@@ -14,6 +14,8 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -38,6 +40,9 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LevelDB.NET, Version=2.1.6.0, Culture=neutral, PublicKeyToken=843150c17bd99711, processorArchitecture=MSIL">
+      <HintPath>..\packages\LevelDB.Standard.2.1.6.1\lib\net4\LevelDB.NET.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -58,6 +63,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="View\Tool\LibraryFolderFinder.cs" />
     <Compile Include="View\Window\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
@@ -104,4 +110,11 @@
   <PropertyGroup>
     <PostBuildEvent>cp "$(SolutionDir)StarTrad\icon.ico" "$(SolutionDir)StarTrad\bin\$(ConfigurationName)\icon.ico"</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\LevelDB.Standard.2.1.6.1\build\net4\LevelDB.Standard.targets" Condition="Exists('..\packages\LevelDB.Standard.2.1.6.1\build\net4\LevelDB.Standard.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\LevelDB.Standard.2.1.6.1\build\net4\LevelDB.Standard.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LevelDB.Standard.2.1.6.1\build\net4\LevelDB.Standard.targets'))" />
+  </Target>
 </Project>

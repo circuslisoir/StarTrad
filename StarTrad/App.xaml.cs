@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StarTrad.View.Tool;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -10,6 +11,18 @@ namespace StarTrad
 	public partial class App : System.Windows.Application
 	{
 		public App() : base()
+		{
+			this.CreateNotifyIcon();
+		}
+
+		/*
+		Private
+		*/
+
+		/// <summary>
+		/// Creates the icon and its context menu to be displayed in the system tray.
+		/// </summary>
+		private void CreateNotifyIcon()
 		{
 			ContextMenu contextMenu = new ContextMenu();
 
@@ -42,6 +55,16 @@ namespace StarTrad
 			notifyIcon.ContextMenu = contextMenu;
 		}
 
+		/// <summary>
+		/// Attemps to find the path to the RSI Launcher's Library Folder then displays the result.
+		/// </summary>
+		private void FindAndShowLibraryFolderPath()
+		{
+			string folderPath = LibraryFolderFinder.GetRsiLauncherLibraryFolderPath();
+
+			MessageBox.Show(folderPath != null ? folderPath : "Chemin du Library Folder non trouvé.");
+		}
+
 		/*
 		Event
 		*/
@@ -53,6 +76,7 @@ namespace StarTrad
 		/// <param name="e"></param>
 		private void UpdateMenuItem_Click(object Sender, EventArgs e)
 		{
+			this.FindAndShowLibraryFolderPath();
 		}
 
 		/// <summary>
@@ -62,6 +86,7 @@ namespace StarTrad
 		/// <param name="e"></param>
 		private void UpdateAndLaunchMenuItem_Click(object Sender, EventArgs e)
 		{
+			this.FindAndShowLibraryFolderPath();
 		}
 
 		/// <summary>
