@@ -101,4 +101,7 @@
     <Resource Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>cp "$(SolutionDir)StarTrad\icon.ico" "$(SolutionDir)StarTrad\bin\Debug\icon.ico"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
