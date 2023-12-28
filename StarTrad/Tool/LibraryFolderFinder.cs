@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace StarTrad.View.Tool
+namespace StarTrad.Tool
 {
 	/// <summary>
 	/// Various methods for finding the Star Citizen installation path.
