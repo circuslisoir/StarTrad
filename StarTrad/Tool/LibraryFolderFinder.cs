@@ -172,7 +172,7 @@ namespace StarTrad.Tool
 				return null;
 			}
 
-			return libraryFolderLine;
+			return libraryFolderLine.Replace(@"\\", @"\");
 		}
 
 		/*
