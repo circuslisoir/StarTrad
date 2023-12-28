@@ -1,4 +1,4 @@
-﻿namespace CircusTranslation.View.Window
+﻿namespace StarTrad.View.Window
 {
 	/// <summary>
 	/// Interaction logic for Settings.xaml

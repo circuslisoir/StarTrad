@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace CircusTranslation
+namespace StarTrad
 {
 	/// <summary>
 	/// Interaction logic for App.xaml
