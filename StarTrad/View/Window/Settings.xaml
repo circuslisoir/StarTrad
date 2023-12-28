@@ -2,9 +2,24 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Options avancées"
-        Width="800" Height="600"
+        Width="320" Height="237"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
 	<Grid>
+		<CheckBox Content="Démarrer avec Windows" Margin="10,10,10,0" VerticalAlignment="Top" Checked="CheckBox_StartWithWindows_Checked" Unchecked="CheckBox_StartWithWindows_Unchecked"/>
+
+		<Label Content="Library Folder :" Margin="10,30,10,0" VerticalAlignment="Top"/>
+		<TextBox x:Name="TextBox_LibraryFolder" Margin="10,61,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22"/>
+
+		<Label Content="Canal :" Margin="10,84,10,0" VerticalAlignment="Top"/>
+		<ComboBox x:Name="ComboBox_Channel" Margin="10,115,10,0" VerticalAlignment="Top" DropDownClosed="ComboBox_Channel_DropDownClosed">
+			<ComboBoxItem>LIVE</ComboBoxItem>
+			<ComboBoxItem>PTU</ComboBoxItem>
+			<ComboBoxItem>EPTU</ComboBoxItem>
+			<ComboBoxItem>TECH-PREVIEW</ComboBoxItem>
+		</ComboBox>
+		<TextBox x:Name="TextBox_Channel" Margin="10,115,30,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Height="22"/>
+
+		<Button Content="Enregistrer" Margin="10,0,10,10" Height="31" VerticalAlignment="Bottom" Click="Button_Save_Click"/>
 	</Grid>
 </Window>
