@@ -84,11 +84,6 @@ namespace CircusTranslation
 		private void ExitMenuItem_Click(object Sender, EventArgs e)
 		{
 			this.Shutdown();
-
-			// Prevent from having a Windows messagebox about the crash
-			Process process = Process.GetCurrentProcess();
-			process.Kill();
-			process.Dispose();
 		}
 	}
 }
