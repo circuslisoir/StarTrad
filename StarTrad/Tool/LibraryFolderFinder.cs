@@ -9,6 +9,8 @@ namespace StarTrad.Tool
 	/// </summary>
 	internal class LibraryFolderFinder
 	{
+		private const string DEFAULT_LIBRARY_FOLDER_PATH = @"C:\Program Files\Roberts Space Industries";
+
 		/*
 		Public
 		*/
@@ -110,17 +112,29 @@ namespace StarTrad.Tool
 
 			// Open a connection to a new DB and create if not found
 			LevelDB.Options options = new LevelDB.Options { CreateIfMissing = false };
-			LevelDB.DB db = new LevelDB.DB(options, leveldbDirectoryPath);
-
-			string value = db.Get("library-folder");
-
-			db.Close();
-
-			if (String.IsNullOrWhiteSpace(value) || !Directory.Exists(value)) {
+			LevelDB.DB db;
+			
+			// Accessing the local storage might fail if the launcher is running
+			try {
+				db = new LevelDB.DB(options, leveldbDirectoryPath);
+			} catch (UnauthorizedAccessException) {
 				return null;
 			}
 
-			return value;
+			string libraryFolderPath = db.Get("library-folder");
+
+			db.Close();
+
+			// An empty value means that the default directory is being used
+			if (String.IsNullOrWhiteSpace(libraryFolderPath)) {
+				libraryFolderPath = DEFAULT_LIBRARY_FOLDER_PATH;
+			}
+
+			if (!Directory.Exists(libraryFolderPath)) {
+				return null;
+			}
+
+			return libraryFolderPath;
 		}
 
 		/// <summary>
