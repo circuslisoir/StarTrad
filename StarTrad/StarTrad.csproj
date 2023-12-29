@@ -40,8 +40,4 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="cp &quot;$(SolutionDir)StarTrad\StarTrad.ico&quot; &quot;$(SolutionDir)StarTrad\bin\$(ConfigurationName)\net8.0-windows\StarTrad.ico&quot;" />
-  </Target>
-
 </Project>
