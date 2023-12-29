@@ -56,6 +56,8 @@
 			Properties.Settings.Default.RsiLauncherChannel = this.TextBox_Channel.Text;
 
 			Properties.Settings.Default.Save();
+
+			this.Close();
 		}
     }
 }
