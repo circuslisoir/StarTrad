@@ -12,7 +12,7 @@ namespace StarTrad
 	public partial class App : System.Windows.Application
 	{
 		// Full path to the location where this program is running
-		public static string appFolder = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)) + @"\";
+		public static string workingDirectoryPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)) + @"\";
 
 		public App() : base()
 		{
