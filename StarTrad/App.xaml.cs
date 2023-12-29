@@ -80,7 +80,8 @@ namespace StarTrad
 		/// <param name="e"></param>
 		private void UpdateMenuItem_Click(object Sender, EventArgs e)
 		{
-			this.FindAndShowLibraryFolderPath();
+			TranslationInstaller installer = new TranslationInstaller();
+			installer.InstallLatestTranslation();
 		}
 
 		/// <summary>
@@ -90,7 +91,8 @@ namespace StarTrad
 		/// <param name="e"></param>
 		private void UpdateAndLaunchMenuItem_Click(object Sender, EventArgs e)
 		{
-			this.FindAndShowLibraryFolderPath();
+			TranslationInstaller installer = new TranslationInstaller();
+			installer.InstallLatestTranslation();
 		}
 
 		/// <summary>
