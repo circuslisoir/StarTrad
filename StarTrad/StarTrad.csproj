@@ -63,6 +63,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helper\LoggerFactory.cs" />
     <Compile Include="Tool\LibraryFolderFinder.cs" />
     <Compile Include="View\Window\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
