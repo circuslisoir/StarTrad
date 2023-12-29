@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 
 namespace StarTrad.Tool
@@ -22,9 +21,9 @@ namespace StarTrad.Tool
 		/// <returns>
 		/// The absolute path to a directory, or null if it cannot be found.
 		/// </returns>
-		public static string GetStarCitizenInstallDirectoryPath(string channel)
+		public static string? GetStarCitizenInstallDirectoryPath(string channel)
 		{
-			string libraryFolderPath = FindLibraryFolderPath();
+			string? libraryFolderPath = FindLibraryFolderPath();
 
 			if (libraryFolderPath == null) {
 				return null;
@@ -51,9 +50,9 @@ namespace StarTrad.Tool
 		/// <returns>
 		/// The absolute path to a directory, or null if it cannot be found.
 		/// </returns>
-		public static string GetRsiLauncherLibraryFolderPath()
+		public static string? GetRsiLauncherLibraryFolderPath()
 		{
-			string libraryFolderPath = Properties.Settings.Default.RsiLauncherLibraryFolder;
+			string? libraryFolderPath = Properties.Settings.Default.RsiLauncherLibraryFolder;
 
 			if (!String.IsNullOrWhiteSpace(libraryFolderPath) && Directory.Exists(libraryFolderPath)) {
 				return libraryFolderPath;
@@ -79,9 +78,9 @@ namespace StarTrad.Tool
 		/// <returns>
 		/// The absolute path to a directory, or null if it cannot be found.
 		/// </returns>
-		private static string FindLibraryFolderPath()
+		private static string? FindLibraryFolderPath()
 		{
-			string libraryfolderPath = FindFromLauncherLocalStorage();
+			string? libraryfolderPath = FindFromLauncherLocalStorage();
 
 			if (!String.IsNullOrEmpty(libraryfolderPath)) {
 				return libraryfolderPath;
@@ -102,7 +101,7 @@ namespace StarTrad.Tool
 		/// <returns>
 		/// The absolute path to a directory, or null if it cannot be found.
 		/// </returns>
-		private static string FindFromLauncherLocalStorage()
+		private static string? FindFromLauncherLocalStorage()
 		{
 			string leveldbDirectoryPath = UserDirectory + @"\AppData\Roaming\rsilauncher\Local Storage\leveldb";
 
@@ -143,7 +142,7 @@ namespace StarTrad.Tool
 		/// <returns>
 		/// The absolute path to a directory, or null if it cannot be found.
 		/// </returns>
-		private static string FindFromLauncherLogFile()
+		private static string? FindFromLauncherLogFile()
 		{
 			string logFilePath = UserDirectory + @"\AppData\Roaming\rsilauncher\logs\log.log";
 
@@ -153,7 +152,7 @@ namespace StarTrad.Tool
 
 			uint lineNumber = 0;
 			uint changeEventLineNumber = 0;
-			string libraryFolderLine = null;
+			string? libraryFolderLine = null;
 
 			using (FileStream fileStream = File.OpenRead(logFilePath)) {
 				using (StreamReader streamReader = new StreamReader(fileStream, Encoding.UTF8, true, 128)) {

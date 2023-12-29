@@ -1,8 +1,9 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.IO;
-using StarTrad.Properties;
 using System.Text;
+using System.Diagnostics;
+using StarTrad.Properties;
+using StarTrad.Helper;
 
 namespace StarTrad.Tool
 {
@@ -13,23 +14,55 @@ namespace StarTrad.Tool
 	{
 		private const string GLOBAL_INI_FILE_NAME = "global.ini";
 
+		// The absolute path to the Star Citizen's installation directory for the configured channel, for example:
+		// "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE".
+		private string currentChannelDirectoryPath;
+
 		/*
-		Public
+		Constructor
+		*/
+
+		private TranslationInstaller(string currentChannelDirectoryPath)
+		{
+			this.currentChannelDirectoryPath = currentChannelDirectoryPath;
+		}
+
+		/*
+		Static
+		*/
+
+		/// <summary>
+		/// Runs the whole installation process, if possible.
+		/// </summary>
+		public static void Run()
+		{
+			string? currentChannelDirectoryPath = LibraryFolderFinder.GetStarCitizenInstallDirectoryPath(Settings.Default.RsiLauncherChannel);
+
+			if (currentChannelDirectoryPath == null) {
+				return;
+			}
+
+			TranslationInstaller installer = new TranslationInstaller(currentChannelDirectoryPath);
+			installer.InstallLatestTranslation();
+		}
+
+		/*
+		Private
 		*/
 
 		/// <summary>
 		/// Installs, if needed, the latest version of the translation from the circuspes website.
 		/// </summary>
-		public void InstallLatestTranslation()
+		private void InstallLatestTranslation()
 		{
-			TranslationVersion latestVersion = this.QueryLatestAvailableTranslationVersion();
+			TranslationVersion? latestVersion = this.QueryLatestAvailableTranslationVersion();
 
 			// Unable to obtain the remote version
 			if (latestVersion == null) {
 				return;
 			}
 
-			TranslationVersion installedVersion = this.GetInstalledTranslationVersion();
+			TranslationVersion? installedVersion = this.GetInstalledTranslationVersion();
 
 			// We already have the latest version installed
 			if (installedVersion != null && latestVersion.IsNewerThan(installedVersion)) {
@@ -39,19 +72,15 @@ namespace StarTrad.Tool
 			this.StartGlobalIniFileDownload();
 		}
 
-		/*
-		Private
-		*/
-
 		/// <summary>
 		/// Reads the installed translation file, if any, in order to obtain its version.
 		/// </summary>
 		/// <returns>
 		/// The installed version as an object, or null if the file cannot be found.
 		/// </returns>
-		private TranslationVersion GetInstalledTranslationVersion()
+		private TranslationVersion? GetInstalledTranslationVersion()
 		{
-			string installedGlobalIniFilePath = this.GlobalIniInstallationFilePath;
+			string? installedGlobalIniFilePath = this.GlobalIniInstallationFilePath;
 
 			if (!File.Exists(installedGlobalIniFilePath)) {
 				return null;
@@ -78,7 +107,7 @@ namespace StarTrad.Tool
 		/// Obtains an object representing the latest version of the translation.
 		/// </summary>
 		/// <returns></returns>
-		private TranslationVersion QueryLatestAvailableTranslationVersion()
+		private TranslationVersion? QueryLatestAvailableTranslationVersion()
 		{
 			string html = CircuspesClient.GetRequest("/download/version.html");
 
@@ -94,6 +123,7 @@ namespace StarTrad.Tool
 		/// </summary>
 		private void StartGlobalIniFileDownload()
 		{
+			// Define where to store the to-be-downloaded file
 			string localGlobalIniFilePath = App.workingDirectoryPath + '\\' + GLOBAL_INI_FILE_NAME;
 
 			if (File.Exists(localGlobalIniFilePath)) {
@@ -102,8 +132,8 @@ namespace StarTrad.Tool
 
 			WebClient client = new WebClient();
 
-			client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(WebClient_GlobalIniFileDownloadProgress);
-			client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(WebClient_GlobalIniFileDownloadCompleted);
+			client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(this.WebClient_GlobalIniFileDownloadProgress);
+			client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(this.WebClient_GlobalIniFileDownloadCompleted);
 			client.DownloadFileAsync(new Uri(CircuspesClient.HOST + "/download/" + GLOBAL_INI_FILE_NAME), localGlobalIniFilePath);
 
 			client.Dispose();
@@ -115,37 +145,23 @@ namespace StarTrad.Tool
 		/// <param name="downloadedGlobalIniFilePath"></param>
 		private void InstallGlobalIniFile(string downloadedGlobalIniFilePath)
 		{
-			string starCitizenDirectory = LibraryFolderFinder.GetStarCitizenInstallDirectoryPath(Settings.Default.RsiLauncherChannel);
-
-			if (!Directory.Exists(starCitizenDirectory)) {
-				return;
-			}
-
 			string globalIniDestinationDirectoryPath = this.GlobalIniInstallationDirectoryPath;
 
-			// Create destination directory if need
-			if (!Directory.Exists(globalIniDestinationDirectoryPath)) {
-				try {
+			try {
+				// Create destination directory if need
+				if (!Directory.Exists(globalIniDestinationDirectoryPath)) {
 					Directory.CreateDirectory(globalIniDestinationDirectoryPath);
-				} catch (Exception) {
-					return;
 				}
-			}
 
-			// Move downloaded file
-			try {
-				File.Move(downloadedGlobalIniFilePath, this.GlobalIniInstallationFilePath);
-			} catch (Exception) {
-				return;
-			}
+				// Move downloaded file
+				File.Move(downloadedGlobalIniFilePath, this.GlobalIniInstallationFilePath, true);
 
-			// Create the user.cfg file
-			try {
-				File.WriteAllLines(starCitizenDirectory + @"\user.cfg", new string[] {
+				// Create the user.cfg file
+				File.WriteAllLines(this.UserCfgFilePath, new string[] {
 					"g_language = french_(france)"
 				});
-			} catch (Exception) {
-				return;
+			} catch (Exception e) {
+				LoggerFactory.LogError(e);
 			}
 		}
 
@@ -154,12 +170,21 @@ namespace StarTrad.Tool
 		*/
 
 		/// <summary>
+		/// Returns the absolute path to the final destination of the global.ini file.
+		/// For a default Star Citizen installation, this should be "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE\data\Localization\french_(france)\global.ini".
+		/// </summary>
+		private string UserCfgFilePath
+		{
+			get { return this.currentChannelDirectoryPath + '\\' + "user.cfg"; }
+		}
+
+		/// <summary>
 		/// Gets the absolute path to the directory where the global.ini file should be installed.
 		/// For a default Star Citizen installation, this should be "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE\data\Localization\french_(france)".
 		/// </summary>
 		private string GlobalIniInstallationDirectoryPath
 		{
-			get { return LibraryFolderFinder.GetStarCitizenInstallDirectoryPath(Settings.Default.RsiLauncherChannel) + @"\data\Localization\french_(france)"; }
+			get { return this.currentChannelDirectoryPath + @"\data\Localization\french_(france)"; }
 		}
 
 		/// <summary>
@@ -184,7 +209,7 @@ namespace StarTrad.Tool
 		{
 			int percentage = (int)(((float)e.BytesReceived / (float)e.TotalBytesToReceive) * 100.0);
 
-			Console.WriteLine("Downloading " + GLOBAL_INI_FILE_NAME + ": " + percentage + " % (" + (e.BytesReceived / 1000000) + "Mo / " + (e.TotalBytesToReceive / 1000000) + "Mo)");
+			Debug.WriteLine("Downloading " + GLOBAL_INI_FILE_NAME + ": " + percentage + " % (" + (e.BytesReceived / 1000000) + "Mo / " + (e.TotalBytesToReceive / 1000000) + "Mo)");
 		}
 
 		/// <summary>
@@ -192,13 +217,13 @@ namespace StarTrad.Tool
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void WebClient_GlobalIniFileDownloadCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+		private void WebClient_GlobalIniFileDownloadCompleted(object? sender, System.ComponentModel.AsyncCompletedEventArgs e)
 		{
 			if (e.Error != null) {
 				return;
 			}
 
-			string localGlobalIniFilePath = App.workingDirectoryPath + '\\' + GLOBAL_INI_FILE_NAME;
+			string localGlobalIniFilePath = App.workingDirectoryPath + GLOBAL_INI_FILE_NAME;
 
 			if (!File.Exists(localGlobalIniFilePath)) {
 				return;

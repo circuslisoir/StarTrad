@@ -60,8 +60,7 @@ namespace StarTrad
 		/// <param name="e"></param>
 		private void UpdateMenuItem_Click(object? sender, EventArgs e)
 		{
-			TranslationInstaller installer = new TranslationInstaller();
-			installer.InstallLatestTranslation();
+			TranslationInstaller.Run();
 		}
 
 		/// <summary>
@@ -71,8 +70,7 @@ namespace StarTrad
 		/// <param name="e"></param>
 		private void UpdateAndLaunchMenuItem_Click(object? sender, EventArgs e)
 		{
-			TranslationInstaller installer = new TranslationInstaller();
-			installer.InstallLatestTranslation();
+			TranslationInstaller.Run();
 		}
 
 		/// <summary>
