@@ -1,4 +1,5 @@
 ﻿using IWshRuntimeLibrary;
+using StarTrad.Helper;
 using System;
 
 namespace StarTrad.View.Window
@@ -19,9 +20,6 @@ namespace StarTrad.View.Window
             this.TextBox_Channel.Text = Properties.Settings.Default.RsiLauncherChannel;
         }
 
-        /*
-		Event
-		*/
 
         #region Events
 
@@ -32,6 +30,7 @@ namespace StarTrad.View.Window
         /// <param name="e"></param>
         private void CheckBox_StartWithWindows_Checked(object sender, System.Windows.RoutedEventArgs e)
         {
+            LoggerFactory.LogInformation("Activation du démarrage de StarTrad avec windows");
             string starTradPath = App.workingDirectoryPath;
             if (!IsShortcutExist(shortcutPath))
                 CreateShortcut(starTradPath, shortcutPath);
@@ -44,6 +43,7 @@ namespace StarTrad.View.Window
         /// <param name="e"></param>
         private void CheckBox_StartWithWindows_Unchecked(object sender, System.Windows.RoutedEventArgs e)
         {
+            LoggerFactory.LogInformation("Désactivation du démarrage de StarTrad avec windows");
             if (IsShortcutExist(shortcutPath))
                 DeleteShortcut(shortcutPath);
         }
@@ -55,7 +55,9 @@ namespace StarTrad.View.Window
         /// <param name="e"></param>
         private void ComboBox_Channel_DropDownClosed(object sender, System.EventArgs e)
         {
-            this.TextBox_Channel.Text = this.ComboBox_Channel.Text.Trim();
+            string newValue = this.ComboBox_Channel.Text.Trim();
+            this.TextBox_Channel.Text = newValue;
+            LoggerFactory.LogInformation($"Changement de la valeur du canal par : {newValue}");
         }
 
         /// <summary>
@@ -65,6 +67,8 @@ namespace StarTrad.View.Window
         /// <param name="e"></param>
         private void Button_Save_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            LoggerFactory.LogInformation("Sauvegarde et fermeture du menu des paramètres");
+
             Properties.Settings.Default.RsiLauncherLibraryFolder = this.TextBox_LibraryFolder.Text;
             Properties.Settings.Default.RsiLauncherChannel = this.TextBox_Channel.Text;
 
@@ -75,13 +79,24 @@ namespace StarTrad.View.Window
 
         #endregion
 
+        /// <summary>
+        /// Checks if shortcut exists
+        /// </summary>
+        /// <param name="path">The shortcut path</param>
+        /// <returns>Boolean</returns>
         private bool IsShortcutExist(string path)
         {
             return System.IO.File.Exists(path);
         }
 
+        /// <summary>
+        /// Create shortcut in folder to file
+        /// </summary>
+        /// <param name="starTradPath">Path to exe file of application</param>
+        /// <param name="shortcutPath">Path where the shortcut who save</param>
         private void CreateShortcut(string starTradPath, string shortcutPath)
         {
+            LoggerFactory.LogInformation("Création du raccourci de démarage avec windows");
             try
             {
                 WshShell shell = new WshShell();
@@ -93,17 +108,29 @@ namespace StarTrad.View.Window
 
                 shortcut.Save();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                LoggerFactory.LogError(ex);
+            }
+
 
         }
 
+        /// <summary>
+        /// Delete shortcut from path
+        /// </summary>
+        /// <param name="path">Path where located the shorcut</param>
         private void DeleteShortcut(string path)
         {
+            LoggerFactory.LogInformation("Suppressions du raccourci de démarage avec windows");
             try
             {
                 System.IO.File.Delete(path);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                LoggerFactory.LogError(ex);
+            }
         }
     }
 }

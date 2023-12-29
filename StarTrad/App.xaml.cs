@@ -1,4 +1,5 @@
-﻿using StarTrad.Tool;
+﻿using StarTrad.Helper;
+using StarTrad.Tool;
 using System;
 using System.Drawing;
 using System.Reflection;
@@ -17,6 +18,8 @@ namespace StarTrad
         public App() : base()
         {
             this.CreateNotifyIcon();
+            LoggerFactory.Setup();
+            LoggerFactory.LogInformation("Démarrage de StarTrad");
         }
 
         /*
@@ -67,6 +70,7 @@ namespace StarTrad
             string folderPath = LibraryFolderFinder.GetRsiLauncherLibraryFolderPath();
 
             MessageBox.Show(folderPath != null ? folderPath : "Chemin du Library Folder non trouvé.");
+            LoggerFactory.LogWarning("Chemin du Library Folder non trouvé");
         }
 
         /*
@@ -81,6 +85,7 @@ namespace StarTrad
         private void UpdateMenuItem_Click(object Sender, EventArgs e)
         {
             this.FindAndShowLibraryFolderPath();
+
         }
 
         /// <summary>
@@ -100,6 +105,7 @@ namespace StarTrad
         /// <param name="e"></param>
         private void SettingsMenuItem_Click(object Sender, EventArgs e)
         {
+            LoggerFactory.LogInformation("Ouverture des paramètres");
             View.Window.Settings settingsWindow = new View.Window.Settings();
             settingsWindow.ShowDialog();
         }
@@ -111,6 +117,7 @@ namespace StarTrad
         /// <param name="e"></param>
         private void ExitMenuItem_Click(object Sender, EventArgs e)
         {
+            LoggerFactory.LogInformation("Fermeture de StarTrad");
             this.Shutdown();
         }
     }
