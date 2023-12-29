@@ -64,7 +64,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helper\LoggerFactory.cs" />
+    <Compile Include="Tool\CircuspesClient.cs" />
     <Compile Include="Tool\LibraryFolderFinder.cs" />
+    <Compile Include="Tool\TranslationInstaller.cs" />
+    <Compile Include="Tool\TranslationVersion.cs" />
     <Compile Include="View\Window\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>

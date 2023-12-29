@@ -113,7 +113,7 @@ namespace StarTrad.Tool
 			// Open a connection to a new DB and create if not found
 			LevelDB.Options options = new LevelDB.Options { CreateIfMissing = false };
 			LevelDB.DB db;
-			
+
 			// Accessing the local storage might fail if the launcher is running
 			try {
 				db = new LevelDB.DB(options, leveldbDirectoryPath);
@@ -159,8 +159,7 @@ namespace StarTrad.Tool
 				using (StreamReader streamReader = new StreamReader(fileStream, Encoding.UTF8, true, 128)) {
 					String line;
 
-					while ((line = streamReader.ReadLine()) != null)
-					{
+					while ((line = streamReader.ReadLine()) != null) {
 						lineNumber++;
 
 						if (line.Contains("CHANGE_LIBRARY_FOLDER")) {
@@ -190,9 +189,12 @@ namespace StarTrad.Tool
 		}
 
 		/*
-		Getter
+		Accessor
 		*/
 
+		/// <summary>
+		/// Returns the path to the user directory, for exemple "C:\Users\<UserName>"
+		/// </summary>
 		private static string UserDirectory
 		{
 			get { return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); }
