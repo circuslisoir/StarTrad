@@ -18,18 +18,12 @@ namespace StarTrad.Tool
         // "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE".
         private string currentChannelDirectoryPath;
 
-        /*
-		Constructor
-		*/
 
         private TranslationInstaller(string currentChannelDirectoryPath)
         {
             this.currentChannelDirectoryPath = currentChannelDirectoryPath;
         }
 
-        /*
-		Static
-		*/
 
         #region Static
         /// <summary>
@@ -50,9 +44,6 @@ namespace StarTrad.Tool
         }
         #endregion
 
-        /*
-		Private
-		*/
 
         #region Private
 
@@ -272,9 +263,6 @@ namespace StarTrad.Tool
 
         #endregion
 
-        /*
-		Event
-		*/
 
         #region Event
 

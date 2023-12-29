@@ -1,103 +1,105 @@
-﻿using System.Windows;
-using StarTrad.Helper;
+﻿using StarTrad.Helper;
 using StarTrad.Tool;
+using System.Windows;
 
 namespace StarTrad
 {
-	/// <summary>
-	/// Interaction logic for App.xaml
-	/// </summary>
-	public partial class App : System.Windows.Application
-	{
-		// Full path to the location where this program is running
-		public static string workingDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
+    /// <summary>
+    /// Interaction logic for App.xaml
+    /// </summary>
+    public partial class App : System.Windows.Application
+    {
+        // Full path to the location where this program is running
+        public static string workingDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
 
-		private static ApplicationContext applicationContext = new ApplicationContext();
-		private static NotifyIcon notifyIcon = new NotifyIcon();
+        private static ApplicationContext applicationContext = new ApplicationContext();
+        private static NotifyIcon notifyIcon = new NotifyIcon();
 
-		public App() : base()
-		{
-			ApplicationConfiguration.Initialize();
+        public App() : base()
+        {
+            LoggerFactory.Setup();
+            LoggerFactory.LogInformation("Démarrage de StarTrad");
 
-			this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-			this.CreateNotifyIcon();
+            ApplicationConfiguration.Initialize();
 
-			System.Windows.Forms.Application.Run(applicationContext);
+            this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            this.CreateNotifyIcon();
 
-			LoggerFactory.Setup();
-			LoggerFactory.LogInformation("Démarrage de StarTrad");
-		}
+            System.Windows.Forms.Application.Run(applicationContext);
+        }
 
-		/*
-		Private
-		*/
 
-		/// <summary>
-		/// Creates the icon and its context menu to be displayed in the system tray.
-		/// </summary>
-		private void CreateNotifyIcon()
-		{
-			ContextMenuStrip cms = new ContextMenuStrip();
-			cms.Items.Add(new ToolStripMenuItem("Vérifier et installer traduction", null, new EventHandler(this.UpdateMenuItem_Click)));
-			cms.Items.Add(new ToolStripMenuItem("Vérifier, installer traduction et lancer", null, new EventHandler(this.UpdateAndLaunchMenuItem_Click)));
-			cms.Items.Add(new ToolStripSeparator());
-			cms.Items.Add(new ToolStripMenuItem("Options avancées", null, new EventHandler(this.SettingsMenuItem_Click)));
-			cms.Items.Add(new ToolStripMenuItem("Quitter", null, new EventHandler(this.ExitMenuItem_Click)));
+        #region Private
 
-			notifyIcon.ContextMenuStrip = cms;
-			notifyIcon.Icon = new Icon(workingDirectoryPath + @"\StarTrad.ico");
-			notifyIcon.Visible = true;
-		}
+        /// <summary>
+        /// Creates the icon and its context menu to be displayed in the system tray.
+        /// </summary>
+        private void CreateNotifyIcon()
+        {
+            ContextMenuStrip cms = new ContextMenuStrip();
+            cms.Items.Add(new ToolStripMenuItem("Vérifier et installer traduction", null, new EventHandler(this.UpdateMenuItem_Click)));
+            cms.Items.Add(new ToolStripMenuItem("Vérifier, installer traduction et lancer", null, new EventHandler(this.UpdateAndLaunchMenuItem_Click)));
+            cms.Items.Add(new ToolStripSeparator());
+            cms.Items.Add(new ToolStripMenuItem("Options avancées", null, new EventHandler(this.SettingsMenuItem_Click)));
+            cms.Items.Add(new ToolStripMenuItem("Quitter", null, new EventHandler(this.ExitMenuItem_Click)));
 
-		/*
-		Event
-		*/
+            notifyIcon.ContextMenuStrip = cms;
+            notifyIcon.Icon = new Icon(workingDirectoryPath + @"\StarTrad.ico");
+            notifyIcon.Visible = true;
+        }
 
-		/// <summary>
-		/// Called when clicking on the "Update" tray menu item.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void UpdateMenuItem_Click(object? sender, EventArgs e)
-		{
-			TranslationInstaller.Run();
-		}
+        #endregion
 
-		/// <summary>
-		/// Called when clicking on the "Update & Launch" tray menu item.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void UpdateAndLaunchMenuItem_Click(object? sender, EventArgs e)
-		{
-			TranslationInstaller.Run();
-		}
+        #region Event
 
-		/// <summary>
-		/// Called when clicking on the "Settings" tray menu item.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void SettingsMenuItem_Click(object? sender, EventArgs e)
-		{
-			LoggerFactory.LogInformation("Ouverture des paramètres");
-			View.Window.Settings settingsWindow = new View.Window.Settings();
-			settingsWindow.ShowDialog();
-		}
+        /// <summary>
+        /// Called when clicking on the "Update" tray menu item.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateMenuItem_Click(object? sender, EventArgs e)
+        {
+            LoggerFactory.LogInformation("Lancement de la recherche de mise a jour");
+            TranslationInstaller.Run();
+        }
 
-		/// <summary>
-		/// Called when clicking on the "Exit" tray menu item.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void ExitMenuItem_Click(object? sender, EventArgs e)
-		{
-			LoggerFactory.LogInformation("Fermeture de StarTrad");
+        /// <summary>
+        /// Called when clicking on the "Update & Launch" tray menu item.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateAndLaunchMenuItem_Click(object? sender, EventArgs e)
+        {
+            TranslationInstaller.Run();
+        }
 
-			applicationContext.ExitThread();
-			notifyIcon.Visible = false;
+        /// <summary>
+        /// Called when clicking on the "Settings" tray menu item.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SettingsMenuItem_Click(object? sender, EventArgs e)
+        {
+            LoggerFactory.LogInformation("Ouverture des paramètres");
+            View.Window.Settings settingsWindow = new View.Window.Settings();
+            settingsWindow.ShowDialog();
+        }
 
-			System.Windows.Forms.Application.Exit();
-		}
-	}
+        /// <summary>
+        /// Called when clicking on the "Exit" tray menu item.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ExitMenuItem_Click(object? sender, EventArgs e)
+        {
+            LoggerFactory.LogInformation("Fermeture de StarTrad");
+
+            applicationContext.ExitThread();
+            notifyIcon.Visible = false;
+
+            System.Windows.Forms.Application.Exit();
+        }
+
+        #endregion
+    }
 }
