@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 
 namespace StarTrad.Tool
 {
@@ -8,6 +9,8 @@ namespace StarTrad.Tool
 	/// </summary>
 	internal class LibraryFolder
 	{
+        protected const string STAR_CITIZEN_DIRECTORY_NAME = "StarCitizen";
+
 		protected readonly string libraryFolderPath;
 
         /*
@@ -57,7 +60,7 @@ namespace StarTrad.Tool
                 return channelDirectoryPaths;
             }
             
-            string startCitizenDirectoryPath = libraryFolderPath + @"\StarCitizen";
+            string startCitizenDirectoryPath = libraryFolderPath + '\\' + STAR_CITIZEN_DIRECTORY_NAME;
 
             if (!Directory.Exists(startCitizenDirectoryPath)) {
                 return channelDirectoryPaths;
@@ -71,5 +74,42 @@ namespace StarTrad.Tool
 
             return channelDirectoryPaths;
         }
+
+        /*
+		Public
+		*/
+
+        public void ExecuteRsiLauncher()
+		{
+            string exePath = this.RsiLauncherExecutablePath;
+
+            if (!File.Exists(exePath)) {
+				return;
+			}
+
+            Process.Start(exePath);
+        }
+
+        /*
+		Accessor
+		*/
+
+        /// <summary>
+        /// The absolute path to the "StarCitizen" directory, by default:
+        /// "C:\Program Files\Roberts Space Industries\StarCitizen".
+        /// </summary>
+        public string StarCitizenDirectoryPath
+		{
+			get { return this.libraryFolderPath + '\\' + STAR_CITIZEN_DIRECTORY_NAME; }
+		}
+
+        /// <summary>
+        /// The absolute path to the RSI Launcher executable, by default:
+        /// "C:\Program Files\Roberts Space Industries\RSI Launcher\RSI Launcher.exe".
+        /// </summary>
+        public string RsiLauncherExecutablePath
+		{
+			get { return this.libraryFolderPath + @"\RSI Launcher\RSI Launcher.exe"; }
+		}
 	}
 }

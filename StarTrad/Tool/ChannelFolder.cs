@@ -10,7 +10,6 @@ namespace StarTrad.Tool
 	internal class ChannelFolder : LibraryFolder 
 	{
 		public const string GLOBAL_INI_FILE_NAME = "global.ini";
-        private const string STAR_CITIZEN_DIRECTORY_NAME = "StarCitizen";
         private const string PREFERED_CHANNEL_NAME = "LIVE";
 
 		private readonly string channelName;
@@ -126,16 +125,27 @@ namespace StarTrad.Tool
 		Accessor
 		*/
 
+        /// <summary>
+        /// The name of the channel folder, for example "LIVE" or "PTU".
+        /// </summary>
+        public string Name
+		{
+			get { return System.IO.Path.GetFileName(this.Path); }
+		}
+
+        /// <summary>
+        /// The absolute path to the Library Folder, by default:
+        /// "C:\Program Files\Roberts Space Industries".
+        /// </summary>
 		public string Path
 		{
 			get { return this.StarCitizenDirectoryPath + '\\' + this.channelName; }
 		}
 
-        public string StarCitizenDirectoryPath
-		{
-			get { return this.libraryFolderPath + '\\' + STAR_CITIZEN_DIRECTORY_NAME; }
-		}
-
+        /// <summary>
+        /// The absolute path to the user.cfg file, by default:
+        /// "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE\user.cfg".
+        /// </summary>
 		public string UserCfgFilePath
         {
             get { return this.Path + '\\' + "user.cfg"; }

@@ -1,5 +1,4 @@
 ﻿using StarTrad.Helper;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -12,33 +11,40 @@ namespace StarTrad.Tool
     internal class TranslationInstaller
     {
         private const string GLOBAL_INI_FILE_NAME = "global.ini";
+        private const string DOWNLOAD_ERROR_MESSAGE = "Erreur de téléchargement du fichier de traduction.";
 
         // The object representing the Star Citizen's installation directory for a channel, for example:
         // "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE".
         private readonly ChannelFolder channelFolder;
 
+        // Should the installed run without using any UI element to report its progress.
+        private readonly bool silent = true;
+
         // A small window to display the installation progressing.
-        private readonly View.Window.Progress? progressWindow = null;
+        private View.Window.Progress? progressWindow = null;
+
+        // Define an event to be called once the traslation has been installed.
+        public delegate void TranslationInstalledHandler<ChannelFolder>(object sender, ChannelFolder channelFolder);
+        public event TranslationInstalledHandler<ChannelFolder>? OnTranslationInstalled = null;
 
         private TranslationInstaller(ChannelFolder channelFolder, bool silent = true)
         {
             this.channelFolder = channelFolder;
-
-            if (!silent) {
-                this.progressWindow = new View.Window.Progress();
-            }
+            this.silent = silent;
         }
 
+		#region Static
 
-        #region Static
-
-        /// <summary>
-        /// Runs the whole installation process, if possible.
-        /// <param name="showDownloadWindow">
-        /// If true, no UI elements will be displayed to show the progress of the installation.
-        /// </param>
-        /// </summary>
-        public static void Run(bool silent = true)
+		/// <summary>
+		/// Runs the whole installation process, if possible.
+		/// <param name="silent">
+		/// If true, no UI elements will be displayed to show the progress of the installation.
+		/// </param>
+        /// <param name="onTranslationInstalled">
+		/// If not null, this event will be called after a successful installation of the translation.
+		/// </param>
+		/// </summary>
+        public static void Install(bool silent = true, TranslationInstalledHandler<ChannelFolder>? onTranslationInstalled = null)
         {
             ChannelFolder? channelFolder = ChannelFolder.Make();
 
@@ -47,7 +53,43 @@ namespace StarTrad.Tool
             }
 
             TranslationInstaller installer = new TranslationInstaller(channelFolder, silent);
+            
+            if (onTranslationInstalled != null) {
+                installer.OnTranslationInstalled += onTranslationInstalled;
+            }
+
             installer.InstallLatestTranslation();
+        }
+
+        /// <summary>
+        /// Uninstalls the translation.
+        /// </summary>
+        /// <returns>
+        /// Success.
+        /// </returns>
+        public static bool Uninstall()
+        {
+            ChannelFolder? channelFolder = ChannelFolder.Make();
+
+            if (channelFolder == null) {
+                return false;
+            }
+
+            string globalIniFilePath = channelFolder.GlobalIniInstallationFilePath;
+
+            if (!File.Exists(globalIniFilePath)) {
+                return false;
+            }
+
+            try {
+                File.Delete(globalIniFilePath);
+            } catch (Exception ex) {
+                LoggerFactory.LogError(ex);
+
+                return false;
+            }
+
+            return true;
         }
 
         #endregion
@@ -62,18 +104,19 @@ namespace StarTrad.Tool
             TranslationVersion? latestVersion = this.QueryLatestAvailableTranslationVersion();
 
             // Unable to obtain the remote version
-            if (latestVersion == null)
-            {
-                LoggerFactory.LogWarning("Impossible de récuprérer version de la dernière traduction");
+            if (latestVersion == null) {
+                this.Notify(ToolTipIcon.Warning, "Impossible de récuprérer la version de la dernière traduction.", true);
+
                 return;
             }
 
             TranslationVersion? installedVersion = this.GetInstalledTranslationVersion();
 
             // We already have the latest version installed
-            if (installedVersion != null && !latestVersion.IsNewerThan(installedVersion))
-            {
-                LoggerFactory.LogInformation("Dernière version de traduction déjà installée");
+            if (installedVersion != null && !latestVersion.IsNewerThan(installedVersion)) {
+                this.Notify(ToolTipIcon.Info, "Dernière version de traduction déjà installée.", true);
+                this.PostGlobalIniInstallation();
+
                 return;
             }
 
@@ -140,6 +183,7 @@ namespace StarTrad.Tool
         private void StartGlobalIniFileDownload()
         {
             LoggerFactory.LogInformation("Lancement du téléchargement de la dernière version de la traduction");
+
             // Define where to store the to-be-downloaded file
             string localGlobalIniFilePath = App.workingDirectoryPath + '\\' + GLOBAL_INI_FILE_NAME;
 
@@ -153,7 +197,8 @@ namespace StarTrad.Tool
             client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(this.WebClient_GlobalIniFileDownloadProgress);
             client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(this.WebClient_GlobalIniFileDownloadCompleted);
 
-            if (this.progressWindow != null) {
+            if (!this.silent) {
+                this.progressWindow = new View.Window.Progress(channelFolder.Name);
                 this.progressWindow.Show();
             }
 
@@ -164,8 +209,13 @@ namespace StarTrad.Tool
         /// <summary>
         /// Given the location of a local global.ini file, installs it in the correct directory.
         /// </summary>
-        /// <param name="downloadedGlobalIniFilePath"></param>
-        private void InstallGlobalIniFile(string downloadedGlobalIniFilePath)
+        /// <param name="downloadedGlobalIniFilePath">
+        /// The absolute path to the downloaded global.ini file.
+        /// </param>
+        /// <returns>
+        /// Success.
+        /// </returns>
+        private bool InstallGlobalIniFile(string downloadedGlobalIniFilePath)
         {
             LoggerFactory.LogInformation($"Installation du nouveau fichier Global.ini");
             string globalIniDestinationDirectoryPath = this.channelFolder.GlobalIniInstallationDirectoryPath;
@@ -173,22 +223,22 @@ namespace StarTrad.Tool
             try
             {
                 // Create destination directory if need
-                if (!Directory.Exists(globalIniDestinationDirectoryPath))
-                {
+                if (!Directory.Exists(globalIniDestinationDirectoryPath)) {
                     Directory.CreateDirectory(globalIniDestinationDirectoryPath);
                     LoggerFactory.LogInformation($"Création du dossier suivant : {globalIniDestinationDirectoryPath}");
                 }
 
                 // Move downloaded file
                 File.Move(downloadedGlobalIniFilePath, this.channelFolder.GlobalIniInstallationFilePath, true);
-
-                // Create or Update the user.cfg file
-                CreateOrUpdateUserCfgFile();
             }
             catch (Exception e)
             {
                 LoggerFactory.LogError(e);
+
+                return false;
             }
+
+            return this.PostGlobalIniInstallation();
         }
 
         private void CreateOrUpdateUserCfgFile()
@@ -240,6 +290,58 @@ namespace StarTrad.Tool
             File.WriteAllLines(this.channelFolder.UserCfgFilePath, lines);
         }
 
+        /// <summary>
+        /// To be called once we have the confirmation that the global.ini file is at its final destination.
+        /// </summary>
+        /// /// <returns>
+        /// Success.
+        /// </returns>
+        private bool PostGlobalIniInstallation()
+        {
+            // Create or Update the user.cfg file
+            try {
+                this.CreateOrUpdateUserCfgFile();
+            } catch (Exception e) {
+                LoggerFactory.LogError(e);
+
+                return false;
+            }
+
+            // Trigger installed event
+            if (this.OnTranslationInstalled != null) {
+                this.OnTranslationInstalled(this, this.channelFolder);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Displays a message from the notify icon.
+        /// </summary>
+        /// <param name="icon"></param>
+        /// <param name="message"></param>
+        /// <param name="log">
+        /// If true, the message will also be written to the log file.
+        /// </param>
+        private void Notify(ToolTipIcon icon, string message, bool log = false)
+        {
+            if (this.silent) {
+                return;
+            }
+
+            App.Notify(icon, message);
+
+            if (!log) {
+                return;
+            }
+
+            if (icon == ToolTipIcon.Info) {
+                LoggerFactory.LogInformation(message);
+            } else if (icon == ToolTipIcon.Warning) {
+                LoggerFactory.LogWarning(message);
+            }
+        }
+
         #endregion
 
         #region Event
@@ -272,30 +374,39 @@ namespace StarTrad.Tool
                 this.progressWindow.Close();
             }
 
-            if (e.Error != null)
-            {
+            if (e.Error != null) {
                 LoggerFactory.LogError(e.Error);
+                this.Notify(ToolTipIcon.Error, DOWNLOAD_ERROR_MESSAGE);
+                
                 return;
             }
 
             string localGlobalIniFilePath = App.workingDirectoryPath + GLOBAL_INI_FILE_NAME;
 
-            if (!File.Exists(localGlobalIniFilePath))
-            {
-                LoggerFactory.LogWarning($"Fichier global.ini télécharger mais non trouver, chemin de recherche : {localGlobalIniFilePath}");
+            if (!File.Exists(localGlobalIniFilePath))  {
+                LoggerFactory.LogWarning($"Fichier global.ini téléchargé mais non trouvé, chemin de recherche : {localGlobalIniFilePath}");
+                this.Notify(ToolTipIcon.Warning, DOWNLOAD_ERROR_MESSAGE);
+
                 return;
             }
 
             long length = new FileInfo(localGlobalIniFilePath).Length;
 
             // File is empty, download failed
-            if (length <= 0)
-            {
+            if (length <= 0) {
                 LoggerFactory.LogWarning("Erreur de téléchargement, fichier vide");
+                this.Notify(ToolTipIcon.Warning, DOWNLOAD_ERROR_MESSAGE);
+
                 return;
             }
 
-            this.InstallGlobalIniFile(localGlobalIniFilePath);
+            bool success = this.InstallGlobalIniFile(localGlobalIniFilePath);
+
+            if (success) {
+                this.Notify(ToolTipIcon.Info, "Traduction installée avec succès !");
+            } else {
+                this.Notify(ToolTipIcon.Error, "Erreur d'installation de la traduction.");
+            }
         }
 
         #endregion

@@ -5,9 +5,11 @@
 	/// </summary>
 	public partial class Progress : System.Windows.Window
 	{
-		public Progress()
+		public Progress(string channel)
 		{
 			InitializeComponent();
+
+			this.Title += $" ({channel})";
 		}
 
 		/*

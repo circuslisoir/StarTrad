@@ -1,5 +1,4 @@
-﻿using StarTrad.Helper;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 
 namespace StarTrad.Tool

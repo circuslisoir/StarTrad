@@ -1,6 +1,7 @@
-﻿using StarTrad.Helper;
-using StarTrad.Tool;
+﻿using System.IO;
 using System.Windows;
+using StarTrad.Helper;
+using StarTrad.Tool;
 
 namespace StarTrad
 {
@@ -28,17 +29,36 @@ namespace StarTrad
             System.Windows.Forms.Application.Run(applicationContext);
         }
 
-
-        #region Private
+		#region Static
 
         /// <summary>
-        /// Creates the icon and its context menu to be displayed in the system tray.
+        /// Displays a message from the notify icon.
         /// </summary>
-        private void CreateNotifyIcon()
+        /// <param name="icon"></param>
+        /// <param name="message"></param>
+        public static void Notify(ToolTipIcon icon, string message)
+        {
+            App.notifyIcon.ShowBalloonTip(2000, "StarTrad", message, icon);
+        }
+
+		#endregion
+
+		#region Private
+
+		/// <summary>
+		/// Creates the icon and its context menu to be displayed in the system tray.
+		/// </summary>
+		private void CreateNotifyIcon()
         {
             ContextMenuStrip cms = new ContextMenuStrip();
-            cms.Items.Add(new ToolStripMenuItem("Vérifier et installer traduction", null, new EventHandler(this.UpdateMenuItem_Click)));
-            cms.Items.Add(new ToolStripMenuItem("Vérifier, installer traduction et lancer", null, new EventHandler(this.UpdateAndLaunchMenuItem_Click)));
+
+            ToolStripMenuItem titleMenuItem = new ToolStripMenuItem("Traduction :");
+            titleMenuItem.Enabled = false;
+
+            cms.Items.Add(titleMenuItem);
+            cms.Items.Add(new ToolStripMenuItem("Installer", null, new EventHandler(this.InstallMenuItem_Click)));
+            cms.Items.Add(new ToolStripMenuItem("Installer et lancer", null, new EventHandler(this.InstallAndLaunchMenuItem_Click)));
+            cms.Items.Add(new ToolStripMenuItem("Désinstaller", null, new EventHandler(this.UninstallMenuItem_Click)));
             cms.Items.Add(new ToolStripSeparator());
             cms.Items.Add(new ToolStripMenuItem("Options avancées", null, new EventHandler(this.SettingsMenuItem_Click)));
             cms.Items.Add(new ToolStripMenuItem("Quitter", null, new EventHandler(this.ExitMenuItem_Click)));
@@ -46,6 +66,7 @@ namespace StarTrad
             notifyIcon.ContextMenuStrip = cms;
             notifyIcon.Icon = new Icon(workingDirectoryPath + @"\StarTrad.ico");
             notifyIcon.Visible = true;
+            notifyIcon.Text = "StarTrad";
         }
 
         #endregion
@@ -53,24 +74,42 @@ namespace StarTrad
         #region Event
 
         /// <summary>
-        /// Called when clicking on the "Update" tray menu item.
+        /// Called when clicking on the "Install" tray menu item.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void UpdateMenuItem_Click(object? sender, EventArgs e)
+        private void InstallMenuItem_Click(object? sender, EventArgs e)
         {
             LoggerFactory.LogInformation("Lancement de la recherche de mise a jour");
-            TranslationInstaller.Run(false);
+            TranslationInstaller.Install(false);
         }
 
         /// <summary>
-        /// Called when clicking on the "Update & Launch" tray menu item.
+        /// Called when clicking on the "Install & Launch" tray menu item.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void UpdateAndLaunchMenuItem_Click(object? sender, EventArgs e)
+        private void InstallAndLaunchMenuItem_Click(object? sender, EventArgs e)
         {
-            TranslationInstaller.Run(false);
+            TranslationInstaller.Install(false, (sender, channelFolder) => {
+                channelFolder.ExecuteRsiLauncher();
+            });
+        }
+
+        /// <summary>
+        /// Called when clicking on the "Uninstall" tray menu item.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UninstallMenuItem_Click(object? sender, EventArgs e)
+        {
+            bool success = TranslationInstaller.Uninstall();
+
+            if (success) {
+                App.Notify(ToolTipIcon.Info, "Traduction désinstallée avec succès !");    
+            } else {
+                App.Notify(ToolTipIcon.Warning, "La traduction n'a pas pu être désinstallée.");
+            }
         }
 
         /// <summary>
