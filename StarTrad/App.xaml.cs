@@ -11,12 +11,13 @@ namespace StarTrad
     public partial class App : System.Windows.Application
     {
         public const string PROGRAM_NAME = "StarTrad";
+        public const string GAME_FOLDER_NOT_FOUND_MESSAGE = "Impossible de trouver le dossier d'installation du jeu.";
 
         // Full path to the location where this program is running
         public static string workingDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
 
-        private static ApplicationContext applicationContext = new ApplicationContext();
-        private static NotifyIcon notifyIcon = new NotifyIcon();
+        private static readonly ApplicationContext applicationContext = new ApplicationContext();
+        private static readonly NotifyIcon notifyIcon = new NotifyIcon();
 
         private readonly ToolStripMenuItem installMenuItem;
         private readonly ToolStripMenuItem installAndLaunchMenuItem;
@@ -95,6 +96,8 @@ namespace StarTrad
             ChannelFolder? channelFolder = ChannelFolder.Make();
 
             if (channelFolder == null) {
+                App.Notify(ToolTipIcon.Warning, GAME_FOLDER_NOT_FOUND_MESSAGE);
+
                 return;
             }
 
@@ -123,6 +126,8 @@ namespace StarTrad
             ChannelFolder? channelFolder = ChannelFolder.Make();
 
             if (channelFolder == null) {
+                App.Notify(ToolTipIcon.Warning, GAME_FOLDER_NOT_FOUND_MESSAGE);
+
                 return;
             }
 
@@ -153,6 +158,8 @@ namespace StarTrad
             ChannelFolder? channelFolder = ChannelFolder.Make();
 
             if (channelFolder == null) {
+                App.Notify(ToolTipIcon.Warning, GAME_FOLDER_NOT_FOUND_MESSAGE);
+
                 return;
             }
 
