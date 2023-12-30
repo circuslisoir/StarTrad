@@ -4,13 +4,13 @@ namespace StarTrad.Helper.ComboxList;
 
 public enum ChanelVersionEnum
 {
-    [Description("Persistant Univers")]
+    [Description("LIVE")]
     LIVE,
 
-    [Description("Public Test Universe")]
+    [Description("PTU")]
     PTU,
 
-    [Description("Evocati Public Test Universe")]
+    [Description("EPTU")]
     EPTU,
 
     [Description("TECH-PREVIEW")]

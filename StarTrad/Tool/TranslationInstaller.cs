@@ -1,4 +1,5 @@
 ﻿using StarTrad.Helper;
+using StarTrad.Helper.ComboxList;
 using StarTrad.Properties;
 using System.Diagnostics;
 using System.IO;
@@ -32,7 +33,7 @@ namespace StarTrad.Tool
         public static void Run()
         {
 
-            string? currentChannelDirectoryPath = LibraryFolderFinder.GetStarCitizenInstallDirectoryPath(Settings.Default.RsiLauncherChannel);
+            string? currentChannelDirectoryPath = LibraryFolderFinder.GetStarCitizenInstallDirectoryPath(EnumHelper.GetDescription((ChanelVersionEnum)Settings.Default.RsiLauncherChannel));
 
             if (currentChannelDirectoryPath == null)
             {

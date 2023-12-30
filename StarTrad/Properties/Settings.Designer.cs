@@ -37,10 +37,10 @@ namespace StarTrad.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("LIVE")]
-        public string RsiLauncherChannel {
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public byte RsiLauncherChannel {
             get {
-                return ((string)(this["RsiLauncherChannel"]));
+                return ((byte)(this["RsiLauncherChannel"]));
             }
             set {
                 this["RsiLauncherChannel"] = value;
@@ -49,10 +49,10 @@ namespace StarTrad.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Never")]
-        public string TranslationUpdateMethod {
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public byte TranslationUpdateMethod {
             get {
-                return ((string)(this["TranslationUpdateMethod"]));
+                return ((byte)(this["TranslationUpdateMethod"]));
             }
             set {
                 this["TranslationUpdateMethod"] = value;

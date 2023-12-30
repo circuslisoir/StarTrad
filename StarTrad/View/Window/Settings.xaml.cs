@@ -1,6 +1,7 @@
 ﻿using IWshRuntimeLibrary;
 using StarTrad.Helper;
 using StarTrad.Helper.ComboxList;
+using System.Windows.Controls;
 
 namespace StarTrad.View.Window
 {
@@ -15,29 +16,19 @@ namespace StarTrad.View.Window
         {
             InitializeComponent();
 
+            // Add ComboBox items
+            this.AddComboBoxItemsFromEnum<ChanelVersionEnum>(this.ComboBox_Channel);
+            this.AddComboBoxItemsFromEnum<TranslationUpdateMethodEnum>(this.ComboBox_TranslationUpdateMethod);
+
+
             // Bind the Checked events after the initial check so they won't be tiggered by it
             this.CheckBox_StartWithWindows.IsChecked = IsShortcutExist(shortcutPath);
-            this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherLibraryFolder;
-            
             this.CheckBox_StartWithWindows.Checked += this.CheckBox_StartWithWindows_Checked;
             this.CheckBox_StartWithWindows.Unchecked += this.CheckBox_StartWithWindows_Unchecked;
-            
-            
-            this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherChannel;
 
-            Array valeursEnum = Enum.GetValues(typeof(ChanelVersionEnum));
-            foreach (ChanelVersionEnum valeur in valeursEnum)
-            {
-                ComboBox_Channel.Items.Add(EnumHelper.GetDescription(valeur));
-            }
-            this.ComboBox_Channel.Text = EnumHelper.GetDescription((ChanelVersionEnum)Enum.Parse(typeof(ChanelVersionEnum), Properties.Settings.Default.RsiLauncherChannel));
-
-            valeursEnum = Enum.GetValues(typeof(TranslationUpdateMethodEnum));
-            foreach (TranslationUpdateMethodEnum valeur in valeursEnum)
-            {
-                ComboBox_TranslationUpdateMethod.Items.Add(EnumHelper.GetDescription(valeur));
-            }
-            this.ComboBox_TranslationUpdateMethod.Text = EnumHelper.GetDescription((TranslationUpdateMethodEnum)Enum.Parse(typeof(TranslationUpdateMethodEnum), Properties.Settings.Default.TranslationUpdateMethod));
+            this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherLibraryFolder;
+            this.ComboBox_Channel.SelectedIndex = Properties.Settings.Default.RsiLauncherChannel;
+            this.ComboBox_TranslationUpdateMethod.SelectedIndex = Properties.Settings.Default.TranslationUpdateMethod;
         }
 
         #region Events
@@ -95,8 +86,8 @@ namespace StarTrad.View.Window
             LoggerFactory.LogInformation("Sauvegarde et fermeture du menu des paramètres");
 
             Properties.Settings.Default.RsiLauncherLibraryFolder = this.TextBox_LibraryFolder.Text;
-            Properties.Settings.Default.RsiLauncherChannel = EnumHelper.GetValueFromDescription<ChanelVersionEnum>(this.ComboBox_Channel.Text.Trim()); ;
-            Properties.Settings.Default.TranslationUpdateMethod = EnumHelper.GetValueFromDescription<TranslationUpdateMethodEnum>(this.ComboBox_TranslationUpdateMethod.Text.Trim());
+            Properties.Settings.Default.RsiLauncherChannel = (byte)(ChanelVersionEnum)((ComboBoxItem)this.ComboBox_Channel.SelectedItem).Tag;
+            Properties.Settings.Default.TranslationUpdateMethod = (byte)(TranslationUpdateMethodEnum)((ComboBoxItem)this.ComboBox_TranslationUpdateMethod.SelectedItem).Tag;
 
             Properties.Settings.Default.Save();
 
@@ -156,6 +147,23 @@ namespace StarTrad.View.Window
             catch (Exception ex)
             {
                 LoggerFactory.LogError(ex);
+            }
+        }
+
+        /// <summary>
+        /// Adds all the values of an Enum as items for a ComboBox.
+        /// </summary>
+        /// <typeparam name="TEnum"></typeparam>
+        /// <param name="comboBox"></param>
+        /// <param name="e"></param>
+        private void AddComboBoxItemsFromEnum<TEnum>(System.Windows.Controls.ComboBox comboBox)
+        {
+            foreach (Enum value in Enum.GetValues(typeof(TEnum))) {
+                ComboBoxItem item = new ComboBoxItem();
+                item.Tag = value;
+                item.Content = EnumHelper.GetDescription(value);
+
+                comboBox.Items.Add(item);
             }
         }
     }

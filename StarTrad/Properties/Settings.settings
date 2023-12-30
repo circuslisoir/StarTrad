@@ -5,11 +5,11 @@
     <Setting Name="RsiLauncherLibraryFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="RsiLauncherChannel" Type="System.String" Scope="User">
-		<Value Profile="(Default)">LIVE</Value>
+    <Setting Name="RsiLauncherChannel" Type="System.Byte" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="TranslationUpdateMethod" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Never</Value>
+    <Setting Name="TranslationUpdateMethod" Type="System.Byte" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>
