@@ -1,6 +1,5 @@
 ﻿using IWshRuntimeLibrary;
 using StarTrad.Helper;
-using System;
 
 namespace StarTrad.View.Window
 {
@@ -18,6 +17,7 @@ namespace StarTrad.View.Window
             this.CheckBox_StartWithWindows.IsChecked = IsShortcutExist(shortcutPath);
             this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherLibraryFolder;
             this.TextBox_Channel.Text = Properties.Settings.Default.RsiLauncherChannel;
+            this.TextBox_TranslationUpdateMethod.Text = Properties.Settings.Default.TranslationUpdateMethod;
         }
 
 
@@ -60,6 +60,13 @@ namespace StarTrad.View.Window
             LoggerFactory.LogInformation($"Changement de la valeur du canal par : {newValue}");
         }
 
+        private void ComboBox_TranslationUpdateMethod_DropDownClosed(object sender, System.EventArgs e)
+        {
+            string newValue = this.ComboBox_TranslationUpdateMethod.Text.Trim();
+            this.TextBox_TranslationUpdateMethod.Text = newValue;
+            LoggerFactory.LogInformation($"Changement de la valeur de la méthode d'update par : {newValue}");
+        }
+
         /// <summary>
         /// Called when clicking on the "Save" button.
         /// </summary>
@@ -71,6 +78,7 @@ namespace StarTrad.View.Window
 
             Properties.Settings.Default.RsiLauncherLibraryFolder = this.TextBox_LibraryFolder.Text;
             Properties.Settings.Default.RsiLauncherChannel = this.TextBox_Channel.Text;
+            Properties.Settings.Default.TranslationUpdateMethod = this.TextBox_TranslationUpdateMethod.Text;
 
             Properties.Settings.Default.Save();
 

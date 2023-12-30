@@ -46,5 +46,17 @@ namespace StarTrad.Properties {
                 this["RsiLauncherChannel"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Au lancement du launcher RSI")]
+        public string TranslationUpdateMethod {
+            get {
+                return ((string)(this["TranslationUpdateMethod"]));
+            }
+            set {
+                this["TranslationUpdateMethod"] = value;
+            }
+        }
     }
 }
