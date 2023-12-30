@@ -14,24 +14,12 @@
 
 
         <Label Content="Canal :" Margin="10,84,10,0" VerticalAlignment="Top" Padding="0,5,5,5"/>
-        <ComboBox x:Name="ComboBox_Channel" Margin="10,115,10,0" VerticalAlignment="Top" DropDownClosed="ComboBox_Channel_DropDownClosed">
-            <ComboBoxItem>LIVE</ComboBoxItem>
-            <ComboBoxItem>PTU</ComboBoxItem>
-            <ComboBoxItem>EPTU</ComboBoxItem>
-            <ComboBoxItem>TECH-PREVIEW</ComboBoxItem>
-        </ComboBox>
-        <TextBox x:Name="TextBox_Channel" Margin="10,115,28,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Height="22"/>
+        <ComboBox x:Name="ComboBox_Channel" Margin="10,115,10,0" VerticalAlignment="Top" SelectionChanged="ComboBox_Channel_SelectionChanged" />
 
         <Label Content="Recherche de MAJ :" Margin="10,137,10,0" VerticalAlignment="Top" Padding="0,5,5,5"/>
         <ComboBox x:Name="ComboBox_TranslationUpdateMethod" Margin="10,160,10,0" VerticalAlignment="Top" 
-                 DropDownClosed="ComboBox_TranslationUpdateMethod_DropDownClosed">
-            <ComboBoxItem>Au lancement du launcher RSI</ComboBoxItem>
-            <ComboBoxItem>Toutes les 2h</ComboBoxItem>
-            <ComboBoxItem>Toutes les 6h</ComboBoxItem>
-            <ComboBoxItem>Toutes les 12h</ComboBoxItem>
-            <ComboBoxItem>Jamais</ComboBoxItem>
-        </ComboBox>
-        <TextBox x:Name="TextBox_TranslationUpdateMethod" Margin="10,160,28,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Height="22"/>
+                 SelectionChanged="ComboBox_TranslationUpdateMethod_SelectionChanged" />
+
 
         <Button Content="Enregistrer" Margin="10,0,10,10" Height="31" VerticalAlignment="Bottom" Click="Button_Save_Click"/>
     </Grid>

@@ -1,5 +1,6 @@
 ﻿using IWshRuntimeLibrary;
 using StarTrad.Helper;
+using StarTrad.Helper.ComboxList;
 
 namespace StarTrad.View.Window
 {
@@ -15,11 +16,22 @@ namespace StarTrad.View.Window
             InitializeComponent();
 
             this.CheckBox_StartWithWindows.IsChecked = IsShortcutExist(shortcutPath);
-            this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherLibraryFolder;
-            this.TextBox_Channel.Text = Properties.Settings.Default.RsiLauncherChannel;
-            this.TextBox_TranslationUpdateMethod.Text = Properties.Settings.Default.TranslationUpdateMethod;
-        }
+            this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherChannel;
 
+            Array valeursEnum = Enum.GetValues(typeof(ChanelVersionEnum));
+            foreach (ChanelVersionEnum valeur in valeursEnum)
+            {
+                ComboBox_Channel.Items.Add(EnumHelper.GetDescription(valeur));
+            }
+            this.ComboBox_Channel.Text = EnumHelper.GetDescription((ChanelVersionEnum)Enum.Parse(typeof(ChanelVersionEnum), Properties.Settings.Default.RsiLauncherChannel));
+
+            valeursEnum = Enum.GetValues(typeof(TranslationUpdateMethodEnum));
+            foreach (TranslationUpdateMethodEnum valeur in valeursEnum)
+            {
+                ComboBox_TranslationUpdateMethod.Items.Add(EnumHelper.GetDescription(valeur));
+            }
+            this.ComboBox_TranslationUpdateMethod.Text = EnumHelper.GetDescription((TranslationUpdateMethodEnum)Enum.Parse(typeof(TranslationUpdateMethodEnum), Properties.Settings.Default.TranslationUpdateMethod));
+        }
 
         #region Events
 
@@ -51,19 +63,18 @@ namespace StarTrad.View.Window
         /// <summary>
         /// Called when the channel ComboBox's dropdown gets closed.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ComboBox_Channel_DropDownClosed(object sender, System.EventArgs e)
+        private void ComboBox_Channel_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             string newValue = this.ComboBox_Channel.Text.Trim();
-            this.TextBox_Channel.Text = newValue;
             LoggerFactory.LogInformation($"Changement de la valeur du canal par : {newValue}");
         }
 
-        private void ComboBox_TranslationUpdateMethod_DropDownClosed(object sender, System.EventArgs e)
+        /// <summary>
+        /// Called when the Translation update methods ComboBox's dropdown gets closed.
+        /// </summary>
+        private void ComboBox_TranslationUpdateMethod_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             string newValue = this.ComboBox_TranslationUpdateMethod.Text.Trim();
-            this.TextBox_TranslationUpdateMethod.Text = newValue;
             LoggerFactory.LogInformation($"Changement de la valeur de la méthode d'update par : {newValue}");
         }
 
@@ -77,8 +88,8 @@ namespace StarTrad.View.Window
             LoggerFactory.LogInformation("Sauvegarde et fermeture du menu des paramètres");
 
             Properties.Settings.Default.RsiLauncherLibraryFolder = this.TextBox_LibraryFolder.Text;
-            Properties.Settings.Default.RsiLauncherChannel = this.TextBox_Channel.Text;
-            Properties.Settings.Default.TranslationUpdateMethod = this.TextBox_TranslationUpdateMethod.Text;
+            Properties.Settings.Default.RsiLauncherChannel = EnumHelper.GetValueFromDescription<ChanelVersionEnum>(this.ComboBox_Channel.Text.Trim()); ;
+            Properties.Settings.Default.TranslationUpdateMethod = EnumHelper.GetValueFromDescription<TranslationUpdateMethodEnum>(this.ComboBox_TranslationUpdateMethod.Text.Trim());
 
             Properties.Settings.Default.Save();
 

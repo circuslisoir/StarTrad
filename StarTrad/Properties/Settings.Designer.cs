@@ -49,7 +49,7 @@ namespace StarTrad.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Au lancement du launcher RSI")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Never")]
         public string TranslationUpdateMethod {
             get {
                 return ((string)(this["TranslationUpdateMethod"]));
