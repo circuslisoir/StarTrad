@@ -1,6 +1,7 @@
 ﻿using IWshRuntimeLibrary;
 using StarTrad.Helper;
 using StarTrad.Helper.ComboxList;
+using StarTrad.Tool;
 
 namespace StarTrad.View.Window
 {
@@ -18,11 +19,11 @@ namespace StarTrad.View.Window
             // Bind the Checked events after the initial check so they won't be tiggered by it
             this.CheckBox_StartWithWindows.IsChecked = IsShortcutExist(shortcutPath);
             this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherLibraryFolder;
-            
+
             this.CheckBox_StartWithWindows.Checked += this.CheckBox_StartWithWindows_Checked;
             this.CheckBox_StartWithWindows.Unchecked += this.CheckBox_StartWithWindows_Unchecked;
-            
-            
+
+
             this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherChannel;
 
             Array valeursEnum = Enum.GetValues(typeof(ChanelVersionEnum));
@@ -38,6 +39,8 @@ namespace StarTrad.View.Window
                 ComboBox_TranslationUpdateMethod.Items.Add(EnumHelper.GetDescription(valeur));
             }
             this.ComboBox_TranslationUpdateMethod.Text = EnumHelper.GetDescription((TranslationUpdateMethodEnum)Enum.Parse(typeof(TranslationUpdateMethodEnum), Properties.Settings.Default.TranslationUpdateMethod));
+
+            UpdateTranslation.StopAutoUpdate();
         }
 
         #region Events
@@ -97,8 +100,9 @@ namespace StarTrad.View.Window
             Properties.Settings.Default.RsiLauncherLibraryFolder = this.TextBox_LibraryFolder.Text;
             Properties.Settings.Default.RsiLauncherChannel = EnumHelper.GetValueFromDescription<ChanelVersionEnum>(this.ComboBox_Channel.Text.Trim()); ;
             Properties.Settings.Default.TranslationUpdateMethod = EnumHelper.GetValueFromDescription<TranslationUpdateMethodEnum>(this.ComboBox_TranslationUpdateMethod.Text.Trim());
-
             Properties.Settings.Default.Save();
+
+            UpdateTranslation.StartAutoUpdate();
 
             this.Close();
         }
