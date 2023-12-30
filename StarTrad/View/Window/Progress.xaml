@@ -8,6 +8,6 @@
 		Topmost="True">
 	<Grid>
 		<ProgressBar x:Name="ProgressBar_Progress" Margin="10,10,10,10"/>
-		<Label x:Name="Label_Progress" Content="Label" Margin="10,10,10,10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+		<Label x:Name="Label_Progress" Margin="10,10,10,10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
 	</Grid>
 </Window>
