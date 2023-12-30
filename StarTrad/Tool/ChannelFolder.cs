@@ -10,6 +10,7 @@ namespace StarTrad.Tool
 	internal class ChannelFolder : LibraryFolder 
 	{
 		public const string GLOBAL_INI_FILE_NAME = "global.ini";
+        private const string PREFERED_CHANNEL_NAME = "LIVE";
 
 		private readonly string channelName;
 
@@ -71,16 +72,23 @@ namespace StarTrad.Tool
         private static string? GetFirstExistingChannelFolderPath()
         {
             // Check for the channel configured in settings
-            string? channelFolderPath = GetChannelFolderPath(Properties.Settings.Default.RsiLauncherChannel);
+            string? pathFromSettings = GetChannelFolderPath(Properties.Settings.Default.RsiLauncherChannel);
 
-            if (channelFolderPath != null) {
-                return channelFolderPath;
+            if (pathFromSettings != null) {
+                return pathFromSettings;
             }
 
             List<string> channelFolderPaths = ListAvailableChannelDirectories();
 
             if (channelFolderPaths.Count < 1) {
                 return null;
+            }
+
+            // We'll always try to use the LIVE channel by default
+            foreach (string channelFolderPath in channelFolderPaths) {
+                if (System.IO.Path.GetFileName(channelFolderPath) == PREFERED_CHANNEL_NAME) {
+                    return PREFERED_CHANNEL_NAME;
+                }
             }
 
             return channelFolderPaths[0];
