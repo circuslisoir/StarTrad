@@ -17,9 +17,16 @@ namespace StarTrad.Tool
         // "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE".
         private readonly ChannelFolder channelFolder;
 
-        private TranslationInstaller(ChannelFolder channelFolder)
+        // A small window to display the installation progressing.
+        private readonly View.Window.Progress? progressWindow = null;
+
+        private TranslationInstaller(ChannelFolder channelFolder, bool silent = true)
         {
             this.channelFolder = channelFolder;
+
+            if (!silent) {
+                this.progressWindow = new View.Window.Progress();
+            }
         }
 
 
@@ -27,8 +34,11 @@ namespace StarTrad.Tool
 
         /// <summary>
         /// Runs the whole installation process, if possible.
+        /// <param name="showDownloadWindow">
+        /// If true, no UI elements will be displayed to show the progress of the installation.
+        /// </param>
         /// </summary>
-        public static void Run()
+        public static void Run(bool silent = true)
         {
             ChannelFolder? channelFolder = ChannelFolder.Make();
 
@@ -36,7 +46,7 @@ namespace StarTrad.Tool
                 return;
             }
 
-            TranslationInstaller installer = new TranslationInstaller(channelFolder);
+            TranslationInstaller installer = new TranslationInstaller(channelFolder, silent);
             installer.InstallLatestTranslation();
         }
 
@@ -142,8 +152,12 @@ namespace StarTrad.Tool
 
             client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(this.WebClient_GlobalIniFileDownloadProgress);
             client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(this.WebClient_GlobalIniFileDownloadCompleted);
-            client.DownloadFileAsync(new Uri(CircuspesClient.HOST + "/download/" + GLOBAL_INI_FILE_NAME), localGlobalIniFilePath);
 
+            if (this.progressWindow != null) {
+                this.progressWindow.Show();
+            }
+
+            client.DownloadFileAsync(new Uri(CircuspesClient.HOST + "/download/" + GLOBAL_INI_FILE_NAME), localGlobalIniFilePath);
             client.Dispose();
         }
 
@@ -237,9 +251,14 @@ namespace StarTrad.Tool
         /// <param name="e"></param>
         private void WebClient_GlobalIniFileDownloadProgress(object sender, DownloadProgressChangedEventArgs e)
         {
+            if (this.progressWindow == null) {
+                return;
+            }
+
             int percentage = (int)(((float)e.BytesReceived / (float)e.TotalBytesToReceive) * 100.0);
 
-            Debug.WriteLine("Downloading " + GLOBAL_INI_FILE_NAME + ": " + percentage + " % (" + (e.BytesReceived / 1000000) + "Mo / " + (e.TotalBytesToReceive / 1000000) + "Mo)");
+            this.progressWindow.ProgressBarPercentage = percentage;
+            this.progressWindow.ProgressBarLabelText = percentage + " % (" + (e.BytesReceived / 1000000) + "Mo / " + (e.TotalBytesToReceive / 1000000) + "Mo)";
         }
 
         /// <summary>
@@ -249,6 +268,10 @@ namespace StarTrad.Tool
         /// <param name="e"></param>
         private void WebClient_GlobalIniFileDownloadCompleted(object? sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
+            if (this.progressWindow != null) {
+                this.progressWindow.Close();
+            }
+
             if (e.Error != null)
             {
                 LoggerFactory.LogError(e.Error);
