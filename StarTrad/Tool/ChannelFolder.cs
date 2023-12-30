@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Collections.Generic;
 using StarTrad.Helper;
 
 namespace StarTrad.Tool

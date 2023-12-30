@@ -1,7 +1,9 @@
-﻿using StarTrad.Helper;
+﻿using System;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Windows.Forms;
+using StarTrad.Helper;
 
 namespace StarTrad.Tool
 {

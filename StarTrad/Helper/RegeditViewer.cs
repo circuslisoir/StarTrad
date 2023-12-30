@@ -1,15 +1,16 @@
 ﻿using Microsoft.Win32;
 
-namespace StarTrad.Helper;
-
-public static class RegeditViewer
+namespace StarTrad.Helper
 {
-    public static object? GetRegeditValue(string registryKeyPath, string registryKeyName)
+    public static class RegeditViewer
     {
-        object? registryValue = Registry.GetValue(registryKeyPath, registryKeyName, null);
-        if (registryValue is not null)
-            return registryValue;
-        else
-            return null;
+        public static object? GetRegeditValue(string registryKeyPath, string registryKeyName)
+        {
+            object? registryValue = Registry.GetValue(registryKeyPath, registryKeyName, null);
+            if (registryValue is not null)
+                return registryValue;
+            else
+                return null;
+        }
     }
 }

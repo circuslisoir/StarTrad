@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.Configuration;
+using System.Drawing;
 using System.Windows;
+using System.Windows.Forms;
 using StarTrad.Helper;
 using StarTrad.Tool;
 
@@ -27,8 +30,6 @@ namespace StarTrad
         {
             LoggerFactory.Setup();
             LoggerFactory.LogInformation("Démarrage de StarTrad");
-
-            ApplicationConfiguration.Initialize();
 
             this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
