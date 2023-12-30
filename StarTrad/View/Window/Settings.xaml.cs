@@ -15,7 +15,14 @@ namespace StarTrad.View.Window
         {
             InitializeComponent();
 
+            // Bind the Checked events after the initial check so they won't be tiggered by it
             this.CheckBox_StartWithWindows.IsChecked = IsShortcutExist(shortcutPath);
+            this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherLibraryFolder;
+            
+            this.CheckBox_StartWithWindows.Checked += this.CheckBox_StartWithWindows_Checked;
+            this.CheckBox_StartWithWindows.Unchecked += this.CheckBox_StartWithWindows_Unchecked;
+            
+            
             this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherChannel;
 
             Array valeursEnum = Enum.GetValues(typeof(ChanelVersionEnum));

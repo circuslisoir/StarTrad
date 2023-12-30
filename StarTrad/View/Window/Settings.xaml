@@ -6,7 +6,7 @@
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
     <Grid>
-        <CheckBox x:Name="CheckBox_StartWithWindows" Content="Démarrer avec Windows" Margin="10,10,10,0" VerticalAlignment="Top" Checked="CheckBox_StartWithWindows_Checked" Unchecked="CheckBox_StartWithWindows_Unchecked"/>
+        <CheckBox x:Name="CheckBox_StartWithWindows" Content="Démarrer avec Windows" Margin="10,10,10,0" VerticalAlignment="Top"/>
 
         <Label Content="Library Folder :" Margin="10,30,10,0" VerticalAlignment="Top" Padding="0,5,5,5"/>
         <TextBox x:Name="TextBox_LibraryFolder" Margin="10,61,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22"/>
