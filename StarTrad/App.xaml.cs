@@ -10,11 +10,17 @@ namespace StarTrad
     /// </summary>
     public partial class App : System.Windows.Application
     {
+        public const string PROGRAM_NAME = "StarTrad";
+
         // Full path to the location where this program is running
         public static string workingDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
 
         private static ApplicationContext applicationContext = new ApplicationContext();
         private static NotifyIcon notifyIcon = new NotifyIcon();
+
+        private readonly ToolStripMenuItem installMenuItem;
+        private readonly ToolStripMenuItem installAndLaunchMenuItem;
+        private readonly ToolStripMenuItem uninstallMenuItem;
 
         public App() : base()
         {
@@ -24,6 +30,11 @@ namespace StarTrad
             ApplicationConfiguration.Initialize();
 
             this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+            // Create notify icon
+            this.installMenuItem = new ToolStripMenuItem("Installer la traduction", null, new EventHandler(this.InstallMenuItem_Click));
+            this.installAndLaunchMenuItem = new ToolStripMenuItem("Installer la traduction et lancer le jeu", null, new EventHandler(this.InstallAndLaunchMenuItem_Click));
+            this.uninstallMenuItem = new ToolStripMenuItem("Désinstaller la traduction", null, new EventHandler(this.UninstallMenuItem_Click));
             this.CreateNotifyIcon();
 
             System.Windows.Forms.Application.Run(applicationContext);
@@ -38,7 +49,7 @@ namespace StarTrad
         /// <param name="message"></param>
         public static void Notify(ToolTipIcon icon, string message)
         {
-            App.notifyIcon.ShowBalloonTip(2000, "StarTrad", message, icon);
+            App.notifyIcon.ShowBalloonTip(2000, PROGRAM_NAME, message, icon);
         }
 
 		#endregion
@@ -55,10 +66,9 @@ namespace StarTrad
             ToolStripMenuItem titleMenuItem = new ToolStripMenuItem("Traduction :");
             titleMenuItem.Enabled = false;
 
-            cms.Items.Add(titleMenuItem);
-            cms.Items.Add(new ToolStripMenuItem("Installer", null, new EventHandler(this.InstallMenuItem_Click)));
-            cms.Items.Add(new ToolStripMenuItem("Installer et lancer", null, new EventHandler(this.InstallAndLaunchMenuItem_Click)));
-            cms.Items.Add(new ToolStripMenuItem("Désinstaller", null, new EventHandler(this.UninstallMenuItem_Click)));
+            cms.Items.Add(installMenuItem);
+            cms.Items.Add(installAndLaunchMenuItem);
+            cms.Items.Add(uninstallMenuItem);
             cms.Items.Add(new ToolStripSeparator());
             cms.Items.Add(new ToolStripMenuItem("Options avancées", null, new EventHandler(this.SettingsMenuItem_Click)));
             cms.Items.Add(new ToolStripMenuItem("Quitter", null, new EventHandler(this.ExitMenuItem_Click)));
@@ -66,7 +76,7 @@ namespace StarTrad
             notifyIcon.ContextMenuStrip = cms;
             notifyIcon.Icon = new Icon(workingDirectoryPath + @"\StarTrad.ico");
             notifyIcon.Visible = true;
-            notifyIcon.Text = "StarTrad";
+            notifyIcon.Text = PROGRAM_NAME;
         }
 
         #endregion
@@ -81,7 +91,26 @@ namespace StarTrad
         private void InstallMenuItem_Click(object? sender, EventArgs e)
         {
             LoggerFactory.LogInformation("Lancement de la recherche de mise a jour");
-            TranslationInstaller.Install(false);
+
+            ChannelFolder? channelFolder = ChannelFolder.Make();
+
+            if (channelFolder == null) {
+                return;
+            }
+
+            this.installMenuItem.Enabled = false;
+            this.installAndLaunchMenuItem.Enabled = false;
+            this.uninstallMenuItem.Enabled = false;
+
+            TranslationInstaller installer = new TranslationInstaller(channelFolder, false);
+            installer.ProgressWindow = new View.Window.Progress(channelFolder.Name);
+            installer.NotifyIcon = notifyIcon;
+            installer.OnInstallationEnded += (sender, channelFolder) => {
+                this.installMenuItem.Enabled = true;
+                this.installAndLaunchMenuItem.Enabled = true;
+                this.uninstallMenuItem.Enabled = true;
+            };
+            installer.InstallLatest();
         }
 
         /// <summary>
@@ -91,9 +120,27 @@ namespace StarTrad
         /// <param name="e"></param>
         private void InstallAndLaunchMenuItem_Click(object? sender, EventArgs e)
         {
-            TranslationInstaller.Install(false, (sender, channelFolder) => {
+            ChannelFolder? channelFolder = ChannelFolder.Make();
+
+            if (channelFolder == null) {
+                return;
+            }
+
+            this.installMenuItem.Enabled = false;
+            this.installAndLaunchMenuItem.Enabled = false;
+            this.uninstallMenuItem.Enabled = false;
+
+            TranslationInstaller installer = new TranslationInstaller(channelFolder, false);
+            installer.ProgressWindow = new View.Window.Progress(channelFolder.Name);
+            installer.NotifyIcon = notifyIcon;
+            installer.OnInstallationEnded += (sender, channelFolder) => {
                 channelFolder.ExecuteRsiLauncher();
-            });
+
+                this.installMenuItem.Enabled = true;
+                this.installAndLaunchMenuItem.Enabled = true;
+                this.uninstallMenuItem.Enabled = true;
+            };
+            installer.InstallLatest();
         }
 
         /// <summary>
@@ -103,13 +150,28 @@ namespace StarTrad
         /// <param name="e"></param>
         private void UninstallMenuItem_Click(object? sender, EventArgs e)
         {
-            bool success = TranslationInstaller.Uninstall();
+            ChannelFolder? channelFolder = ChannelFolder.Make();
+
+            if (channelFolder == null) {
+                return;
+            }
+
+            this.installMenuItem.Enabled = false;
+            this.installAndLaunchMenuItem.Enabled = false;
+            this.uninstallMenuItem.Enabled = false;
+
+            TranslationInstaller installer = new TranslationInstaller(channelFolder);
+            bool success = installer.Uninstall();
 
             if (success) {
                 App.Notify(ToolTipIcon.Info, "Traduction désinstallée avec succès !");    
             } else {
                 App.Notify(ToolTipIcon.Warning, "La traduction n'a pas pu être désinstallée.");
             }
+
+            this.installMenuItem.Enabled = true;
+            this.installAndLaunchMenuItem.Enabled = true;
+            this.uninstallMenuItem.Enabled = true;
         }
 
         /// <summary>
