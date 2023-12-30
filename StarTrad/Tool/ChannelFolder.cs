@@ -10,6 +10,7 @@ namespace StarTrad.Tool
 	internal class ChannelFolder : LibraryFolder 
 	{
 		public const string GLOBAL_INI_FILE_NAME = "global.ini";
+        private const string STAR_CITIZEN_DIRECTORY_NAME = "StarCitizen";
         private const string PREFERED_CHANNEL_NAME = "LIVE";
 
 		private readonly string channelName;
@@ -112,7 +113,7 @@ namespace StarTrad.Tool
                 return null;
             }
 
-            string starCitizenDirectoryPath = libraryFolderPath + @"\StarCitizen\" + channel;
+            string starCitizenDirectoryPath = libraryFolderPath + '\\' + STAR_CITIZEN_DIRECTORY_NAME + '\\' + channel;
 
             if (!IsValidChannelFolderPath(starCitizenDirectoryPath)) {
                 return null;
@@ -127,7 +128,12 @@ namespace StarTrad.Tool
 
 		public string Path
 		{
-			get { return this.libraryFolderPath + '\\' + this.channelName; }
+			get { return this.StarCitizenDirectoryPath + '\\' + this.channelName; }
+		}
+
+        public string StarCitizenDirectoryPath
+		{
+			get { return this.libraryFolderPath + '\\' + STAR_CITIZEN_DIRECTORY_NAME; }
 		}
 
 		public string UserCfgFilePath

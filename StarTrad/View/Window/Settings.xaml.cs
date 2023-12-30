@@ -64,8 +64,7 @@ namespace StarTrad.View.Window
         /// </summary>
         private void ComboBox_Channel_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            string newValue = this.ComboBox_Channel.Text.Trim();
-            LoggerFactory.LogInformation($"Changement de la valeur du canal par : {newValue}");
+            LoggerFactory.LogInformation($"Changement de la valeur du canal par : {this.ComboBox_Channel.Text.Trim()}");
         }
 
         /// <summary>
@@ -73,8 +72,7 @@ namespace StarTrad.View.Window
         /// </summary>
         private void ComboBox_TranslationUpdateMethod_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            string newValue = this.ComboBox_TranslationUpdateMethod.Text.Trim();
-            LoggerFactory.LogInformation($"Changement de la valeur de la méthode d'update par : {newValue}");
+            LoggerFactory.LogInformation($"Changement de la valeur de la méthode d'update par : {this.ComboBox_TranslationUpdateMethod.Text.Trim()}");
         }
 
         /// <summary>
@@ -190,7 +188,9 @@ namespace StarTrad.View.Window
 
             if (channelDirectoryPaths.Count < 1) {
                 Properties.Settings.Default.RsiLauncherChannel = "";
-            } else if (!channelDirectoryPaths.Contains(Properties.Settings.Default.RsiLauncherChannel)) {
+                this.ComboBox_Channel.IsEnabled = false;
+                this.Label_ChannelNotFound.Content = "Aucun canal trouvé";
+            } else if (!this.ComboBox_Channel.Items.Contains(Properties.Settings.Default.RsiLauncherChannel)) {
                 Properties.Settings.Default.RsiLauncherChannel = Path.GetFileName(channelDirectoryPaths[0]);
             }
 

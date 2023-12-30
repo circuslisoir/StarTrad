@@ -24,6 +24,7 @@ namespace StarTrad.Tool
 
 
         #region Static
+
         /// <summary>
         /// Runs the whole installation process, if possible.
         /// </summary>
@@ -38,8 +39,8 @@ namespace StarTrad.Tool
             TranslationInstaller installer = new TranslationInstaller(channelFolder);
             installer.InstallLatestTranslation();
         }
-        #endregion
 
+        #endregion
 
         #region Private
 
@@ -60,9 +61,9 @@ namespace StarTrad.Tool
             TranslationVersion? installedVersion = this.GetInstalledTranslationVersion();
 
             // We already have the latest version installed
-            if (installedVersion != null && latestVersion.IsNewerThan(installedVersion))
+            if (installedVersion != null && !latestVersion.IsNewerThan(installedVersion))
             {
-                LoggerFactory.LogInformation("Dernière version de traduction déjà installer");
+                LoggerFactory.LogInformation("Dernière version de traduction déjà installée");
                 return;
             }
 
