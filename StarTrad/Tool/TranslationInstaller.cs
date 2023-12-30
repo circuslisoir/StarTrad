@@ -1,6 +1,4 @@
 ﻿using StarTrad.Helper;
-using StarTrad.Helper.ComboxList;
-using StarTrad.Properties;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -15,14 +13,13 @@ namespace StarTrad.Tool
     {
         private const string GLOBAL_INI_FILE_NAME = "global.ini";
 
-        // The absolute path to the Star Citizen's installation directory for the configured channel, for example:
+        // The object representing the Star Citizen's installation directory for a channel, for example:
         // "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE".
-        private string currentChannelDirectoryPath;
+        private readonly ChannelFolder channelFolder;
 
-
-        private TranslationInstaller(string currentChannelDirectoryPath)
+        private TranslationInstaller(ChannelFolder channelFolder)
         {
-            this.currentChannelDirectoryPath = currentChannelDirectoryPath;
+            this.channelFolder = channelFolder;
         }
 
 
@@ -32,20 +29,13 @@ namespace StarTrad.Tool
         /// </summary>
         public static void Run()
         {
-            string? channel = EnumHelper.GetDescription((ChanelVersionEnum)Settings.Default.RsiLauncherChannel);
+            ChannelFolder? channelFolder = ChannelFolder.Make();
 
-            if (channel == null) {
+            if (channelFolder == null) {
                 return;
             }
 
-            string? currentChannelDirectoryPath = LibraryFolderFinder.GetStarCitizenInstallDirectoryPath(channel);
-
-            if (currentChannelDirectoryPath == null)
-            {
-                return;
-            }
-
-            TranslationInstaller installer = new TranslationInstaller(currentChannelDirectoryPath);
+            TranslationInstaller installer = new TranslationInstaller(channelFolder);
             installer.InstallLatestTranslation();
         }
         #endregion
@@ -88,7 +78,7 @@ namespace StarTrad.Tool
         private TranslationVersion? GetInstalledTranslationVersion()
         {
             LoggerFactory.LogInformation("Récupération de la version local de la traduction");
-            string? installedGlobalIniFilePath = this.GlobalIniInstallationFilePath;
+            string? installedGlobalIniFilePath = this.channelFolder.GlobalIniInstallationFilePath;
 
             if (!File.Exists(installedGlobalIniFilePath))
             {
@@ -163,7 +153,7 @@ namespace StarTrad.Tool
         private void InstallGlobalIniFile(string downloadedGlobalIniFilePath)
         {
             LoggerFactory.LogInformation($"Installation du nouveau fichier Global.ini");
-            string globalIniDestinationDirectoryPath = this.GlobalIniInstallationDirectoryPath;
+            string globalIniDestinationDirectoryPath = this.channelFolder.GlobalIniInstallationDirectoryPath;
 
             try
             {
@@ -175,7 +165,7 @@ namespace StarTrad.Tool
                 }
 
                 // Move downloaded file
-                File.Move(downloadedGlobalIniFilePath, this.GlobalIniInstallationFilePath, true);
+                File.Move(downloadedGlobalIniFilePath, this.channelFolder.GlobalIniInstallationFilePath, true);
 
                 // Create or Update the user.cfg file
                 CreateOrUpdateUserCfgFile();
@@ -191,16 +181,16 @@ namespace StarTrad.Tool
             string g_language = "g_language = french_(france)";
 
             // Vérification si le fichier existe
-            if (!File.Exists(UserCfgFilePath))
+            if (!File.Exists(this.channelFolder.UserCfgFilePath))
             {
                 // Si le fichier n'existe pas, le créer avec la ligne g_language
-                File.WriteAllText(UserCfgFilePath, g_language);
+                File.WriteAllText(this.channelFolder.UserCfgFilePath, g_language);
                 LoggerFactory.LogWarning($"Création du fichier User.cfg, avec la clé : {g_language}");
                 return;
             }
 
             // Lecture du fichier ligne par ligne
-            string[] lines = File.ReadAllLines(UserCfgFilePath);
+            string[] lines = File.ReadAllLines(this.channelFolder.UserCfgFilePath);
 
             bool gLanguageFound = false;
 
@@ -232,43 +222,10 @@ namespace StarTrad.Tool
             }
 
             // Écriture des modifications dans le fichier
-            File.WriteAllLines(UserCfgFilePath, lines);
+            File.WriteAllLines(this.channelFolder.UserCfgFilePath, lines);
         }
 
         #endregion
-
-
-        #region Accessor
-
-        /// <summary>
-        /// Returns the absolute path to the final destination of the global.ini file.
-        /// For a default Star Citizen installation, this should be "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE\data\Localization\french_(france)\global.ini".
-        /// </summary>
-        private string UserCfgFilePath
-        {
-            get { return this.currentChannelDirectoryPath + '\\' + "user.cfg"; }
-        }
-
-        /// <summary>
-        /// Gets the absolute path to the directory where the global.ini file should be installed.
-        /// For a default Star Citizen installation, this should be "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE\data\Localization\french_(france)".
-        /// </summary>
-        private string GlobalIniInstallationDirectoryPath
-        {
-            get { return this.currentChannelDirectoryPath + @"\data\Localization\french_(france)"; }
-        }
-
-        /// <summary>
-        /// Returns the absolute path to the final destination of the global.ini file.
-        /// For a default Star Citizen installation, this should be "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE\data\Localization\french_(france)\global.ini".
-        /// </summary>
-        private string GlobalIniInstallationFilePath
-        {
-            get { return this.GlobalIniInstallationDirectoryPath + '\\' + GLOBAL_INI_FILE_NAME; }
-        }
-
-        #endregion
-
 
         #region Event
 

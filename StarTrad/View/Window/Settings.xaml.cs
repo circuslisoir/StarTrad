@@ -1,6 +1,8 @@
 ﻿using IWshRuntimeLibrary;
 using StarTrad.Helper;
 using StarTrad.Helper.ComboxList;
+using StarTrad.Tool;
+using System.IO;
 using System.Windows.Controls;
 
 namespace StarTrad.View.Window
@@ -17,7 +19,7 @@ namespace StarTrad.View.Window
             InitializeComponent();
 
             // Add ComboBox items
-            this.AddComboBoxItemsFromEnum<ChanelVersionEnum>(this.ComboBox_Channel);
+            this.SetupChannelsComboBox();
             this.AddComboBoxItemsFromEnum<TranslationUpdateMethodEnum>(this.ComboBox_TranslationUpdateMethod);
 
             // Bind the Checked events after the initial check so they won't be tiggered by it
@@ -26,7 +28,7 @@ namespace StarTrad.View.Window
             this.CheckBox_StartWithWindows.Unchecked += this.CheckBox_StartWithWindows_Unchecked;
 
             this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherLibraryFolder;
-            this.ComboBox_Channel.SelectedIndex = Properties.Settings.Default.RsiLauncherChannel;
+            this.ComboBox_Channel.Text = Properties.Settings.Default.RsiLauncherChannel;
             this.ComboBox_TranslationUpdateMethod.SelectedIndex = Properties.Settings.Default.TranslationUpdateMethod;
         }
 
@@ -84,8 +86,16 @@ namespace StarTrad.View.Window
         {
             LoggerFactory.LogInformation("Sauvegarde et fermeture du menu des paramètres");
 
-            Properties.Settings.Default.RsiLauncherLibraryFolder = this.TextBox_LibraryFolder.Text;
-            Properties.Settings.Default.RsiLauncherChannel = (byte)(ChanelVersionEnum)((ComboBoxItem)this.ComboBox_Channel.SelectedItem).Tag;
+            string libraryFolderPath = this.TextBox_LibraryFolder.Text.Trim();
+
+            if (libraryFolderPath.Length > 0 && !Directory.Exists(this.TextBox_LibraryFolder.Text)) {
+                MessageBox.Show($"Le dossier \"{this.TextBox_LibraryFolder.Text}\" n'existe pas.\n\nVous pouvez laisser le champ vide pour que le programme le détecte automatiquement.");
+
+                return;
+            }
+
+            Properties.Settings.Default.RsiLauncherLibraryFolder = libraryFolderPath;
+            Properties.Settings.Default.RsiLauncherChannel = this.ComboBox_Channel.Text;
             Properties.Settings.Default.TranslationUpdateMethod = (byte)(TranslationUpdateMethodEnum)((ComboBoxItem)this.ComboBox_TranslationUpdateMethod.SelectedItem).Tag;
 
             Properties.Settings.Default.Save();
@@ -164,6 +174,27 @@ namespace StarTrad.View.Window
 
                 comboBox.Items.Add(item);
             }
+        }
+
+        /// <summary>
+        /// Adds items to the channel ComboBox depending on the existing channel directories.
+        /// Also update the channel in settings if the existing value isn't valid.
+        /// </summary>
+        private void SetupChannelsComboBox()
+        {
+            List<string> channelDirectoryPaths = LibraryFolder.ListAvailableChannelDirectories();
+
+            foreach (string channelDirectoryPath in channelDirectoryPaths) {
+                this.ComboBox_Channel.Items.Add(Path.GetFileName(channelDirectoryPath));
+            }
+
+            if (channelDirectoryPaths.Count < 1) {
+                Properties.Settings.Default.RsiLauncherChannel = "";
+            } else if (!channelDirectoryPaths.Contains(Properties.Settings.Default.RsiLauncherChannel)) {
+                Properties.Settings.Default.RsiLauncherChannel = Path.GetFileName(channelDirectoryPaths[0]);
+            }
+
+            Properties.Settings.Default.Save();
         }
     }
 }

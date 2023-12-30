@@ -16,46 +16,14 @@ namespace StarTrad.Tool
 		*/
 
         /// <summary>
-        /// Obtains the path to the Star Citizen installation directory.
-        /// </summary>
-        /// <param name="channel">"LIVE", "PTU", ...</param>
-        /// <returns>
-        /// The absolute path to a directory, or null if it cannot be found.
-        /// </returns>
-        public static string? GetStarCitizenInstallDirectoryPath(string channel)
-        {
-            LoggerFactory.LogInformation("Récupération du dossier d'installation SC");
-            string? libraryFolderPath = FindLibraryFolderPath();
-
-            if (libraryFolderPath == null)
-            {
-                return null;
-            }
-
-            string starCitizenDirectoryPath = libraryFolderPath + @"\StarCitizen\" + channel;
-
-            if (!Directory.Exists(starCitizenDirectoryPath))
-            {
-                return null;
-            }
-
-            // The directory does exists, we'll just check that the game is actuallty installed in it
-            if (!File.Exists(starCitizenDirectoryPath + @"\Data.p4k"))
-            {
-                return null;
-            }
-
-            return starCitizenDirectoryPath;
-        }
-
-        /// <summary>
         /// Obtains the path to the Star Citizen's Library Folder from the settings.
         /// If the stored path is no longer valid, tries to find it again.
         /// </summary>
         /// <returns>
         /// The absolute path to a directory, or null if it cannot be found.
+        /// Example: "C:\Program Files\Roberts Space Industries".
         /// </returns>
-        public static string? GetRsiLauncherLibraryFolderPath()
+        public static string? GetFromSettingsOrFindExisting()
         {
             string? libraryFolderPath = Properties.Settings.Default.RsiLauncherLibraryFolder;
 
@@ -65,7 +33,7 @@ namespace StarTrad.Tool
             }
 
             // The library folder path stored in settings is no longer valid, we'll try to find it again
-            libraryFolderPath = FindLibraryFolderPath();
+            libraryFolderPath = Find();
 
             // Keep the path in settings so we won't need to look lor it again next time
             Properties.Settings.Default.RsiLauncherLibraryFolder = libraryFolderPath;
@@ -83,8 +51,9 @@ namespace StarTrad.Tool
         /// </summary>
         /// <returns>
         /// The absolute path to a directory, or null if it cannot be found.
+        /// Example: "C:\Program Files\Roberts Space Industries".
         /// </returns>
-        private static string? FindLibraryFolderPath()
+        private static string? Find()
         {
             string? libraryfolderPath = FindFromLauncherLocalStorage();
 
@@ -108,6 +77,7 @@ namespace StarTrad.Tool
         /// </summary>
         /// <returns>
         /// The absolute path to a directory, or null if it cannot be found.
+        /// Example: "C:\Program Files\Roberts Space Industries".
         /// </returns>
         private static string? FindFromLauncherLocalStorage()
         {
@@ -155,6 +125,7 @@ namespace StarTrad.Tool
         /// </summary>
         /// <returns>
         /// The absolute path to a directory, or null if it cannot be found.
+        /// Example: "C:\Program Files\Roberts Space Industries".
         /// </returns>
         private static string? FindFromLauncherLogFile()
         {

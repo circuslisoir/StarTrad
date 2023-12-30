@@ -37,10 +37,10 @@ namespace StarTrad.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public byte RsiLauncherChannel {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RsiLauncherChannel {
             get {
-                return ((byte)(this["RsiLauncherChannel"]));
+                return ((string)(this["RsiLauncherChannel"]));
             }
             set {
                 this["RsiLauncherChannel"] = value;
