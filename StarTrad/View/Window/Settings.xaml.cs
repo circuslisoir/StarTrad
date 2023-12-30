@@ -20,7 +20,6 @@ namespace StarTrad.View.Window
             this.AddComboBoxItemsFromEnum<ChanelVersionEnum>(this.ComboBox_Channel);
             this.AddComboBoxItemsFromEnum<TranslationUpdateMethodEnum>(this.ComboBox_TranslationUpdateMethod);
 
-
             // Bind the Checked events after the initial check so they won't be tiggered by it
             this.CheckBox_StartWithWindows.IsChecked = IsShortcutExist(shortcutPath);
             this.CheckBox_StartWithWindows.Checked += this.CheckBox_StartWithWindows_Checked;

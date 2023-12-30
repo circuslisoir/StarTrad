@@ -32,8 +32,13 @@ namespace StarTrad.Tool
         /// </summary>
         public static void Run()
         {
+            string? channel = EnumHelper.GetDescription((ChanelVersionEnum)Settings.Default.RsiLauncherChannel);
 
-            string? currentChannelDirectoryPath = LibraryFolderFinder.GetStarCitizenInstallDirectoryPath(EnumHelper.GetDescription((ChanelVersionEnum)Settings.Default.RsiLauncherChannel));
+            if (channel == null) {
+                return;
+            }
+
+            string? currentChannelDirectoryPath = LibraryFolderFinder.GetStarCitizenInstallDirectoryPath(channel);
 
             if (currentChannelDirectoryPath == null)
             {
@@ -96,7 +101,7 @@ namespace StarTrad.Tool
             {
                 using (StreamReader streamReader = new StreamReader(fileStream, Encoding.UTF8, true, 128))
                 {
-                    string line;
+                    string? line;
 
                     while ((line = streamReader.ReadLine()) != null)
                     {
@@ -118,7 +123,7 @@ namespace StarTrad.Tool
         private TranslationVersion? QueryLatestAvailableTranslationVersion()
         {
             LoggerFactory.LogInformation("Récupération de la dernière version de la traduction");
-            string html = CircuspesClient.GetRequest("/download/version.html");
+            string? html = CircuspesClient.GetRequest("/download/version.html");
 
             if (string.IsNullOrWhiteSpace(html))
             {

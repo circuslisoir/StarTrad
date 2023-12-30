@@ -173,7 +173,7 @@ namespace StarTrad.Tool
             {
                 using (StreamReader streamReader = new StreamReader(fileStream, Encoding.UTF8, true, 128))
                 {
-                    string line;
+                    string? line;
 
                     while ((line = streamReader.ReadLine()) != null)
                     {
