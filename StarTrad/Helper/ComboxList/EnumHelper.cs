@@ -13,16 +13,6 @@ public class EnumHelper
         return attribute == null ? value.ToString() : attribute.Description;
     }
 
-    public static TEnum GetEnumValueFromString<TEnum>(string value) where TEnum : struct
-    {
-        if (!Enum.TryParse<TEnum>(value, out TEnum enumValue))
-        {
-            throw new ArgumentException($"La chaîne \"{value}\" n'est pas une valeur valide pour l'enum {typeof(TEnum)}.");
-        }
-
-        return enumValue;
-    }
-
     public static string GetValueFromDescription<TEnum>(string description) where TEnum : Enum
     {
         foreach (TEnum valeur in Enum.GetValues(typeof(TEnum)))
