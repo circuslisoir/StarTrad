@@ -186,7 +186,7 @@ namespace StarTrad.View.Window
             List<string> channelDirectoryPaths = LibraryFolder.ListAvailableChannelDirectories();
 
             foreach (string channelDirectoryPath in channelDirectoryPaths) {
-                this.ComboBox_Channel.Items.Add(Path.GetFileName(channelDirectoryPath));
+                this.ComboBox_Channel.Items.Add(System.IO.Path.GetFileName(channelDirectoryPath));
             }
 
             if (channelDirectoryPaths.Count < 1) {
@@ -194,7 +194,7 @@ namespace StarTrad.View.Window
                 this.ComboBox_Channel.IsEnabled = false;
                 this.Label_ChannelNotFound.Content = "Aucun canal trouvé";
             } else if (!this.ComboBox_Channel.Items.Contains(Properties.Settings.Default.RsiLauncherChannel)) {
-                Properties.Settings.Default.RsiLauncherChannel = Path.GetFileName(channelDirectoryPaths[0]);
+                Properties.Settings.Default.RsiLauncherChannel = System.IO.Path.GetFileName(channelDirectoryPaths[0]);
             }
 
             Properties.Settings.Default.Save();

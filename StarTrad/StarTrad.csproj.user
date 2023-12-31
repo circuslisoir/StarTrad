@@ -7,11 +7,17 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="View\Window\Path.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="View\Window\Progress.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="View\Window\Path.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="View\Window\Progress.xaml">
       <SubType>Designer</SubType>
     </Page>

@@ -32,9 +32,14 @@ namespace StarTrad.Tool
 		/// Makes an instance of this class but only if the can find the channel directory where the game is installed.
 		/// </summary>
 		/// <returns></returns>
-		new public static ChannelFolder? Make()
+		new public static ChannelFolder? Make(bool askForPathIfNeeded = false)
 		{
 			string? libraryFolderPath = LibraryFolderFinder.GetFromSettingsOrFindExisting();
+
+            if (askForPathIfNeeded && libraryFolderPath == null) {
+                View.Window.Path pathWindow = new View.Window.Path();
+                libraryFolderPath = pathWindow.LibraryFolderPath;
+            }
 
 			if (libraryFolderPath == null) {
 				return null;

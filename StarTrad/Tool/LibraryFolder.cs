@@ -31,9 +31,14 @@ namespace StarTrad.Tool
 		/// Makes an instance of this class but only if we can actually find the Library Folder on the disk.
 		/// </summary>
 		/// <returns></returns>
-		public static LibraryFolder? Make()
+		public static LibraryFolder? Make(bool askForPathIfNeeded = false)
 		{
 			string? libraryFolderPath = LibraryFolderFinder.GetFromSettingsOrFindExisting();
+
+            if (askForPathIfNeeded && libraryFolderPath == null) {
+                View.Window.Path pathWindow = new View.Window.Path();
+                libraryFolderPath = pathWindow.LibraryFolderPath;
+            }
 
 			if (libraryFolderPath == null) {
 				return null;

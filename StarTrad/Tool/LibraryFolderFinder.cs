@@ -11,7 +11,7 @@ namespace StarTrad.Tool
     /// </summary>
     internal class LibraryFolderFinder
     {
-        private const string DEFAULT_LIBRARY_FOLDER_PATH = @"C:\Program Files\Roberts Space Industries";
+        public const string DEFAULT_LIBRARY_FOLDER_PATH = @"C:\Program Files\Roberts Space Industries";
         private const string RSI_LAUNCHER_REGISTRY_KEY = "81bfc699-f883-50c7-b674-2483b6baae23";
 
         /*

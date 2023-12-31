@@ -93,7 +93,7 @@ namespace StarTrad
         {
             LoggerFactory.LogInformation("Lancement de la recherche de mise a jour");
 
-            ChannelFolder? channelFolder = ChannelFolder.Make();
+            ChannelFolder? channelFolder = ChannelFolder.Make(true);
 
             if (channelFolder == null) {
                 App.Notify(ToolTipIcon.Warning, GAME_FOLDER_NOT_FOUND_MESSAGE);
@@ -123,7 +123,7 @@ namespace StarTrad
         /// <param name="e"></param>
         private void InstallAndLaunchMenuItem_Click(object? sender, EventArgs e)
         {
-            ChannelFolder? channelFolder = ChannelFolder.Make();
+            ChannelFolder? channelFolder = ChannelFolder.Make(true);
 
             if (channelFolder == null) {
                 App.Notify(ToolTipIcon.Warning, GAME_FOLDER_NOT_FOUND_MESSAGE);
@@ -155,7 +155,7 @@ namespace StarTrad
         /// <param name="e"></param>
         private void UninstallMenuItem_Click(object? sender, EventArgs e)
         {
-            ChannelFolder? channelFolder = ChannelFolder.Make();
+            ChannelFolder? channelFolder = ChannelFolder.Make(true);
 
             if (channelFolder == null) {
                 App.Notify(ToolTipIcon.Warning, GAME_FOLDER_NOT_FOUND_MESSAGE);
