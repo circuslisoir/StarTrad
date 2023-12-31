@@ -42,6 +42,16 @@ namespace StarTrad.Tool
 			return new LibraryFolder(libraryFolderPath);
 		}
 
+        /// <summary>
+        /// Checks if the given path is a valid Library Folder path.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static bool IsValidLibraryFolderPath(string path)
+        {
+            return ListAvailableChannelDirectoriesAt(path).Count >= 1;
+        }
+
 		/// <summary>
         /// Lists all the existing channel directories inside the StarCitizen directory.
         /// </summary>
@@ -54,10 +64,25 @@ namespace StarTrad.Tool
         /// </returns>
         public static List<string> ListAvailableChannelDirectories()
         {
-            List<string> channelDirectoryPaths = new List<string>();
             string? libraryFolderPath = LibraryFolderFinder.GetFromSettingsOrFindExisting();
 
             if (libraryFolderPath == null) {
+                return new List<string>();
+            }
+
+            return ListAvailableChannelDirectoriesAt(libraryFolderPath);
+        }
+
+        /// <summary>
+        /// Tries to list the channel folders located under the given library folder path.
+        /// </summary>
+        /// <param name="libraryFolderPath"></param>
+        /// <returns></returns>
+        private static List<string> ListAvailableChannelDirectoriesAt(string libraryFolderPath)
+        {
+            List<string> channelDirectoryPaths = new List<string>();
+
+            if (!Directory.Exists(libraryFolderPath)) {
                 return channelDirectoryPaths;
             }
             
