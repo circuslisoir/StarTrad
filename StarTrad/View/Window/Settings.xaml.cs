@@ -24,6 +24,7 @@ namespace StarTrad.View.Window
             this.CheckBox_StartWithWindows.Unchecked += this.CheckBox_StartWithWindows_Unchecked;
 
 
+
             this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherChannel;
 
             Array valeursEnum = Enum.GetValues(typeof(ChanelVersionEnum));
@@ -32,6 +33,7 @@ namespace StarTrad.View.Window
                 ComboBox_Channel.Items.Add(EnumHelper.GetDescription(valeur));
             }
             this.ComboBox_Channel.Text = EnumHelper.GetDescription((ChanelVersionEnum)Enum.Parse(typeof(ChanelVersionEnum), Properties.Settings.Default.RsiLauncherChannel));
+            this.ComboBox_Channel.SelectionChanged += this.ComboBox_Channel_SelectionChanged;
 
             valeursEnum = Enum.GetValues(typeof(TranslationUpdateMethodEnum));
             foreach (TranslationUpdateMethodEnum valeur in valeursEnum)
@@ -39,6 +41,7 @@ namespace StarTrad.View.Window
                 ComboBox_TranslationUpdateMethod.Items.Add(EnumHelper.GetDescription(valeur));
             }
             this.ComboBox_TranslationUpdateMethod.Text = EnumHelper.GetDescription((TranslationUpdateMethodEnum)Enum.Parse(typeof(TranslationUpdateMethodEnum), Properties.Settings.Default.TranslationUpdateMethod));
+            this.ComboBox_TranslationUpdateMethod.SelectionChanged += this.ComboBox_TranslationUpdateMethod_SelectionChanged;
 
             UpdateTranslation.StopAutoUpdate();
         }
@@ -75,7 +78,7 @@ namespace StarTrad.View.Window
         /// </summary>
         private void ComboBox_Channel_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            string newValue = this.ComboBox_Channel.Text.Trim();
+            string newValue = this.ComboBox_Channel.SelectedValue.ToString().Trim();
             LoggerFactory.LogInformation($"Changement de la valeur du canal par : {newValue}");
         }
 
@@ -84,7 +87,7 @@ namespace StarTrad.View.Window
         /// </summary>
         private void ComboBox_TranslationUpdateMethod_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            string newValue = this.ComboBox_TranslationUpdateMethod.Text.Trim();
+            string newValue = this.ComboBox_TranslationUpdateMethod.SelectedValue.ToString().Trim();
             LoggerFactory.LogInformation($"Changement de la valeur de la méthode d'update par : {newValue}");
         }
 
@@ -95,11 +98,11 @@ namespace StarTrad.View.Window
         /// <param name="e"></param>
         private void Button_Save_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            LoggerFactory.LogInformation("Sauvegarde et fermeture du menu des paramètres");
+            LoggerFactory.LogInformation("Sauvegarde et fermeture des paramètres");
 
             Properties.Settings.Default.RsiLauncherLibraryFolder = this.TextBox_LibraryFolder.Text;
-            Properties.Settings.Default.RsiLauncherChannel = EnumHelper.GetValueFromDescription<ChanelVersionEnum>(this.ComboBox_Channel.Text.Trim()); ;
-            Properties.Settings.Default.TranslationUpdateMethod = EnumHelper.GetValueFromDescription<TranslationUpdateMethodEnum>(this.ComboBox_TranslationUpdateMethod.Text.Trim());
+            Properties.Settings.Default.RsiLauncherChannel = EnumHelper.GetValueFromString<ChanelVersionEnum>(this.ComboBox_Channel.Text.Trim()); ;
+            Properties.Settings.Default.TranslationUpdateMethod = EnumHelper.GetValueFromString<TranslationUpdateMethodEnum>(this.ComboBox_TranslationUpdateMethod.Text.Trim());
             Properties.Settings.Default.Save();
 
             UpdateTranslation.StartAutoUpdate();

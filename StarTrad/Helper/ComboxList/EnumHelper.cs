@@ -13,16 +13,16 @@ public class EnumHelper
         return attribute == null ? value.ToString() : attribute.Description;
     }
 
-    public static string GetValueFromDescription<TEnum>(string description) where TEnum : Enum
+    public static string GetValueFromString<TEnum>(string stringValue) where TEnum : Enum
     {
         foreach (TEnum valeur in Enum.GetValues(typeof(TEnum)))
         {
-            if (GetDescription(valeur) == description)
+            if (GetDescription(valeur) == stringValue)
             {
                 return valeur.ToString();
             }
         }
 
-        return description;
+        return stringValue;
     }
 }

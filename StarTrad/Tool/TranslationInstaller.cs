@@ -53,7 +53,6 @@ namespace StarTrad.Tool
         private void InstallLatestTranslation()
         {
             TranslationVersion? latestVersion = this.QueryLatestAvailableTranslationVersion();
-
             // Unable to obtain the remote version
             if (latestVersion == null)
             {
@@ -101,12 +100,15 @@ namespace StarTrad.Tool
                     {
                         if (line.StartsWith(versionCommentToken))
                         {
-                            return TranslationVersion.Make(line.Replace(versionCommentToken, ""));
+                            TranslationVersion version = TranslationVersion.Make(line.Replace(versionCommentToken, ""));
+                            LoggerFactory.LogInformation($"Dernière version local installée : {version}");
+                            return version;
                         }
                     }
                 }
             }
 
+            LoggerFactory.LogInformation("Aucune version local de la traduction n'a été trouvée");
             return null;
         }
 
@@ -124,7 +126,10 @@ namespace StarTrad.Tool
                 return null;
             }
 
-            return TranslationVersion.Make(html);
+            TranslationVersion version = TranslationVersion.Make(html);
+
+            LoggerFactory.LogInformation($"Dernière version disponnible : {version}");
+            return version;
         }
 
         /// <summary>
@@ -146,6 +151,7 @@ namespace StarTrad.Tool
             client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(this.WebClient_GlobalIniFileDownloadProgress);
             client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(this.WebClient_GlobalIniFileDownloadCompleted);
             client.DownloadFileAsync(new Uri(CircuspesClient.HOST + "/download/" + GLOBAL_INI_FILE_NAME), localGlobalIniFilePath);
+            LoggerFactory.LogInformation("Téléchargement de la mise à jour de la traduction terminer");
 
             client.Dispose();
         }
@@ -164,8 +170,8 @@ namespace StarTrad.Tool
                 // Create destination directory if need
                 if (!Directory.Exists(globalIniDestinationDirectoryPath))
                 {
-                    Directory.CreateDirectory(globalIniDestinationDirectoryPath);
                     LoggerFactory.LogInformation($"Création du dossier suivant : {globalIniDestinationDirectoryPath}");
+                    Directory.CreateDirectory(globalIniDestinationDirectoryPath);
                 }
 
                 // Move downloaded file
@@ -173,6 +179,8 @@ namespace StarTrad.Tool
 
                 // Create or Update the user.cfg file
                 CreateOrUpdateUserCfgFile();
+
+                LoggerFactory.LogInformation("Mise à jours de la traduction terminée");
             }
             catch (Exception e)
             {

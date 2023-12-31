@@ -14,11 +14,10 @@
 
 
         <Label Content="Canal :" Margin="10,84,10,0" VerticalAlignment="Top" Padding="0,5,5,5"/>
-        <ComboBox x:Name="ComboBox_Channel" Margin="10,115,10,0" VerticalAlignment="Top" SelectionChanged="ComboBox_Channel_SelectionChanged" />
+        <ComboBox x:Name="ComboBox_Channel" Margin="10,115,10,0" VerticalAlignment="Top" />
 
         <Label Content="Recherche de MAJ :" Margin="10,137,10,0" VerticalAlignment="Top" Padding="0,5,5,5"/>
-        <ComboBox x:Name="ComboBox_TranslationUpdateMethod" Margin="10,160,10,0" VerticalAlignment="Top" 
-                 SelectionChanged="ComboBox_TranslationUpdateMethod_SelectionChanged" />
+        <ComboBox x:Name="ComboBox_TranslationUpdateMethod" Margin="10,160,10,0" VerticalAlignment="Top" />
 
 
         <Button Content="Enregistrer" Margin="10,0,10,10" Height="31" VerticalAlignment="Bottom" Click="Button_Save_Click"/>
