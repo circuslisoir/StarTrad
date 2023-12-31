@@ -194,7 +194,11 @@ namespace StarTrad.View.Window
                 this.ComboBox_Channel.IsEnabled = false;
                 this.Label_ChannelNotFound.Content = "Aucun canal trouvé";
             } else if (!this.ComboBox_Channel.Items.Contains(Properties.Settings.Default.RsiLauncherChannel)) {
-                Properties.Settings.Default.RsiLauncherChannel = System.IO.Path.GetFileName(channelDirectoryPaths[0]);
+                if (this.ComboBox_Channel.Items.Contains(ChannelFolder.PREFERED_CHANNEL_NAME)) {
+                    Properties.Settings.Default.RsiLauncherChannel = ChannelFolder.PREFERED_CHANNEL_NAME;
+                } else {
+                    Properties.Settings.Default.RsiLauncherChannel = System.IO.Path.GetFileName(channelDirectoryPaths[0]);
+                }
             }
 
             Properties.Settings.Default.Save();

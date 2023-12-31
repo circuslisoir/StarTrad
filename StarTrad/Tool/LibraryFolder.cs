@@ -85,17 +85,17 @@ namespace StarTrad.Tool
         /// <returns></returns>
         private static List<string> ListAvailableChannelDirectoriesAt(string libraryFolderPath)
         {
-            List<string> channelDirectoryPaths = new List<string>();
-
             if (!Directory.Exists(libraryFolderPath)) {
-                return channelDirectoryPaths;
+                return new List<string>();
             }
             
             string startCitizenDirectoryPath = libraryFolderPath + '\\' + STAR_CITIZEN_DIRECTORY_NAME;
 
             if (!Directory.Exists(startCitizenDirectoryPath)) {
-                return channelDirectoryPaths;
+                return new List<string>();
             }
+
+            List<string> channelDirectoryPaths = new List<string>();
 
             foreach (string directoryPath in Directory.GetDirectories(startCitizenDirectoryPath)) {
                 if (ChannelFolder.IsValidChannelFolderPath(directoryPath)) {

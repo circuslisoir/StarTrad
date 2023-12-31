@@ -11,7 +11,7 @@ namespace StarTrad.Tool
 	internal class ChannelFolder : LibraryFolder 
 	{
 		public const string GLOBAL_INI_FILE_NAME = "global.ini";
-        private const string PREFERED_CHANNEL_NAME = "LIVE";
+        public const string PREFERED_CHANNEL_NAME = "LIVE";
 
 		private readonly string channelName;
 
