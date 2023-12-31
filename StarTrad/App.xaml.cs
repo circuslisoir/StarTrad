@@ -59,7 +59,6 @@ namespace StarTrad
         /// <param name="e"></param>
         private void UpdateMenuItem_Click(object? sender, EventArgs e)
         {
-            LoggerFactory.LogInformation("Lancement de la recherche de mise a jour");
             TranslationInstaller.Run();
         }
 

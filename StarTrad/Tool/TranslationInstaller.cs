@@ -31,7 +31,7 @@ namespace StarTrad.Tool
         /// </summary>
         public static void Run()
         {
-
+            LoggerFactory.LogInformation("Lancement de la recherche de mise a jour");
             string? currentChannelDirectoryPath = LibraryFolderFinder.GetStarCitizenInstallDirectoryPath(Settings.Default.RsiLauncherChannel);
 
             if (currentChannelDirectoryPath == null)

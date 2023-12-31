@@ -23,10 +23,6 @@ namespace StarTrad.View.Window
             this.CheckBox_StartWithWindows.Checked += this.CheckBox_StartWithWindows_Checked;
             this.CheckBox_StartWithWindows.Unchecked += this.CheckBox_StartWithWindows_Unchecked;
 
-
-
-            this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherChannel;
-
             Array valeursEnum = Enum.GetValues(typeof(ChanelVersionEnum));
             foreach (ChanelVersionEnum valeur in valeursEnum)
             {
@@ -42,8 +38,6 @@ namespace StarTrad.View.Window
             }
             this.ComboBox_TranslationUpdateMethod.Text = EnumHelper.GetDescription((TranslationUpdateMethodEnum)Enum.Parse(typeof(TranslationUpdateMethodEnum), Properties.Settings.Default.TranslationUpdateMethod));
             this.ComboBox_TranslationUpdateMethod.SelectionChanged += this.ComboBox_TranslationUpdateMethod_SelectionChanged;
-
-            UpdateTranslation.StopAutoUpdate();
         }
 
         #region Events
@@ -105,7 +99,7 @@ namespace StarTrad.View.Window
             Properties.Settings.Default.TranslationUpdateMethod = EnumHelper.GetValueFromString<TranslationUpdateMethodEnum>(this.ComboBox_TranslationUpdateMethod.Text.Trim());
             Properties.Settings.Default.Save();
 
-            UpdateTranslation.StartAutoUpdate();
+            UpdateTranslation.ReloadAutoUpdate();
 
             this.Close();
         }

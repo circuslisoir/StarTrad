@@ -7,16 +7,23 @@ internal static class UpdateTranslation
 {
     private static System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
 
+    #region Public
+
+    public static void ReloadAutoUpdate()
+    {
+        StopAutoUpdate();
+        StartAutoUpdate();
+    }
+
     public static void StartAutoUpdate()
     {
-        LoggerFactory.LogInformation($"Lancement de la mise a jour automatique toute les : ${Properties.Settings.Default.TranslationUpdateMethod}");
+        LoggerFactory.LogInformation($"Lancement de la mise a jour automatique; toute les : ${Properties.Settings.Default.TranslationUpdateMethod}");
         //Vérification du type de MAJ 
         if (Properties.Settings.Default.TranslationUpdateMethod == nameof(TranslationUpdateMethodEnum.Never))
             //Pas de MAJ auto
             return;
-        else if (Properties.Settings.Default.TranslationUpdateMethod == nameof(TranslationUpdateMethodEnum.StartRsiLauncher))
-            //Maj à chaque lancement du launcher RSI
-            throw new NotImplementedException();
+        else if (Properties.Settings.Default.TranslationUpdateMethod == nameof(TranslationUpdateMethodEnum.StartRsiLauncher) && !ProcessWatcher.IsProcessWatcherRunning())
+            ProcessWatcher.StartProcessWatcher();
         else if (Properties.Settings.Default.TranslationUpdateMethod == nameof(TranslationUpdateMethodEnum.EveryTwoHours) ||
                 Properties.Settings.Default.TranslationUpdateMethod == nameof(TranslationUpdateMethodEnum.EverySixHours) ||
                 Properties.Settings.Default.TranslationUpdateMethod == nameof(TranslationUpdateMethodEnum.EveryTwelveHours))
@@ -24,8 +31,6 @@ internal static class UpdateTranslation
             //MAJ auto préiodique 2,6 ou 12 heurs 
             StartTimer();
         }
-        else return;
-
     }
 
     public static void StopAutoUpdate()
@@ -45,6 +50,12 @@ internal static class UpdateTranslation
         }
         else return;
     }
+
+    #endregion
+
+
+
+    #region Private
 
     private static void StartTimer()
     {
@@ -82,5 +93,7 @@ internal static class UpdateTranslation
         timer.Dispose();
         timer.Tick -= Timer_Tick;
     }
+
+    #endregion
 
 }
