@@ -90,13 +90,6 @@ namespace StarTrad.Tool
                 return null;
             }
 
-            // We'll always try to use the LIVE channel by default
-            foreach (string channelFolderPath in channelFolderPaths) {
-                if (System.IO.Path.GetFileName(channelFolderPath) == PREFERED_CHANNEL_NAME) {
-                    return PREFERED_CHANNEL_NAME;
-                }
-            }
-
             return channelFolderPaths[0];
         }
 

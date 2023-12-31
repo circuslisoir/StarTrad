@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace StarTrad.Tool
 {
@@ -59,6 +60,7 @@ namespace StarTrad.Tool
 
 		/// <summary>
         /// Lists all the existing channel directories inside the StarCitizen directory.
+        /// Also, the "LIVE" channel will always be the first item of the returned list, unless it's unavailable.
         /// </summary>
         /// <returns>
         /// Example: [
@@ -80,6 +82,7 @@ namespace StarTrad.Tool
 
         /// <summary>
         /// Tries to list the channel folders located under the given library folder path.
+        /// Also, the "LIVE" channel will always be the first item of the returned list, unless it's unavailable.
         /// </summary>
         /// <param name="libraryFolderPath"></param>
         /// <returns></returns>
@@ -102,6 +105,16 @@ namespace StarTrad.Tool
                    channelDirectoryPaths.Add(directoryPath);
                 }
             }
+
+            channelDirectoryPaths.Sort(delegate(string a, string b) {
+                // Always put the LIVE channel at the top of the list
+                if (Path.GetFileName(a) == ChannelFolder.PREFERED_CHANNEL_NAME) {
+                    return -1;
+                }
+
+                // Every other channels will be put at the bottom
+                return 1;
+            });
 
             return channelDirectoryPaths;
         }
