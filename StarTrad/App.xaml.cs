@@ -105,7 +105,7 @@ namespace StarTrad
             this.installAndLaunchMenuItem.Enabled = false;
             this.uninstallMenuItem.Enabled = false;
 
-            TranslationInstaller installer = new TranslationInstaller(channelFolder, false);
+            TranslationInstaller installer = new TranslationInstaller(channelFolder);
             installer.ProgressWindow = new View.Window.Progress(channelFolder.Name);
             installer.NotifyIcon = notifyIcon;
             installer.OnInstallationEnded += (sender, channelFolder) => {
@@ -135,7 +135,7 @@ namespace StarTrad
             this.installAndLaunchMenuItem.Enabled = false;
             this.uninstallMenuItem.Enabled = false;
 
-            TranslationInstaller installer = new TranslationInstaller(channelFolder, false);
+            TranslationInstaller installer = new TranslationInstaller(channelFolder);
             installer.ProgressWindow = new View.Window.Progress(channelFolder.Name);
             installer.NotifyIcon = notifyIcon;
             installer.OnInstallationEnded += (sender, channelFolder) => {

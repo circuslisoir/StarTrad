@@ -31,7 +31,7 @@ namespace StarTrad.Tool
         Constructor
         */
 
-        public TranslationInstaller(ChannelFolder channelFolder, bool silent = true)
+        public TranslationInstaller(ChannelFolder channelFolder)
         {
             this.channelFolder = channelFolder;
         }
