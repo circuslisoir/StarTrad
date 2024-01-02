@@ -2,13 +2,13 @@
 
 namespace StarTrad.Helper.ComboxList
 {
-	public enum TranslationUpdateMethodEnum
+    public enum TranslationUpdateMethodEnum
     {
+        [Description("Jamais")]
+        Never,
+
         [Description("Au lancement du launcher RSI")]
         StartRsiLauncher,
-
-        [Description("Toutes les 2h")]
-        EveryTwoHours,
 
         [Description("Toutes les 6h")]
         EverySixHours,
@@ -16,7 +16,13 @@ namespace StarTrad.Helper.ComboxList
         [Description("Toutes les 12h")]
         EveryTwelveHours,
 
-        [Description("Jamais")]
-        Never
+        [Description("Toutes les 24h")]
+        EveryTwentyFourHours,
+
+        [Description("Toutes les 48h")]
+        EveryFourtyEightHours,
+
+        [Description("Toutes les semaines")]
+        EverySevenDays
     }
 }

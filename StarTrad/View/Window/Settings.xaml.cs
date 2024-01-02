@@ -8,6 +8,7 @@ using StarTrad.Helper.ComboxList;
 using StarTrad.Tool;
 using IWshRuntimeLibrary;
 
+
 namespace StarTrad.View.Window
 {
     /// <summary>
@@ -27,12 +28,17 @@ namespace StarTrad.View.Window
 
             // Bind the Checked events after the initial check so they won't be tiggered by it
             this.CheckBox_StartWithWindows.IsChecked = IsShortcutExist(shortcutPath);
+
             this.CheckBox_StartWithWindows.Checked += this.CheckBox_StartWithWindows_Checked;
             this.CheckBox_StartWithWindows.Unchecked += this.CheckBox_StartWithWindows_Unchecked;
 
             this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherLibraryFolder;
+            
             this.ComboBox_Channel.Text = Properties.Settings.Default.RsiLauncherChannel;
+            this.ComboBox_Channel.SelectionChanged += this.ComboBox_Channel_SelectionChanged;
+            
             this.ComboBox_TranslationUpdateMethod.SelectedIndex = Properties.Settings.Default.TranslationUpdateMethod;
+            this.ComboBox_TranslationUpdateMethod.SelectionChanged += this.ComboBox_TranslationUpdateMethod_SelectionChanged;
         }
 
         #region Events
@@ -85,8 +91,7 @@ namespace StarTrad.View.Window
         /// <param name="e"></param>
         private void Button_Save_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            LoggerFactory.LogInformation("Sauvegarde et fermeture du menu des paramètres");
-
+            LoggerFactory.LogInformation("Sauvegarde et fermeture des paramètres");
             string libraryFolderPath = this.TextBox_LibraryFolder.Text.Trim();
 
             if (libraryFolderPath.Length > 0 && !Directory.Exists(this.TextBox_LibraryFolder.Text)) {
@@ -100,6 +105,8 @@ namespace StarTrad.View.Window
             Properties.Settings.Default.TranslationUpdateMethod = (byte)(TranslationUpdateMethodEnum)((ComboBoxItem)this.ComboBox_TranslationUpdateMethod.SelectedItem).Tag;
 
             Properties.Settings.Default.Save();
+
+            UpdateTranslation.ReloadAutoUpdate();
 
             this.Close();
         }

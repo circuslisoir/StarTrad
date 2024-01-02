@@ -38,6 +38,7 @@ namespace StarTrad
             this.uninstallMenuItem = new ToolStripMenuItem("Désinstaller la traduction", null, new EventHandler(this.UninstallMenuItem_Click));
             this.CreateNotifyIcon();
 
+            UpdateTranslation.StartAutoUpdate();
             System.Windows.Forms.Application.Run(applicationContext);
         }
 

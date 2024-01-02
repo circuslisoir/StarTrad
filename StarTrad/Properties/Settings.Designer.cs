@@ -49,6 +49,7 @@ namespace StarTrad.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public byte TranslationUpdateMethod {
             get {
@@ -56,6 +57,18 @@ namespace StarTrad.Properties {
             }
             set {
                 this["TranslationUpdateMethod"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2024-01-02")]
+        public global::System.DateTime LastUpdateDate {
+            get {
+                return ((global::System.DateTime)(this["LastUpdateDate"]));
+            }
+            set {
+                this["LastUpdateDate"] = value;
             }
         }
     }
