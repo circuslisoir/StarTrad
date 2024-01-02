@@ -12,6 +12,7 @@ namespace StarTrad.Tool
     internal class LibraryFolderFinder
     {
         public const string DEFAULT_LIBRARY_FOLDER_PATH = @"C:\Program Files\Roberts Space Industries";
+        public const string RSI_LAUNCHER_EXECUTABLE_FILE_NAME = "RSI Launcher.exe";
         private const string RSI_LAUNCHER_REGISTRY_KEY = "81bfc699-f883-50c7-b674-2483b6baae23";
 
         /*
@@ -35,7 +36,7 @@ namespace StarTrad.Tool
             }
 
             // The library folder path stored in settings is no longer valid, we'll try to find it again
-            libraryFolderPath = Find();
+            libraryFolderPath = FindLibraryFolderPath();
 
             // Keep the path in settings so we won't need to look lor it again next time
             Properties.Settings.Default.RsiLauncherLibraryFolder = (libraryFolderPath != null ? libraryFolderPath : "");
@@ -55,25 +56,25 @@ namespace StarTrad.Tool
         /// The absolute path to a directory, or null if it cannot be found.
         /// Example: "C:\Program Files\Roberts Space Industries".
         /// </returns>
-        private static string? Find()
+        private static string? FindLibraryFolderPath()
         {
             if (LibraryFolder.IsValidLibraryFolderPath(DEFAULT_LIBRARY_FOLDER_PATH)) {
                 return DEFAULT_LIBRARY_FOLDER_PATH;
             }
 
-            string? libraryfolderPath = FindFromRegistry();
+            string? libraryfolderPath = FindLibraryFolderPathFromRegistry();
 
             if (libraryfolderPath != null) {
                 return libraryfolderPath;
             }
 
-            libraryfolderPath = FindFromLauncherLocalStorage();
+            libraryfolderPath = FindLibraryFolderPathFromLauncherLocalStorage();
 
             if (libraryfolderPath != null) {
                 return libraryfolderPath;
             }
 
-            libraryfolderPath = FindFromLauncherLogFile();
+            libraryfolderPath = FindLibraryFolderPathFromLauncherLogFile();
 
             if (libraryfolderPath != null) {
                 return libraryfolderPath;
@@ -91,7 +92,7 @@ namespace StarTrad.Tool
 		/// The absolute path to a directory, or null if it cannot be found.
 		/// Example: "C:\Program Files\Roberts Space Industries".
 		/// </returns>
-		private static string? FindFromLauncherLocalStorage()
+		private static string? FindLibraryFolderPathFromLauncherLocalStorage()
         {
             string leveldbDirectoryPath = UserDirectory + @"\AppData\Roaming\rsilauncher\Local Storage\leveldb";
 
@@ -129,79 +130,21 @@ namespace StarTrad.Tool
         /// Attemps to find where the launcher is located then using that to find where the Library Folder is.
         /// </summary>
         /// <returns></returns>
-        public static string? FindFromRegistry()
+        public static string? FindLibraryFolderPathFromRegistry()
         {
-            // 'C:\Program Files\Roberts Space Industries\RSI Launcher'
-            string? installLocation = (string?)Registry.GetValue($@"HKEY_LOCAL_MACHINE\SOFTWARE\{RSI_LAUNCHER_REGISTRY_KEY}", "InstallLocation", null);
-            LoggerFactory.LogInformation("installLocation = '" + installLocation + "'");
+            string? rsiLauncherFolderPath = FindRsiLauncherFolderFromRegistry();
 
-            if (installLocation != null && Directory.Exists(installLocation)) {
-                string? libraryFolderPath = Path.GetDirectoryName(installLocation);
-
-                if (libraryFolderPath != null && LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
-                    return libraryFolderPath;
-                }
+            if (rsiLauncherFolderPath == null) {
+                return null;
             }
 
-            // 'C:\Program Files\Roberts Space Industries\RSI Launcher\uninstallerIcon.ico'
-            string? displayIcon = (string?)Registry.GetValue($@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{RSI_LAUNCHER_REGISTRY_KEY}", "DisplayIcon", null);
-            LoggerFactory.LogInformation("displayIcon = '" + displayIcon + "'");
+            string? libraryFolderPath = Path.GetDirectoryName(rsiLauncherFolderPath);
 
-            if (displayIcon != null && File.Exists(displayIcon)) {
-                string? libraryFolderPath = Path.GetDirectoryName(Path.GetDirectoryName(displayIcon));
-
-                if (libraryFolderPath != null && LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
-                    return libraryFolderPath;
-                }
+            if (libraryFolderPath == null || !LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
+                return null;
             }
 
-            // "C:\Program Files\Roberts Space Industries\RSI Launcher\Uninstall RSI Launcher.exe" /allusers /S
-            string? quietUninstallString = (string?)Registry.GetValue($@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{RSI_LAUNCHER_REGISTRY_KEY}", "QuietUninstallString", null);
-            LoggerFactory.LogInformation("quietUninstallString = '" + quietUninstallString + "'");
-
-            if (quietUninstallString != null) {
-                int firstQuotePos = quietUninstallString.IndexOf('"');
-                int secondQuotePos = quietUninstallString.IndexOf('"', firstQuotePos+1);
-                string? launcherUninstallerExecutablePath = null;
-
-                try {
-                    launcherUninstallerExecutablePath = quietUninstallString.Substring(firstQuotePos, secondQuotePos);
-                } catch (ArgumentOutOfRangeException) {
-                }
-
-                if (launcherUninstallerExecutablePath != null) {
-                    string? libraryFolderPath = Path.GetDirectoryName(Path.GetDirectoryName(displayIcon));
-
-                    if (libraryFolderPath != null && LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
-                        return libraryFolderPath;
-                    }
-                }
-            }
-
-            // '"C:\Program Files\Roberts Space Industries\RSI Launcher\Uninstall RSI Launcher.exe" /allusers'
-            string? uninstallString = (string?)Registry.GetValue($@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{RSI_LAUNCHER_REGISTRY_KEY}", "UninstallString", null);
-            LoggerFactory.LogInformation("uninstallString = '" + uninstallString + "'");
-
-            if (uninstallString != null) {
-                int firstQuotePos = uninstallString.IndexOf('"');
-                int secondQuotePos = uninstallString.IndexOf('"', firstQuotePos+1);
-                string? launcherUninstallerExecutablePath = null;
-
-                try {
-                    launcherUninstallerExecutablePath = uninstallString.Substring(firstQuotePos, secondQuotePos);
-                } catch (ArgumentOutOfRangeException) {
-                }
-
-                if (launcherUninstallerExecutablePath != null) {
-                    string? libraryFolderPath = Path.GetDirectoryName(Path.GetDirectoryName(displayIcon));
-
-                    if (libraryFolderPath != null && LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
-                        return libraryFolderPath;
-                    }
-                }
-            }
-
-            return null;
+            return libraryFolderPath;
         }
 
         /// <summary>
@@ -211,7 +154,7 @@ namespace StarTrad.Tool
         /// The absolute path to a directory, or null if it cannot be found.
         /// Example: "C:\Program Files\Roberts Space Industries".
         /// </returns>
-        private static string? FindFromLauncherLogFile()
+        private static string? FindLibraryFolderPathFromLauncherLogFile()
         {
             string logFilePath = UserDirectory + @"\AppData\Roaming\rsilauncher\logs\log.log";
 
@@ -259,6 +202,98 @@ namespace StarTrad.Tool
         }
 
         #endregion
+
+        #region RSI Launcher folder finding methods
+
+        /// <summary>
+        /// Attemps to find where the RSI Launcher is installed by reading the registry.
+        /// </summary>
+        /// <returns>
+        /// The absolute path to the RSI Launcher folder, or null if it cannot be found.
+        /// </returns>
+        public static string? FindRsiLauncherFolderFromRegistry()
+        {
+            // 'C:\Program Files\Roberts Space Industries\RSI Launcher'
+            string? installLocation = (string?)Registry.GetValue($@"HKEY_LOCAL_MACHINE\SOFTWARE\{RSI_LAUNCHER_REGISTRY_KEY}", "InstallLocation", null);
+            LoggerFactory.LogInformation("installLocation = '" + installLocation + "'");
+
+            if (installLocation != null && IsValidRsiLauncherFolderPath(installLocation)) {
+                 return installLocation;
+            }
+
+            // 'C:\Program Files\Roberts Space Industries\RSI Launcher\uninstallerIcon.ico'
+            string? displayIcon = (string?)Registry.GetValue($@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{RSI_LAUNCHER_REGISTRY_KEY}", "DisplayIcon", null);
+            LoggerFactory.LogInformation("displayIcon = '" + displayIcon + "'");
+
+            if (displayIcon != null && File.Exists(displayIcon)) {
+                string? rsiLauncherFolderPath = Path.GetDirectoryName(displayIcon);
+
+                if (rsiLauncherFolderPath != null && IsValidRsiLauncherFolderPath(rsiLauncherFolderPath)) {
+                    return rsiLauncherFolderPath;
+                }
+            }
+
+            // "C:\Program Files\Roberts Space Industries\RSI Launcher\Uninstall RSI Launcher.exe" /allusers /S
+            string? quietUninstallString = (string?)Registry.GetValue($@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{RSI_LAUNCHER_REGISTRY_KEY}", "QuietUninstallString", null);
+            LoggerFactory.LogInformation("quietUninstallString = '" + quietUninstallString + "'");
+
+            if (quietUninstallString != null) {
+                int firstQuotePos = quietUninstallString.IndexOf('"');
+                int secondQuotePos = quietUninstallString.IndexOf('"', firstQuotePos+1);
+                string? launcherUninstallerExecutablePath = null;
+
+                try {
+                    launcherUninstallerExecutablePath = quietUninstallString.Substring(firstQuotePos, secondQuotePos);
+                } catch (ArgumentOutOfRangeException) {
+                }
+
+                if (launcherUninstallerExecutablePath != null) {
+                    string? rsiLauncherFolderPath = Path.GetDirectoryName(displayIcon);
+
+                    if (rsiLauncherFolderPath != null && IsValidRsiLauncherFolderPath(rsiLauncherFolderPath)) {
+                        return rsiLauncherFolderPath;
+                    }
+                }
+            }
+
+            // '"C:\Program Files\Roberts Space Industries\RSI Launcher\Uninstall RSI Launcher.exe" /allusers'
+            string? uninstallString = (string?)Registry.GetValue($@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{RSI_LAUNCHER_REGISTRY_KEY}", "UninstallString", null);
+            LoggerFactory.LogInformation("uninstallString = '" + uninstallString + "'");
+
+            if (uninstallString != null) {
+                int firstQuotePos = uninstallString.IndexOf('"');
+                int secondQuotePos = uninstallString.IndexOf('"', firstQuotePos+1);
+                string? launcherUninstallerExecutablePath = null;
+
+                try {
+                    launcherUninstallerExecutablePath = uninstallString.Substring(firstQuotePos, secondQuotePos);
+                } catch (ArgumentOutOfRangeException) {
+                }
+
+                if (launcherUninstallerExecutablePath != null) {
+                    string? rsiLauncherFolderPath = Path.GetDirectoryName(displayIcon);
+
+                    if (rsiLauncherFolderPath != null && IsValidRsiLauncherFolderPath(rsiLauncherFolderPath)) {
+                        return rsiLauncherFolderPath;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Checks if the given path is a directory containing the RSI Launcher.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private static bool IsValidRsiLauncherFolderPath(string path)
+        {
+            return Directory.Exists(path)
+                && File.Exists(path + '\\' + RSI_LAUNCHER_EXECUTABLE_FILE_NAME);
+        }
 
         /*
 		Accessor

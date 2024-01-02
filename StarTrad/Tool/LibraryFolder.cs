@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace StarTrad.Tool
 {
@@ -153,7 +152,7 @@ namespace StarTrad.Tool
         /// </summary>
         public string RsiLauncherExecutablePath
 		{
-			get { return this.libraryFolderPath + @"\RSI Launcher\RSI Launcher.exe"; }
+			get { return this.libraryFolderPath + @"\RSI Launcher\" + LibraryFolderFinder.RSI_LAUNCHER_EXECUTABLE_FILE_NAME; }
 		}
 	}
 }
