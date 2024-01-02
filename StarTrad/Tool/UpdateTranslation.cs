@@ -1,5 +1,6 @@
 ﻿using StarTrad.Helper;
 using StarTrad.Helper.ComboxList;
+using System;
 
 
 namespace StarTrad.Tool;
@@ -19,18 +20,18 @@ internal static class UpdateTranslation
     {
         LoggerFactory.LogInformation($"Lancement de la mise a jour automatique; toute les : ${Properties.Settings.Default.TranslationUpdateMethod}");
         //Vérification du type de MAJ 
-        if (Properties.Settings.Default.TranslationUpdateMethod == nameof(TranslationUpdateMethodEnum.Never))
+        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.Never)
             //Pas de MAJ auto
             return;
-        else if (Properties.Settings.Default.TranslationUpdateMethod == nameof(TranslationUpdateMethodEnum.StartRsiLauncher))
+        else if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.StartRsiLauncher)
             throw new NotImplementedException();
         //else if (Properties.Settings.Default.TranslationUpdateMethod == nameof(TranslationUpdateMethodEnum.StartRsiLauncher) && !ProcessWatcher.IsProcessWatcherRunning())
         //ProcessWatcher.StartProcessWatcher();
-        else if (Properties.Settings.Default.TranslationUpdateMethod == nameof(TranslationUpdateMethodEnum.EverySixHours) ||
-                Properties.Settings.Default.TranslationUpdateMethod == nameof(TranslationUpdateMethodEnum.EveryTwelveHours) ||
-                Properties.Settings.Default.TranslationUpdateMethod == nameof(TranslationUpdateMethodEnum.EveryTwentyFourHours) ||
-                Properties.Settings.Default.TranslationUpdateMethod == nameof(TranslationUpdateMethodEnum.EveryFourtyEightHours) ||
-                Properties.Settings.Default.TranslationUpdateMethod == nameof(TranslationUpdateMethodEnum.EverySevenDays))
+        else if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EverySixHours ||
+                Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryTwelveHours ||
+                Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryTwentyFourHours ||
+                Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryFourtyEightHours ||
+                Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EverySevenDays)
         {
             StartTempTimer();
         }
@@ -58,19 +59,19 @@ internal static class UpdateTranslation
         //Calcul de la date de prochaine maj
         switch (Properties.Settings.Default.TranslationUpdateMethod)
         {
-            case nameof(TranslationUpdateMethodEnum.EverySixHours):
+            case (byte)TranslationUpdateMethodEnum.EverySixHours:
                 nextUpdateDate.AddHours(6);
                 break;
-            case nameof(TranslationUpdateMethodEnum.EveryTwelveHours):
+            case (byte)TranslationUpdateMethodEnum.EveryTwelveHours:
                 nextUpdateDate.AddHours(12);
                 break;
-            case nameof(TranslationUpdateMethodEnum.EveryTwentyFourHours):
+            case (byte)TranslationUpdateMethodEnum.EveryTwentyFourHours:
                 nextUpdateDate.AddHours(24);
                 break;
-            case nameof(TranslationUpdateMethodEnum.EveryFourtyEightHours):
+            case (byte)TranslationUpdateMethodEnum.EveryFourtyEightHours:
                 nextUpdateDate.AddHours(48);
                 break;
-            case nameof(TranslationUpdateMethodEnum.EverySevenDays):
+            case (byte)TranslationUpdateMethodEnum.EverySevenDays:
                 nextUpdateDate.AddDays(7);
                 break;
         }
@@ -79,7 +80,7 @@ internal static class UpdateTranslation
         if (nextUpdateDate < DateTime.Now)
         {
             //Faire une maj puis lancé le timer
-            TranslationInstaller.Run();
+            TranslationInstaller.InstallTranslationWithoutUI();
             StartTimer();
         }
         else
@@ -97,23 +98,23 @@ internal static class UpdateTranslation
         //Configure le temps du timer en fonction de la périodicité de la maj
         switch (Properties.Settings.Default.TranslationUpdateMethod)
         {
-            case nameof(TranslationUpdateMethodEnum.EverySixHours):
+            case (byte)TranslationUpdateMethodEnum.EverySixHours:
                 //Toutes les 6 heurs
                 timer.Interval = (int)TimeSpan.FromHours(6).TotalMilliseconds;
                 break;
-            case nameof(TranslationUpdateMethodEnum.EveryTwelveHours):
+            case (byte)TranslationUpdateMethodEnum.EveryTwelveHours:
                 //Toutes les 12 heurs
                 timer.Interval = (int)TimeSpan.FromHours(12).TotalMilliseconds;
                 break;
-            case nameof(TranslationUpdateMethodEnum.EveryTwentyFourHours):
+            case (byte)TranslationUpdateMethodEnum.EveryTwentyFourHours:
                 //Toutes les 12 heurs
                 timer.Interval = (int)TimeSpan.FromHours(24).TotalMilliseconds;
                 break;
-            case nameof(TranslationUpdateMethodEnum.EveryFourtyEightHours):
+            case (byte)TranslationUpdateMethodEnum.EveryFourtyEightHours:
                 //Toutes les 12 heurs
                 timer.Interval = (int)TimeSpan.FromHours(48).TotalMilliseconds;
                 break;
-            case nameof(TranslationUpdateMethodEnum.EverySevenDays):
+            case (byte)TranslationUpdateMethodEnum.EverySevenDays:
                 //Toutes les 12 heurs
                 timer.Interval = (int)TimeSpan.FromDays(7).TotalMilliseconds;
                 break;
@@ -135,14 +136,14 @@ internal static class UpdateTranslation
     private static void TempTimer_Tick(object sender, EventArgs e)
     {
         //Lancement d'une maj
-        TranslationInstaller.Run();
+        TranslationInstaller.InstallTranslationWithoutUI();
         StopTimer();
         StartTimer();
     }
     private static void Timer_Tick(object sender, EventArgs e)
     {
         //Lancement d'une maj
-        TranslationInstaller.Run();
+        TranslationInstaller.InstallTranslationWithoutUI();
     }
 
 
