@@ -49,7 +49,6 @@ namespace StarTrad.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public byte TranslationUpdateMethod {
             get {
@@ -69,6 +68,18 @@ namespace StarTrad.Properties {
             }
             set {
                 this["LastUpdateDate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RsiLauncherFolderPath {
+            get {
+                return ((string)(this["RsiLauncherFolderPath"]));
+            }
+            set {
+                this["RsiLauncherFolderPath"] = value;
             }
         }
     }

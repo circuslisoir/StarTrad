@@ -34,7 +34,7 @@ namespace StarTrad.Tool
 		/// <returns></returns>
 		new public static ChannelFolder? Make(bool askForPathIfNeeded = false)
 		{
-			string? libraryFolderPath = LibraryFolderFinder.GetFromSettingsOrFindExisting();
+			string? libraryFolderPath = LibraryFolder.GetFolderPath();
 
             if (askForPathIfNeeded && libraryFolderPath == null) {
                 View.Window.Path pathWindow = new View.Window.Path();
@@ -104,7 +104,7 @@ namespace StarTrad.Tool
         private static string? GetChannelFolderPath(string channel)
         {
             LoggerFactory.LogInformation("Récupération du dossier d'installation SC");
-            string? libraryFolderPath = LibraryFolderFinder.GetFromSettingsOrFindExisting();
+            string? libraryFolderPath = LibraryFolder.GetFolderPath();
 
             if (libraryFolderPath == null)
             {

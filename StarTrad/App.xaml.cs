@@ -106,7 +106,7 @@ namespace StarTrad
 
             this.SetMenuItemsState(false);
 
-            TranslationInstaller.Install(false, (sender, channelFolder) => {
+            TranslationInstaller.Install(false, (sender, success) => {
                 this.SetMenuItemsState(true);
             });
         }
@@ -120,8 +120,8 @@ namespace StarTrad
         {
             this.SetMenuItemsState(false);
 
-            TranslationInstaller.Install(false, (sender, channelFolder) => {
-                channelFolder.ExecuteRsiLauncher();
+            TranslationInstaller.Install(false, (sender, success) => {
+                if (success) RsiLauncherFolder.ExecuteRsiLauncher();
                 this.SetMenuItemsState(true);
             });
         }

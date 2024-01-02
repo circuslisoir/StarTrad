@@ -13,7 +13,7 @@ namespace StarTrad.View.Window
 		{
 			InitializeComponent();
 
-			this.TextBox_Path.Text = LibraryFolderFinder.DEFAULT_LIBRARY_FOLDER_PATH;
+			this.TextBox_Path.Text = LibraryFolder.DEFAULT_LIBRARY_FOLDER_PATH;
 
 			this.ShowDialog();
 		}

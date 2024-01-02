@@ -1,6 +1,7 @@
 ﻿using System.IO;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Text;
+using System;
 
 namespace StarTrad.Tool
 {
@@ -11,6 +12,7 @@ namespace StarTrad.Tool
 	internal class LibraryFolder
 	{
         protected const string STAR_CITIZEN_DIRECTORY_NAME = "StarCitizen";
+        public const string DEFAULT_LIBRARY_FOLDER_PATH = @"C:\Program Files\Roberts Space Industries";
 
 		protected readonly string libraryFolderPath;
 
@@ -33,7 +35,7 @@ namespace StarTrad.Tool
 		/// <returns></returns>
 		public static LibraryFolder? Make(bool askForPathIfNeeded = false)
 		{
-			string? libraryFolderPath = LibraryFolderFinder.GetFromSettingsOrFindExisting();
+			string? libraryFolderPath = LibraryFolder.GetFolderPath();
 
             if (askForPathIfNeeded && libraryFolderPath == null) {
                 View.Window.Path pathWindow = new View.Window.Path();
@@ -70,7 +72,7 @@ namespace StarTrad.Tool
         /// </returns>
         public static List<string> ListAvailableChannelDirectories()
         {
-            string? libraryFolderPath = LibraryFolderFinder.GetFromSettingsOrFindExisting();
+            string? libraryFolderPath = LibraryFolder.GetFolderPath();
 
             if (libraryFolderPath == null) {
                 return new List<string>();
@@ -118,41 +120,205 @@ namespace StarTrad.Tool
             return channelDirectoryPaths;
         }
 
-        /*
-		Public
-		*/
+        /// <summary>
+        /// Obtains the path to the Star Citizen's Library Folder from the settings.
+        /// If the stored path is no longer valid, tries to find it again.
+        /// </summary>
+        /// <returns>
+        /// The absolute path to a directory, or null if it cannot be found.
+        /// Example: "C:\Program Files\Roberts Space Industries".
+        /// </returns>
+        public static string? GetFolderPath()
+        {
+            string? libraryFolderPath = Properties.Settings.Default.RsiLauncherLibraryFolder;
 
-        public void ExecuteRsiLauncher()
-		{
-            string exePath = this.RsiLauncherExecutablePath;
+            if (LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
+                return libraryFolderPath;
+            }
 
-            if (!File.Exists(exePath)) {
-				return;
-			}
+            // The library folder path stored in settings is no longer valid, we'll try to find it again
+            libraryFolderPath = FindLibraryFolderPath();
 
-            Process.Start(exePath);
+            // Keep the path in settings so we won't need to look lor it again next time
+            Properties.Settings.Default.RsiLauncherLibraryFolder = (libraryFolderPath != null ? libraryFolderPath : "");
+            Properties.Settings.Default.Save();
+
+            return libraryFolderPath;
         }
 
-        /*
+		#region Library Folder path finding methods
+
+        /// <summary>
+        /// Tries to find the path to the Star Citizen's Library Folder using various methods.
+        /// </summary>
+        /// <returns>
+        /// The absolute path to a directory, or null if it cannot be found.
+        /// Example: "C:\Program Files\Roberts Space Industries".
+        /// </returns>
+        private static string? FindLibraryFolderPath()
+        {
+            if (LibraryFolder.IsValidLibraryFolderPath(DEFAULT_LIBRARY_FOLDER_PATH)) {
+                return DEFAULT_LIBRARY_FOLDER_PATH;
+            }
+
+            string? libraryfolderPath = FindLibraryFolderPathFromRegistry();
+
+            if (libraryfolderPath != null) {
+                return libraryfolderPath;
+            }
+
+            libraryfolderPath = FindLibraryFolderPathFromLauncherLocalStorage();
+
+            if (libraryfolderPath != null) {
+                return libraryfolderPath;
+            }
+
+            libraryfolderPath = FindLibraryFolderPathFromLauncherLogFile();
+
+            if (libraryfolderPath != null) {
+                return libraryfolderPath;
+            }
+
+            return null;
+        }
+
+		/// <summary>
+		/// Attemps to find the library folder by reading the RSI Launcher's Local Storage database.
+		/// </summary>
+		/// <returns>
+		/// The absolute path to a directory, or null if it cannot be found.
+		/// Example: "C:\Program Files\Roberts Space Industries".
+		/// </returns>
+		private static string? FindLibraryFolderPathFromLauncherLocalStorage()
+        {
+            string leveldbDirectoryPath = UserDirectory + @"\AppData\Roaming\rsilauncher\Local Storage\leveldb";
+
+            if (!Directory.Exists(leveldbDirectoryPath)) {
+                return null;
+            }
+
+            // Open a connection to a new DB and create if not found
+            LevelDB.Options options = new LevelDB.Options { CreateIfMissing = false };
+            LevelDB.DB db;
+
+            // Accessing the local storage might fail if the launcher is running
+            try {
+                db = new LevelDB.DB(options, leveldbDirectoryPath);
+            } catch (UnauthorizedAccessException) {
+                return null;
+            }
+
+            string libraryFolderPath = db.Get("library-folder");
+
+            db.Close();
+
+            if (String.IsNullOrWhiteSpace(libraryFolderPath)) {
+                return null;
+            }
+
+            if (!LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
+                return null;
+            }
+
+            return libraryFolderPath;
+        }
+
+        /// <summary>
+        /// Attemps to find where the launcher is located then using that to find where the Library Folder is.
+        /// </summary>
+        /// <returns></returns>
+        private static string? FindLibraryFolderPathFromRegistry()
+        {
+            string? rsiLauncherFolderPath = RsiLauncherFolder.GetFolderPath();
+
+            if (rsiLauncherFolderPath == null) {
+                return null;
+            }
+
+            string? libraryFolderPath = Path.GetDirectoryName(rsiLauncherFolderPath);
+
+            if (libraryFolderPath == null || !LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
+                return null;
+            }
+
+            return libraryFolderPath;
+        }
+
+        /// <summary>
+        /// Attemps to find the library folder by reading the RSI Launcher's log file.
+        /// </summary>
+        /// <returns>
+        /// The absolute path to a directory, or null if it cannot be found.
+        /// Example: "C:\Program Files\Roberts Space Industries".
+        /// </returns>
+        private static string? FindLibraryFolderPathFromLauncherLogFile()
+        {
+            string logFilePath = UserDirectory + @"\AppData\Roaming\rsilauncher\logs\log.log";
+
+            if (!File.Exists(logFilePath)) {
+                return null;
+            }
+
+            uint lineNumber = 0;
+            uint changeEventLineNumber = 0;
+            string? libraryFolderLine = null;
+
+            using (FileStream fileStream = File.OpenRead(logFilePath)) {
+                using (StreamReader streamReader = new StreamReader(fileStream, Encoding.UTF8, true, 128)) {
+                    string? line;
+
+                    while ((line = streamReader.ReadLine()) != null) {
+                        lineNumber++;
+
+                        if (line.Contains("CHANGE_LIBRARY_FOLDER")) {
+                            changeEventLineNumber = lineNumber;
+
+                            continue;
+                        }
+
+                        if (changeEventLineNumber > 0 && lineNumber == (changeEventLineNumber + 3)) {
+                            libraryFolderLine = line;
+
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            if (libraryFolderLine == null) {
+                return null;
+            }
+
+            libraryFolderLine = libraryFolderLine.Trim("\" ".ToCharArray());
+
+            if (!Directory.Exists(libraryFolderLine)) {
+                return null;
+            }
+
+            return libraryFolderLine.Replace(@"\\", @"\");
+        }
+
+		#endregion
+
+		/*
 		Accessor
 		*/
 
-        /// <summary>
-        /// The absolute path to the "StarCitizen" directory, by default:
-        /// "C:\Program Files\Roberts Space Industries\StarCitizen".
-        /// </summary>
-        public string StarCitizenDirectoryPath
+		/// <summary>
+		/// The absolute path to the "StarCitizen" directory, by default:
+		/// "C:\Program Files\Roberts Space Industries\StarCitizen".
+		/// </summary>
+		public string StarCitizenDirectoryPath
 		{
 			get { return this.libraryFolderPath + '\\' + STAR_CITIZEN_DIRECTORY_NAME; }
 		}
 
         /// <summary>
-        /// The absolute path to the RSI Launcher executable, by default:
-        /// "C:\Program Files\Roberts Space Industries\RSI Launcher\RSI Launcher.exe".
+        /// Returns the path to the user directory, for exemple "C:\Users\<UserName>"
         /// </summary>
-        public string RsiLauncherExecutablePath
-		{
-			get { return this.libraryFolderPath + @"\RSI Launcher\" + LibraryFolderFinder.RSI_LAUNCHER_EXECUTABLE_FILE_NAME; }
-		}
+        private static string UserDirectory
+        {
+            get { return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); }
+        }
 	}
 }

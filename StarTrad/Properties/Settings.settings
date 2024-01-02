@@ -14,5 +14,8 @@
     <Setting Name="LastUpdateDate" Type="System.DateTime" Scope="User">
       <Value Profile="(Default)">2024-01-02</Value>
     </Setting>
+    <Setting Name="RsiLauncherFolderPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>
