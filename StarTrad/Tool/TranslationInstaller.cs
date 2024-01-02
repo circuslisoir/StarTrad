@@ -179,6 +179,9 @@ namespace StarTrad.Tool
 
                 // Create or Update the user.cfg file
                 CreateOrUpdateUserCfgFile();
+                Settings.Default.LastUpdateDate = DateTime.Now;
+                Settings.Default.Save();
+
 
                 LoggerFactory.LogInformation("Mise à jours de la traduction terminée");
             }

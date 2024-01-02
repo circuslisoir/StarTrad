@@ -25,6 +25,7 @@ namespace StarTrad
             this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
             this.CreateNotifyIcon();
 
+            UpdateTranslation.StartAutoUpdate();
             System.Windows.Forms.Application.Run(applicationContext);
         }
 
