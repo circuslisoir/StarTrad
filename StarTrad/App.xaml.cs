@@ -13,7 +13,6 @@ namespace StarTrad
     public partial class App : System.Windows.Application
     {
         public const string PROGRAM_NAME = "StarTrad";
-        public const string GAME_FOLDER_NOT_FOUND_MESSAGE = "Impossible de trouver le dossier d'installation du jeu.";
 
         // Full path to the location where this program is running
         public static string workingDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
@@ -81,6 +80,17 @@ namespace StarTrad
             notifyIcon.Text = PROGRAM_NAME;
         }
 
+        /// <summary>
+        /// Enables or disables the notify icon's menu items.
+        /// </summary>
+        /// <param name="enabled"></param>
+        private void SetMenuItemsState(bool enabled)
+        {
+            this.installMenuItem.Enabled = enabled;
+            this.installAndLaunchMenuItem.Enabled = enabled;
+            this.uninstallMenuItem.Enabled = enabled;
+        }
+
         #endregion
 
         #region Event
@@ -94,27 +104,11 @@ namespace StarTrad
         {
             LoggerFactory.LogInformation("Lancement de la recherche de mise a jour");
 
-            ChannelFolder? channelFolder = ChannelFolder.Make(true);
+            this.SetMenuItemsState(false);
 
-            if (channelFolder == null) {
-                App.Notify(ToolTipIcon.Warning, GAME_FOLDER_NOT_FOUND_MESSAGE);
-
-                return;
-            }
-
-            this.installMenuItem.Enabled = false;
-            this.installAndLaunchMenuItem.Enabled = false;
-            this.uninstallMenuItem.Enabled = false;
-
-            TranslationInstaller installer = new TranslationInstaller(channelFolder);
-            installer.ProgressWindow = new View.Window.Progress(channelFolder.Name);
-            installer.NotifyIcon = notifyIcon;
-            installer.OnInstallationEnded += (sender, channelFolder) => {
-                this.installMenuItem.Enabled = true;
-                this.installAndLaunchMenuItem.Enabled = true;
-                this.uninstallMenuItem.Enabled = true;
-            };
-            installer.InstallLatest();
+            TranslationInstaller.Install(false, (sender, channelFolder) => {
+                this.SetMenuItemsState(true);
+            });
         }
 
         /// <summary>
@@ -124,29 +118,12 @@ namespace StarTrad
         /// <param name="e"></param>
         private void InstallAndLaunchMenuItem_Click(object? sender, EventArgs e)
         {
-            ChannelFolder? channelFolder = ChannelFolder.Make(true);
+            this.SetMenuItemsState(false);
 
-            if (channelFolder == null) {
-                App.Notify(ToolTipIcon.Warning, GAME_FOLDER_NOT_FOUND_MESSAGE);
-
-                return;
-            }
-
-            this.installMenuItem.Enabled = false;
-            this.installAndLaunchMenuItem.Enabled = false;
-            this.uninstallMenuItem.Enabled = false;
-
-            TranslationInstaller installer = new TranslationInstaller(channelFolder);
-            installer.ProgressWindow = new View.Window.Progress(channelFolder.Name);
-            installer.NotifyIcon = notifyIcon;
-            installer.OnInstallationEnded += (sender, channelFolder) => {
+            TranslationInstaller.Install(false, (sender, channelFolder) => {
                 channelFolder.ExecuteRsiLauncher();
-
-                this.installMenuItem.Enabled = true;
-                this.installAndLaunchMenuItem.Enabled = true;
-                this.uninstallMenuItem.Enabled = true;
-            };
-            installer.InstallLatest();
+                this.SetMenuItemsState(true);
+            });
         }
 
         /// <summary>
@@ -156,30 +133,11 @@ namespace StarTrad
         /// <param name="e"></param>
         private void UninstallMenuItem_Click(object? sender, EventArgs e)
         {
-            ChannelFolder? channelFolder = ChannelFolder.Make(true);
+            this.SetMenuItemsState(false);
+            
+            TranslationInstaller.Uninstall(false);
 
-            if (channelFolder == null) {
-                App.Notify(ToolTipIcon.Warning, GAME_FOLDER_NOT_FOUND_MESSAGE);
-
-                return;
-            }
-
-            this.installMenuItem.Enabled = false;
-            this.installAndLaunchMenuItem.Enabled = false;
-            this.uninstallMenuItem.Enabled = false;
-
-            TranslationInstaller installer = new TranslationInstaller(channelFolder);
-            bool success = installer.Uninstall();
-
-            if (success) {
-                App.Notify(ToolTipIcon.Info, "Traduction désinstallée avec succès !");    
-            } else {
-                App.Notify(ToolTipIcon.Warning, "La traduction n'a pas pu être désinstallée.");
-            }
-
-            this.installMenuItem.Enabled = true;
-            this.installAndLaunchMenuItem.Enabled = true;
-            this.uninstallMenuItem.Enabled = true;
+            this.SetMenuItemsState(true);
         }
 
         /// <summary>

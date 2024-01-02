@@ -13,35 +13,90 @@ namespace StarTrad.Tool
     internal class TranslationInstaller
     {
         private const string GLOBAL_INI_FILE_NAME = "global.ini";
-        private const string DOWNLOAD_ERROR_MESSAGE = "Erreur de téléchargement du fichier de traduction.";
-
-        // The object representing the Star Citizen's installation directory for a channel, for example:
-        // "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE".
-        private readonly ChannelFolder channelFolder;
-
-        // UI elements used to display the installation progress
-        private View.Window.Progress? progressWindow = null;
-        private NotifyIcon? notifyIcon = null;
+        private const string MESSAGE_DOWNLOAD_ERROR = "Erreur de téléchargement du fichier de traduction.";
+        private const string MESSAGE_GAME_FOLDER_NOT_FOUND = "Impossible de trouver le dossier d'installation du jeu.";
 
         // Define an event to be called once the translation installer has finished running.
         public delegate void InstallationEndedHandler<ChannelFolder>(object sender, ChannelFolder channelFolder);
         public event InstallationEndedHandler<ChannelFolder>? OnInstallationEnded = null;
 
+        // The object representing the Star Citizen's installation directory for a channel, for example:
+        // "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE".
+        private readonly ChannelFolder channelFolder;
+
+        // If true, no UI elements will be used to report progress
+        private readonly bool silent = true;
+
+        // UI elements used to display the installation progress
+        private View.Window.Progress? progressWindow = null;
+
         /*
         Constructor
         */
 
-        public TranslationInstaller(ChannelFolder channelFolder)
+        public TranslationInstaller(ChannelFolder channelFolder, bool silent)
         {
             this.channelFolder = channelFolder;
+            this.silent = silent;
         }
+
+        #region Static
+
+        /// <summary>
+        /// Shortcut for the non-static Install() method.
+        /// </summary>
+        /// <param name="silent"></param>
+        /// <param name="installationEnded"></param>
+        public static void Install(bool silent, InstallationEndedHandler<ChannelFolder>? installationEnded = null)
+        {
+            ChannelFolder? channelFolder = ChannelFolder.Make(!silent);
+
+            if (channelFolder == null) {
+                if (!silent) App.Notify(ToolTipIcon.Warning, MESSAGE_GAME_FOLDER_NOT_FOUND);
+                return;
+            }
+
+            TranslationInstaller installer = new TranslationInstaller(channelFolder, silent);
+            installer.OnInstallationEnded += installationEnded;
+            installer.Install();
+        }
+        
+        /// <summary>
+        /// Shortcut for the non-static Uninstall() method.
+        /// </summary>
+        /// <param name="silent"></param>
+        /// <param name="installationEnded"></param>
+        public static void Uninstall(bool silent)
+        {
+            ChannelFolder? channelFolder = ChannelFolder.Make(!silent);
+
+            if (channelFolder == null) {
+                if (!silent) App.Notify(ToolTipIcon.Warning, MESSAGE_GAME_FOLDER_NOT_FOUND);
+                return;
+            }
+
+            TranslationInstaller installer = new TranslationInstaller(channelFolder, silent);
+            bool success = installer.Uninstall();
+
+            if (silent) {
+                return;
+            }
+
+            if (success) {
+                App.Notify(ToolTipIcon.Info, "Traduction désinstallée avec succès !");    
+            } else {
+                App.Notify(ToolTipIcon.Warning, "La traduction n'a pas pu être désinstallée.");
+            }
+        }
+
+        #endregion Static
 
         #region Public
 
         /// <summary>
         /// Installs, if needed, the latest version of the translation from the circuspes website.
         /// </summary>
-        public void InstallLatest()
+        public void Install()
         {
             TranslationVersion? latestVersion = this.QueryLatestAvailableTranslationVersion();
 
@@ -67,20 +122,6 @@ namespace StarTrad.Tool
             }
 
             this.StartGlobalIniFileDownload();
-        }
-
-        public static void InstallTranslationWithoutUI()
-        {
-            ChannelFolder? channelFolder = ChannelFolder.Make(true);
-
-            if (channelFolder == null)
-            {
-                LoggerFactory.LogWarning("Channel Folder not found");
-                return;
-            }
-
-            TranslationInstaller installer = new TranslationInstaller(channelFolder);
-            installer.InstallLatest();
         }
 
         /// <summary>
@@ -203,8 +244,8 @@ namespace StarTrad.Tool
             client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(this.WebClient_GlobalIniFileDownloadProgress);
             client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(this.WebClient_GlobalIniFileDownloadCompleted);
 
-            if (this.progressWindow != null)
-            {
+            if (!this.silent) {
+                this.progressWindow = new View.Window.Progress(this.channelFolder.Name);
                 this.progressWindow.Show();
             }
 
@@ -324,7 +365,7 @@ namespace StarTrad.Tool
 
             if (e.Error != null)
             {
-                this.Notify(ToolTipIcon.Error, DOWNLOAD_ERROR_MESSAGE);
+                this.Notify(ToolTipIcon.Error, MESSAGE_DOWNLOAD_ERROR);
                 LoggerFactory.LogError(e.Error);
 
                 return;
@@ -334,7 +375,7 @@ namespace StarTrad.Tool
 
             if (!File.Exists(localGlobalIniFilePath))
             {
-                this.Notify(ToolTipIcon.Warning, DOWNLOAD_ERROR_MESSAGE);
+                this.Notify(ToolTipIcon.Warning, MESSAGE_DOWNLOAD_ERROR);
                 LoggerFactory.LogWarning($"Fichier global.ini téléchargé mais non trouvé, chemin de recherche : {localGlobalIniFilePath}");
 
                 return;
@@ -345,7 +386,7 @@ namespace StarTrad.Tool
             // File is empty, download failed
             if (length <= 0)
             {
-                this.Notify(ToolTipIcon.Warning, DOWNLOAD_ERROR_MESSAGE);
+                this.Notify(ToolTipIcon.Warning, MESSAGE_DOWNLOAD_ERROR);
                 LoggerFactory.LogWarning("Erreur de téléchargement, fichier vide");
 
                 return;
@@ -375,9 +416,8 @@ namespace StarTrad.Tool
         /// </param>
         private void Notify(ToolTipIcon icon, string message, bool log = false)
         {
-            if (this.notifyIcon != null)
-            {
-                this.notifyIcon.ShowBalloonTip(2000, App.PROGRAM_NAME, message, icon);
+            if (!this.silent) {
+                App.Notify(icon, message);
             }
 
             if (log)
@@ -391,20 +431,6 @@ namespace StarTrad.Tool
                     LoggerFactory.LogWarning(message);
                 }
             }
-        }
-
-        #endregion
-
-        #region Accessor
-
-        public View.Window.Progress? ProgressWindow
-        {
-            set { this.progressWindow = value; }
-        }
-
-        public NotifyIcon? NotifyIcon
-        {
-            set { this.notifyIcon = value; }
         }
 
         #endregion

@@ -7,8 +7,9 @@ namespace StarTrad.Helper.ComboxList
         [Description("Jamais")]
         Never,
 
-        [Description("Au lancement du launcher RSI")]
-        StartRsiLauncher,
+        // Not implemented
+        //[Description("Au lancement du launcher RSI")]
+        //StartRsiLauncher,
 
         [Description("Toutes les 6h")]
         EverySixHours,
