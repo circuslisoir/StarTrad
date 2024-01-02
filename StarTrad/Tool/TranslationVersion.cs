@@ -14,7 +14,7 @@
 
         #region Static
 
-        public static TranslationVersion Make(string version)
+        public static TranslationVersion? Make(string version)
         {
             string[] parts = version.Trim().Split('-');
 

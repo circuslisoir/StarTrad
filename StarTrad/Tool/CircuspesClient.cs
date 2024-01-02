@@ -17,7 +17,7 @@ namespace StarTrad.Tool
 		/// </summary>
 		/// <param name="route"></param>
 		/// <returns></returns>
-		public static Task<string> GetRequestAsync(string route)
+		public static Task<string?> GetRequestAsync(string route)
 		{
 			return Task.Run(() => GetRequest(route));
 		}
@@ -27,14 +27,14 @@ namespace StarTrad.Tool
 		/// </summary>
 		/// <param name="route"></param>
 		/// <returns></returns>
-		public static string GetRequest(string route)
+		public static string? GetRequest(string route)
 		{
 			if (route[0] != '/') {
 				route = '/' + route;
 			}
 
 			HttpWebRequest request;
-			string response = null;
+			string? response = null;
 
 			try {
 				request = (HttpWebRequest)WebRequest.Create(HOST + route);

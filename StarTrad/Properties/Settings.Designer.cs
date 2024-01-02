@@ -49,10 +49,11 @@ namespace StarTrad.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string TranslationUpdateMethod {
+
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public byte TranslationUpdateMethod {
             get {
-                return ((string)(this["TranslationUpdateMethod"]));
+                return ((byte)(this["TranslationUpdateMethod"]));
             }
             set {
                 this["TranslationUpdateMethod"] = value;

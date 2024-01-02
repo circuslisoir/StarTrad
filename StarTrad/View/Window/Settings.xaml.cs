@@ -1,7 +1,13 @@
-﻿using IWshRuntimeLibrary;
+﻿using System;
+using System.IO;
+using System.Windows.Controls;
+using System.Windows.Forms;
+using System.Collections.Generic;
 using StarTrad.Helper;
 using StarTrad.Helper.ComboxList;
 using StarTrad.Tool;
+using IWshRuntimeLibrary;
+
 
 namespace StarTrad.View.Window
 {
@@ -16,27 +22,22 @@ namespace StarTrad.View.Window
         {
             InitializeComponent();
 
+            // Add ComboBox items
+            this.SetupChannelsComboBox();
+            this.AddComboBoxItemsFromEnum<TranslationUpdateMethodEnum>(this.ComboBox_TranslationUpdateMethod);
+
             // Bind the Checked events after the initial check so they won't be tiggered by it
             this.CheckBox_StartWithWindows.IsChecked = IsShortcutExist(shortcutPath);
-            this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherLibraryFolder;
 
             this.CheckBox_StartWithWindows.Checked += this.CheckBox_StartWithWindows_Checked;
             this.CheckBox_StartWithWindows.Unchecked += this.CheckBox_StartWithWindows_Unchecked;
 
-            Array valeursEnum = Enum.GetValues(typeof(ChanelVersionEnum));
-            foreach (ChanelVersionEnum valeur in valeursEnum)
-            {
-                ComboBox_Channel.Items.Add(EnumHelper.GetDescription(valeur));
-            }
-            this.ComboBox_Channel.Text = EnumHelper.GetDescription((ChanelVersionEnum)Enum.Parse(typeof(ChanelVersionEnum), Properties.Settings.Default.RsiLauncherChannel));
+            this.TextBox_LibraryFolder.Text = Properties.Settings.Default.RsiLauncherLibraryFolder;
+            
+            this.ComboBox_Channel.Text = Properties.Settings.Default.RsiLauncherChannel;
             this.ComboBox_Channel.SelectionChanged += this.ComboBox_Channel_SelectionChanged;
-
-            valeursEnum = Enum.GetValues(typeof(TranslationUpdateMethodEnum));
-            foreach (TranslationUpdateMethodEnum valeur in valeursEnum)
-            {
-                ComboBox_TranslationUpdateMethod.Items.Add(EnumHelper.GetDescription(valeur));
-            }
-            this.ComboBox_TranslationUpdateMethod.Text = EnumHelper.GetDescription((TranslationUpdateMethodEnum)Enum.Parse(typeof(TranslationUpdateMethodEnum), Properties.Settings.Default.TranslationUpdateMethod));
+            
+            this.ComboBox_TranslationUpdateMethod.SelectedIndex = Properties.Settings.Default.TranslationUpdateMethod;
             this.ComboBox_TranslationUpdateMethod.SelectionChanged += this.ComboBox_TranslationUpdateMethod_SelectionChanged;
         }
 
@@ -72,8 +73,7 @@ namespace StarTrad.View.Window
         /// </summary>
         private void ComboBox_Channel_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            string newValue = this.ComboBox_Channel.SelectedValue.ToString().Trim();
-            LoggerFactory.LogInformation($"Changement de la valeur du canal par : {newValue}");
+            LoggerFactory.LogInformation($"Changement de la valeur du canal par : {this.ComboBox_Channel.Text.Trim()}");
         }
 
         /// <summary>
@@ -81,8 +81,7 @@ namespace StarTrad.View.Window
         /// </summary>
         private void ComboBox_TranslationUpdateMethod_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            string newValue = this.ComboBox_TranslationUpdateMethod.SelectedValue.ToString().Trim();
-            LoggerFactory.LogInformation($"Changement de la valeur de la méthode d'update par : {newValue}");
+            LoggerFactory.LogInformation($"Changement de la valeur de la méthode d'update par : {this.ComboBox_TranslationUpdateMethod.Text.Trim()}");
         }
 
         /// <summary>
@@ -93,10 +92,18 @@ namespace StarTrad.View.Window
         private void Button_Save_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             LoggerFactory.LogInformation("Sauvegarde et fermeture des paramètres");
+            string libraryFolderPath = this.TextBox_LibraryFolder.Text.Trim();
 
-            Properties.Settings.Default.RsiLauncherLibraryFolder = this.TextBox_LibraryFolder.Text;
-            Properties.Settings.Default.RsiLauncherChannel = EnumHelper.GetValueFromString<ChanelVersionEnum>(this.ComboBox_Channel.Text.Trim()); ;
-            Properties.Settings.Default.TranslationUpdateMethod = EnumHelper.GetValueFromString<TranslationUpdateMethodEnum>(this.ComboBox_TranslationUpdateMethod.Text.Trim());
+            if (libraryFolderPath.Length > 0 && !Directory.Exists(this.TextBox_LibraryFolder.Text)) {
+                MessageBox.Show($"Le dossier \"{this.TextBox_LibraryFolder.Text}\" n'existe pas.\n\nVous pouvez laisser le champ vide pour que le programme le détecte automatiquement.");
+
+                return;
+            }
+
+            Properties.Settings.Default.RsiLauncherLibraryFolder = libraryFolderPath;
+            Properties.Settings.Default.RsiLauncherChannel = this.ComboBox_Channel.Text;
+            Properties.Settings.Default.TranslationUpdateMethod = (byte)(TranslationUpdateMethodEnum)((ComboBoxItem)this.ComboBox_TranslationUpdateMethod.SelectedItem).Tag;
+
             Properties.Settings.Default.Save();
 
             UpdateTranslation.ReloadAutoUpdate();
@@ -158,6 +165,46 @@ namespace StarTrad.View.Window
             {
                 LoggerFactory.LogError(ex);
             }
+        }
+
+        /// <summary>
+        /// Adds all the values of an Enum as items for a ComboBox.
+        /// </summary>
+        /// <typeparam name="TEnum"></typeparam>
+        /// <param name="comboBox"></param>
+        /// <param name="e"></param>
+        private void AddComboBoxItemsFromEnum<TEnum>(System.Windows.Controls.ComboBox comboBox)
+        {
+            foreach (Enum value in Enum.GetValues(typeof(TEnum))) {
+                ComboBoxItem item = new ComboBoxItem();
+                item.Tag = value;
+                item.Content = EnumHelper.GetDescription(value);
+
+                comboBox.Items.Add(item);
+            }
+        }
+
+        /// <summary>
+        /// Adds items to the channel ComboBox depending on the existing channel directories.
+        /// Also update the channel in settings if the existing value isn't valid.
+        /// </summary>
+        private void SetupChannelsComboBox()
+        {
+            List<string> channelDirectoryPaths = LibraryFolder.ListAvailableChannelDirectories();
+
+            foreach (string channelDirectoryPath in channelDirectoryPaths) {
+                this.ComboBox_Channel.Items.Add(System.IO.Path.GetFileName(channelDirectoryPath));
+            }
+
+            if (channelDirectoryPaths.Count < 1) {
+                Properties.Settings.Default.RsiLauncherChannel = "";
+                this.ComboBox_Channel.IsEnabled = false;
+                this.Label_ChannelNotFound.Content = "Aucun canal trouvé";
+            } else if (!this.ComboBox_Channel.Items.Contains(Properties.Settings.Default.RsiLauncherChannel)) {
+                Properties.Settings.Default.RsiLauncherChannel = System.IO.Path.GetFileName(channelDirectoryPaths[0]);
+            }
+
+            Properties.Settings.Default.Save();
         }
     }
 }

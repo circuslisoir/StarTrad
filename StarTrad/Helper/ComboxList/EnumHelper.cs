@@ -1,28 +1,39 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Reflection;
 
-namespace StarTrad.Helper.ComboxList;
-
-public class EnumHelper
+namespace StarTrad.Helper.ComboxList
 {
-    public static string GetDescription(Enum value)
+	public class EnumHelper
     {
-        FieldInfo? field = value.GetType().GetField(value.ToString());
-        DescriptionAttribute? attribute = (DescriptionAttribute)Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute));
-
-        return attribute == null ? value.ToString() : attribute.Description;
-    }
-
-    public static string GetValueFromString<TEnum>(string stringValue) where TEnum : Enum
-    {
-        foreach (TEnum valeur in Enum.GetValues(typeof(TEnum)))
+        public static string? GetDescription(Enum value)
         {
-            if (GetDescription(valeur) == stringValue)
-            {
-                return valeur.ToString();
-            }
-        }
+            FieldInfo? field = value.GetType().GetField(value.ToString());
 
-        return stringValue;
+            if (field == null) {
+                return null;
+            }
+
+            Attribute? attribute = Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute));
+
+            if (attribute == null) {
+                return value.ToString();
+            }
+
+            return ((DescriptionAttribute)attribute).Description;
+        }
+        
+        public static string GetValueFromDescription<TEnum>(string description) where TEnum : Enum
+        {
+            foreach (TEnum valeur in Enum.GetValues(typeof(TEnum)))
+            {
+                if (GetDescription(valeur) == description)
+                {
+                    return valeur.ToString();
+                }
+            }
+
+            return description;
+        }
     }
 }
