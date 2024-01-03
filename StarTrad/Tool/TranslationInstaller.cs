@@ -16,6 +16,9 @@ namespace StarTrad.Tool
         private const string MESSAGE_DOWNLOAD_ERROR = "Erreur de téléchargement du fichier de traduction.";
         private const string MESSAGE_GAME_FOLDER_NOT_FOUND = "Impossible de trouver le dossier d'installation du jeu.";
 
+        // A flag which will turn `true` while installing the translation.
+        private static bool installing = false;
+
         // Define an event to be called once the translation installer has finished running.
         public delegate void InstallationEndedHandler<Boolean>(object sender, Boolean channelFolder);
         public event InstallationEndedHandler<Boolean>? OnInstallationEnded = null;
@@ -98,13 +101,17 @@ namespace StarTrad.Tool
         /// </summary>
         public void Install()
         {
+            // Another installation is already in progress
+            if (TranslationInstaller.installing) return;
+            TranslationInstaller.installing = true;
+
             TranslationVersion? latestVersion = this.QueryLatestAvailableTranslationVersion();
 
             // Unable to obtain the remote version
             if (latestVersion == null)
             {
                 this.Notify(ToolTipIcon.Warning, "Impossible de récuprérer la version de la dernière traduction.", true);
-                if (this.OnInstallationEnded != null) this.OnInstallationEnded(this, false);
+                this.End(false);
 
                 return;
             }
@@ -116,7 +123,7 @@ namespace StarTrad.Tool
             {
                 this.CreateOrUpdateUserCfgFile();
                 this.Notify(ToolTipIcon.Info, "Dernière version de traduction déjà installée.", true);
-                if (this.OnInstallationEnded != null) this.OnInstallationEnded(this, true);
+                this.End(true);
 
                 return;
             }
@@ -132,6 +139,11 @@ namespace StarTrad.Tool
         /// </returns>
         public bool Uninstall()
         {
+            // Don't try to uninstall while another instance is trying to install
+            if (TranslationInstaller.installing) {
+                return false;
+            }
+
             ChannelFolder? channelFolder = ChannelFolder.Make();
 
             if (channelFolder == null)
@@ -190,12 +202,19 @@ namespace StarTrad.Tool
 
                     while ((line = streamReader.ReadLine()) != null)
                     {
-                        if (line.StartsWith(versionCommentToken))
-                        {
-                            TranslationVersion version = TranslationVersion.Make(line.Replace(versionCommentToken, ""));
-                            LoggerFactory.LogInformation($"Dernière version local installée : {version}");
-                            return version;
+                        if (!line.StartsWith(versionCommentToken)) {
+                            continue;
                         }
+
+                        TranslationVersion? version = TranslationVersion.Make(line.Replace(versionCommentToken, ""));
+
+                        if (version == null) {
+                            continue;
+                        }
+
+                        LoggerFactory.LogInformation($"Dernière version local installée : {version}");
+
+                        return version;
                     }
                 }
             }
@@ -412,6 +431,18 @@ namespace StarTrad.Tool
         }
 
         /// <summary>
+        /// To be called at the end of the installation process.
+        /// </summary>
+        private void End(bool success)
+        {
+            if (this.OnInstallationEnded != null) {
+                this.OnInstallationEnded(this, success);
+            }
+
+            TranslationInstaller.installing = false;
+        }
+
+        /// <summary>
         /// Displays a message from the notify icon.
         /// </summary>
         /// <param name="icon"></param>
@@ -468,11 +499,7 @@ namespace StarTrad.Tool
         private void WebClient_GlobalIniFileDownloadCompleted(object? sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             bool success = this.GlobalIniFileDownloadCompleted(e);
-
-            if (this.OnInstallationEnded != null)
-            {
-                this.OnInstallationEnded(this, success);
-            }
+            this.End(success);
         }
 
         #endregion
