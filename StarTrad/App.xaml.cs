@@ -157,6 +157,8 @@ namespace StarTrad
             notifyIcon.Visible = false;
 
             System.Windows.Forms.Application.Exit();
+
+            this.Shutdown();
         }
 
         /// <summary>
