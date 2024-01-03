@@ -55,6 +55,9 @@ namespace StarTrad
             // Initialize update scheduler
             UpdateTranslation.OnUpdateTriggered += this.OnAutoUpdateTriggered;
             UpdateTranslation.StartAutoUpdate();
+            
+            // Say hello
+            App.Notify(ToolTipIcon.Info, "StarTrad démarré ! Retrouvez-le dans la zone de notification en bas à droite.");
 
             System.Windows.Forms.Application.Run(applicationContext);
         }
