@@ -15,7 +15,7 @@ namespace StarTrad.View.Window
     /// </summary>
     public partial class Settings : System.Windows.Window
     {
-        private static string shortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup) + @"\StarTrad.lnk";
+        private static string startupShortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup) + @"\StarTrad.lnk";
 
         public Settings()
         {
@@ -25,8 +25,7 @@ namespace StarTrad.View.Window
             this.SetupChannelsComboBox();
             this.AddComboBoxItemsFromEnum<TranslationUpdateMethodEnum>(this.ComboBox_TranslationUpdateMethod);
 
-            // Bind the Checked events after the initial check so they won't be tiggered by it
-            this.CheckBox_StartWithWindows.IsChecked = IsShortcutExist(shortcutPath);
+            this.CheckBox_StartWithWindows.IsChecked = System.IO.File.Exists(startupShortcutPath);
 
             // Bind the Checked events after the initial IsChecked assignation so they won't be triggered by it
             this.CheckBox_StartWithWindows.Checked += this.CheckBox_StartWithWindows_Checked;
@@ -51,9 +50,9 @@ namespace StarTrad.View.Window
         private void CheckBox_StartWithWindows_Checked(object sender, System.Windows.RoutedEventArgs e)
         {
             LoggerFactory.LogInformation("Activation du démarrage de StarTrad avec windows");
-            string starTradPath = App.workingDirectoryPath;
-            if (!IsShortcutExist(shortcutPath))
-                CreateShortcut(starTradPath, shortcutPath);
+
+            if (!System.IO.File.Exists(startupShortcutPath))
+                CreateShortcut(App.workingDirectoryPath, startupShortcutPath);
         }
 
         /// <summary>
@@ -64,8 +63,16 @@ namespace StarTrad.View.Window
         private void CheckBox_StartWithWindows_Unchecked(object sender, System.Windows.RoutedEventArgs e)
         {
             LoggerFactory.LogInformation("Désactivation du démarrage de StarTrad avec windows");
-            if (IsShortcutExist(shortcutPath))
-                DeleteShortcut(shortcutPath);
+
+            if (!System.IO.File.Exists(startupShortcutPath)) {
+                return;
+            }
+
+            try {
+                System.IO.File.Delete(startupShortcutPath);
+            } catch (Exception ex) {
+                LoggerFactory.LogError(ex);
+            }
         }
 
         /// <summary>
@@ -82,6 +89,26 @@ namespace StarTrad.View.Window
         private void ComboBox_TranslationUpdateMethod_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             LoggerFactory.LogInformation($"Changement de la valeur de la méthode d'update par : {this.ComboBox_TranslationUpdateMethod.Text.Trim()}");
+        }
+
+        /// <summary>
+        /// Called when clicking on the "CreateDesktopShortcut" button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_CreateDesktopShortcut_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            string desktopShortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\StarTrad.lnk";
+
+            if (System.IO.File.Exists(desktopShortcutPath)) {
+                MessageBox.Show("Le raccourci existe déjà sur le bureau.");
+
+                return;
+            }
+
+            bool success = this.CreateShortcut(App.workingDirectoryPath, desktopShortcutPath, [App.ARGUMENT_INSTALL, App.ARGUMENT_LAUNCH]);
+
+            MessageBox.Show(success ? "Raccourci créé avec succès !" : "la création du raccourci a échouée.");
         }
 
         /// <summary>
@@ -114,25 +141,16 @@ namespace StarTrad.View.Window
         #endregion
 
         /// <summary>
-        /// Checks if shortcut exists
-        /// </summary>
-        /// <param name="path">The shortcut path</param>
-        /// <returns>Boolean</returns>
-        private bool IsShortcutExist(string path)
-        {
-            return System.IO.File.Exists(path);
-        }
-
-        /// <summary>
         /// Create shortcut in folder to file
         /// </summary>
         /// <param name="starTradPath">Path to exe file of application</param>
-        /// <param name="shortcutPath">Path where the shortcut who save</param>
-        private void CreateShortcut(string starTradPath, string shortcutPath)
+        /// <param name="shortcutPath">Path where the shortcut will be saved</param>
+        /// <param name="arguments">One or more command line arguments to be added to the shortcut's target</param>
+        private bool CreateShortcut(string starTradPath, string shortcutPath, string[]? arguments = null)
         {
-            LoggerFactory.LogInformation("Création du raccourci de démarage avec windows");
-            try
-            {
+            LoggerFactory.LogInformation("Création d'un raccourci vers " + starTradPath + " à l'emplacement " + shortcutPath);
+
+            try {
                 WshShell shell = new WshShell();
                 IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
 
@@ -140,31 +158,18 @@ namespace StarTrad.View.Window
                 shortcut.WorkingDirectory = starTradPath;
                 shortcut.IconLocation = starTradPath + @"\StarTrad.ico";
 
+                if (arguments != null) {
+                    shortcut.Arguments = String.Join(' ', arguments);
+                }
+
                 shortcut.Save();
-            }
-            catch (Exception ex)
-            {
+
+                return true;
+            } catch (Exception ex) {
                 LoggerFactory.LogError(ex);
             }
 
-
-        }
-
-        /// <summary>
-        /// Delete shortcut from path
-        /// </summary>
-        /// <param name="path">Path where located the shorcut</param>
-        private void DeleteShortcut(string path)
-        {
-            LoggerFactory.LogInformation("Suppressions du raccourci de démarage avec windows");
-            try
-            {
-                System.IO.File.Delete(path);
-            }
-            catch (Exception ex)
-            {
-                LoggerFactory.LogError(ex);
-            }
+            return false;
         }
 
         /// <summary>
