@@ -14,8 +14,12 @@ namespace StarTrad
     {
         public const string PROGRAM_NAME = "StarTrad";
 
+        // Command line arguments
+        public const string ARGUMENT_INSTALL = "/install";
+        public const string ARGUMENT_LAUNCH = "/launch";
+
         // Full path to the location where this program is running
-        public static string workingDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
+        public static readonly string workingDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
 
         private static readonly ApplicationContext applicationContext = new ApplicationContext();
         private static readonly NotifyIcon notifyIcon = new NotifyIcon();
@@ -37,7 +41,11 @@ namespace StarTrad
             this.uninstallMenuItem = new ToolStripMenuItem("Désinstaller la traduction", null, new EventHandler(this.UninstallMenuItem_Click));
             this.CreateNotifyIcon();
 
+            // Handle command line arguments
+            this.HandleCommandLineArguments();
+
             UpdateTranslation.StartAutoUpdate();
+
             System.Windows.Forms.Application.Run(applicationContext);
         }
 
@@ -56,6 +64,26 @@ namespace StarTrad
 		#endregion
 
 		#region Private
+
+        /// <summary>
+		/// Handles arguments passed to the program.
+		/// </summary>
+        private void HandleCommandLineArguments()
+        {
+            string[] args = Environment.GetCommandLineArgs();
+
+            if (!this.Contains(args, ARGUMENT_INSTALL)) {
+                return;
+            }
+
+            TranslationInstaller.Install(false, (sender, success) => {
+                if (success && this.Contains(args, ARGUMENT_LAUNCH)) {
+                    RsiLauncherFolder.ExecuteRsiLauncher();
+                }
+
+                this.ExitApplication();
+            });
+        }
 
 		/// <summary>
 		/// Creates the icon and its context menu to be displayed in the system tray.
@@ -81,6 +109,23 @@ namespace StarTrad
         }
 
         /// <summary>
+        /// Checks if a given string list contains a certain string.
+        /// </summary>
+        /// <param name="strings"></param>
+        /// <param name="needle"></param>
+        /// <returns></returns>
+        private bool Contains(string[] strings, string needle)
+        {
+            foreach (string str in strings) {
+                if (str == needle) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Enables or disables the notify icon's menu items.
         /// </summary>
         /// <param name="enabled"></param>
@@ -89,6 +134,19 @@ namespace StarTrad
             this.installMenuItem.Enabled = enabled;
             this.installAndLaunchMenuItem.Enabled = enabled;
             this.uninstallMenuItem.Enabled = enabled;
+        }
+
+        /// <summary>
+        /// Terminates the application.
+        /// </summary>
+        private void ExitApplication()
+        {
+            LoggerFactory.LogInformation("Fermeture de StarTrad");
+
+            applicationContext.ExitThread();
+            notifyIcon.Visible = false;
+
+            System.Windows.Forms.Application.Exit();
         }
 
         #endregion
@@ -134,7 +192,7 @@ namespace StarTrad
         private void UninstallMenuItem_Click(object? sender, EventArgs e)
         {
             this.SetMenuItemsState(false);
-            
+
             TranslationInstaller.Uninstall(false);
 
             this.SetMenuItemsState(true);
@@ -159,12 +217,7 @@ namespace StarTrad
         /// <param name="e"></param>
         private void ExitMenuItem_Click(object? sender, EventArgs e)
         {
-            LoggerFactory.LogInformation("Fermeture de StarTrad");
-
-            applicationContext.ExitThread();
-            notifyIcon.Visible = false;
-
-            System.Windows.Forms.Application.Exit();
+            this.ExitApplication();
         }
 
         #endregion

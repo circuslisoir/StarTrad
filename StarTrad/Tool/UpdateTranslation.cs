@@ -20,7 +20,7 @@ internal static class UpdateTranslation
     {
         LoggerFactory.LogInformation($"Lancement de la mise a jour automatique; toute les : ${Properties.Settings.Default.TranslationUpdateMethod}");
 
-        //Vérification du type de MAJ 
+        //Vérification du type de MAJ
         if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.Never) {
             return;
         }

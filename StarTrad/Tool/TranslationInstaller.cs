@@ -60,7 +60,7 @@ namespace StarTrad.Tool
             installer.OnInstallationEnded += installationEnded;
             installer.Install();
         }
-        
+
         /// <summary>
         /// Shortcut for the non-static Uninstall() method.
         /// </summary>
@@ -83,7 +83,7 @@ namespace StarTrad.Tool
             }
 
             if (success) {
-                App.Notify(ToolTipIcon.Info, "Traduction désinstallée avec succès !");    
+                App.Notify(ToolTipIcon.Info, "Traduction désinstallée avec succès !");
             } else {
                 App.Notify(ToolTipIcon.Warning, "La traduction n'a pas pu être désinstallée.");
             }
