@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using StarTrad.Helper;
@@ -30,6 +32,11 @@ namespace StarTrad
 
         public App() : base()
         {
+            // Setup exception handlers
+            AppDomain.CurrentDomain.UnhandledException += OnAppDomainUnhandledException;
+            System.Windows.Forms.Application.ThreadException += OnApplicationThreadException;
+            System.Windows.Forms.Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+
             LoggerFactory.Setup();
             LoggerFactory.LogInformation("Démarrage de StarTrad");
 
@@ -149,6 +156,27 @@ namespace StarTrad
             System.Windows.Forms.Application.Exit();
         }
 
+        /// <summary>
+		/// Writes a crash log file from an exception.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void WriteCrashLog(Exception e)
+		{
+			LoggerFactory.LogError(e.Message);
+			LoggerFactory.LogError(e.Source);
+			LoggerFactory.LogError(e.Data.ToString());
+			LoggerFactory.LogError(e.ToString());
+			LoggerFactory.LogError(e.StackTrace);
+
+			this.ExitApplication();
+
+			// Prevent from having a Windows messagebox about the crash
+			Process process = Process.GetCurrentProcess();
+			process.Kill();
+			process.Dispose();
+		}
+
         #endregion
 
         #region Event
@@ -218,6 +246,26 @@ namespace StarTrad
         private void ExitMenuItem_Click(object? sender, EventArgs e)
         {
             this.ExitApplication();
+        }
+
+        /// <summary>
+        /// Called when an unhandled exception happens on the Application thread.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnApplicationThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            this.WriteCrashLog(e.Exception);
+        }
+
+        /// <summary>
+        /// Called when an unhandled exception happens for the current AppDomain.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnAppDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            this.WriteCrashLog((Exception)e.ExceptionObject);
         }
 
         #endregion

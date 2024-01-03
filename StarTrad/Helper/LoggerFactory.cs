@@ -24,6 +24,16 @@ namespace StarTrad.Helper
 			Trace.Flush();
 		}
 
+		public static void LogError(string? message)
+		{
+			if (message == null) {
+				return;
+			}
+
+			Trace.TraceWarning($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [ERROR] {message}");
+			Trace.Flush();
+		}
+
 		public static void LogError(Exception exception)
 		{
 			Trace.TraceError($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [ERROR] {exception.Message}\n{exception}");
