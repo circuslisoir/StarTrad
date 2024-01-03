@@ -8,6 +8,10 @@ internal static class UpdateTranslation
 {
     private static System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
 
+    // Define an event to be called once the translation installer has finished running.
+    public delegate void UpdateTriggeredHandler(object? sender);
+    public static event UpdateTriggeredHandler? OnUpdateTriggered = null;
+
     #region Public
 
     public static void ReloadAutoUpdate()
@@ -139,15 +143,18 @@ internal static class UpdateTranslation
 
     private static void TempTimer_Tick(object? sender, EventArgs e)
     {
-        //Lancement d'une maj
-        TranslationInstaller.Install(true);
         StopTimer();
         StartTimer();
+
+        if (OnUpdateTriggered != null) {
+            OnUpdateTriggered(sender);
+        }
     }
     private static void Timer_Tick(object? sender, EventArgs e)
     {
-        //Lancement d'une maj
-        TranslationInstaller.Install(true);
+        if (OnUpdateTriggered != null) {
+            OnUpdateTriggered(sender);
+        }
     }
 
     #endregion

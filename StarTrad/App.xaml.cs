@@ -32,15 +32,16 @@ namespace StarTrad
 
         public App() : base()
         {
+            this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
             // Setup exception handlers
             AppDomain.CurrentDomain.UnhandledException += OnAppDomainUnhandledException;
             System.Windows.Forms.Application.ThreadException += OnApplicationThreadException;
             System.Windows.Forms.Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
+            // Initialize logger
             LoggerFactory.Setup();
             LoggerFactory.LogInformation("Démarrage de StarTrad");
-
-            this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
             // Create notify icon
             this.installMenuItem = new ToolStripMenuItem("Installer la traduction", null, new EventHandler(this.InstallMenuItem_Click));
@@ -51,6 +52,8 @@ namespace StarTrad
             // Handle command line arguments
             this.HandleCommandLineArguments();
 
+            // Initialize update scheduler
+            UpdateTranslation.OnUpdateTriggered += this.OnAutoUpdateTriggered;
             UpdateTranslation.StartAutoUpdate();
 
             System.Windows.Forms.Application.Run(applicationContext);
@@ -266,6 +269,19 @@ namespace StarTrad
         private void OnAppDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             this.WriteCrashLog((Exception)e.ExceptionObject);
+        }
+
+        /// <summary>
+        /// Called when the UpdateTranslation() tool triggers an automatic update of the translation.
+        /// </summary>
+        /// <param name="sender"></param>
+        private void OnAutoUpdateTriggered(object? sender)
+        {
+            this.SetMenuItemsState(false);
+
+            TranslationInstaller.Install(true, (sender, success) => {
+                this.SetMenuItemsState(true);
+            });
         }
 
         #endregion
