@@ -9,7 +9,7 @@
 		{
 			InitializeComponent();
 
-			this.Title += $" ({channel})";
+			this.Label_Title.Content += $"Téléchargement de la traduction ({channel})";
 		}
 
 		/*

@@ -5,9 +5,13 @@
 		Width="300" Height="100"
 		WindowStartupLocation="CenterScreen"
 		ResizeMode="NoResize"
-		Topmost="True">
-	<Grid>
-		<ProgressBar x:Name="ProgressBar_Progress" Margin="10,10,10,10"/>
-		<Label x:Name="Label_Progress" Margin="10,10,10,10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+		Topmost="True"
+		AllowsTransparency="True"
+		WindowStyle="None">
+	<Grid Background="#0D202D">
+		<Label x:Name="Label_Title" Margin="10,10,10,0" VerticalAlignment="Top" Foreground="White" Height="31" FontWeight="Bold"/>
+
+		<ProgressBar x:Name="ProgressBar_Progress" Margin="10,46,10,10" Foreground="#1C4D6E" Background="#FF122F43" BorderBrush="{x:Null}"/>
+		<Label x:Name="Label_Progress" Margin="10,46,10,10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White"/>
 	</Grid>
 </Window>
