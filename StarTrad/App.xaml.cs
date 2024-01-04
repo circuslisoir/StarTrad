@@ -50,7 +50,9 @@ namespace StarTrad
             this.CreateNotifyIcon();
 
             // Handle command line arguments
-            this.HandleCommandLineArguments();
+            if (this.HandleCommandLineArguments()) {
+                return;
+            }
 
             // Initialize update scheduler
             UpdateTranslation.OnUpdateTriggered += this.OnAutoUpdateTriggered;
@@ -81,13 +83,13 @@ namespace StarTrad
         /// <summary>
         /// Handles arguments passed to the program.
         /// </summary>
-        private void HandleCommandLineArguments()
+        private bool HandleCommandLineArguments()
         {
             string[] args = Environment.GetCommandLineArgs();
 
             if (!this.Contains(args, ARGUMENT_INSTALL))
             {
-                return;
+                return false;
             }
 
             TranslationInstaller.Install(false, (sender, success) =>
@@ -99,6 +101,8 @@ namespace StarTrad
 
                 this.ExitApplication();
             });
+
+            return true;
         }
 
         /// <summary>
