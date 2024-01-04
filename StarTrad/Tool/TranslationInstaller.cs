@@ -21,7 +21,7 @@ namespace StarTrad.Tool
 
         // Define an event to be called once the translation installer has finished running.
         public delegate void InstallationEndedHandler<Boolean>(object sender, Boolean channelFolder);
-        public event InstallationEndedHandler<Boolean>? OnInstallationEnded = null;
+        public event InstallationEndedHandler<bool>? OnInstallationEnded = null;
 
         // The object representing the Star Citizen's installation directory for a channel, for example:
         // "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE".
@@ -50,11 +50,12 @@ namespace StarTrad.Tool
         /// </summary>
         /// <param name="silent"></param>
         /// <param name="installationEnded"></param>
-        public static void Install(bool silent, InstallationEndedHandler<Boolean>? installationEnded = null)
+        public static void Install(bool silent, InstallationEndedHandler<bool>? installationEnded = null)
         {
             ChannelFolder? channelFolder = ChannelFolder.Make(!silent);
 
-            if (channelFolder == null) {
+            if (channelFolder == null)
+            {
                 if (!silent) App.Notify(ToolTipIcon.Warning, MESSAGE_GAME_FOLDER_NOT_FOUND);
                 return;
             }
@@ -73,7 +74,8 @@ namespace StarTrad.Tool
         {
             ChannelFolder? channelFolder = ChannelFolder.Make(!silent);
 
-            if (channelFolder == null) {
+            if (channelFolder == null)
+            {
                 if (!silent) App.Notify(ToolTipIcon.Warning, MESSAGE_GAME_FOLDER_NOT_FOUND);
                 return;
             }
@@ -81,13 +83,17 @@ namespace StarTrad.Tool
             TranslationInstaller installer = new TranslationInstaller(channelFolder, silent);
             bool success = installer.Uninstall();
 
-            if (silent) {
+            if (silent)
+            {
                 return;
             }
 
-            if (success) {
+            if (success)
+            {
                 App.Notify(ToolTipIcon.Info, "Traduction désinstallée avec succès !");
-            } else {
+            }
+            else
+            {
                 App.Notify(ToolTipIcon.Warning, "La traduction n'a pas pu être désinstallée.");
             }
         }
@@ -140,7 +146,8 @@ namespace StarTrad.Tool
         public bool Uninstall()
         {
             // Don't try to uninstall while another instance is trying to install
-            if (TranslationInstaller.installing) {
+            if (TranslationInstaller.installing)
+            {
                 return false;
             }
 
@@ -202,13 +209,15 @@ namespace StarTrad.Tool
 
                     while ((line = streamReader.ReadLine()) != null)
                     {
-                        if (!line.StartsWith(versionCommentToken)) {
+                        if (!line.StartsWith(versionCommentToken))
+                        {
                             continue;
                         }
 
                         TranslationVersion? version = TranslationVersion.Make(line.Replace(versionCommentToken, ""));
 
-                        if (version == null) {
+                        if (version == null)
+                        {
                             continue;
                         }
 
@@ -253,10 +262,14 @@ namespace StarTrad.Tool
             // Define where to store the to-be-downloaded file
             string localGlobalIniFilePath = App.workingDirectoryPath + '\\' + GLOBAL_INI_FILE_NAME;
 
-            if (File.Exists(localGlobalIniFilePath)) {
-                try {
+            if (File.Exists(localGlobalIniFilePath))
+            {
+                try
+                {
                     File.Delete(localGlobalIniFilePath);
-                } catch (Exception e) {
+                }
+                catch (Exception e)
+                {
                     LoggerFactory.LogError(e);
                 }
             }
@@ -266,7 +279,8 @@ namespace StarTrad.Tool
             client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(this.WebClient_GlobalIniFileDownloadProgress);
             client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(this.WebClient_GlobalIniFileDownloadCompleted);
 
-            if (!this.silent) {
+            if (!this.silent)
+            {
                 this.progressWindow = new View.Window.Progress(this.channelFolder.Name);
                 this.progressWindow.Show();
             }
@@ -435,7 +449,8 @@ namespace StarTrad.Tool
         /// </summary>
         private void End(bool success)
         {
-            if (this.OnInstallationEnded != null) {
+            if (this.OnInstallationEnded != null)
+            {
                 this.OnInstallationEnded(this, success);
             }
 
@@ -452,7 +467,8 @@ namespace StarTrad.Tool
         /// </param>
         private void Notify(ToolTipIcon icon, string message, bool log = false)
         {
-            if (!this.silent) {
+            if (!this.silent)
+            {
                 App.Notify(icon, message);
             }
 

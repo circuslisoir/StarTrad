@@ -25,18 +25,20 @@ internal static class UpdateTranslation
         LoggerFactory.LogInformation($"Lancement de la mise a jour automatique; toute les : ${Properties.Settings.Default.TranslationUpdateMethod}");
 
         //Vérification du type de MAJ
-        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.Never) {
+        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.Never)
+        {
             return;
         }
 
-        // Not implemented
-        /*if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.StartRsiLauncher) {
-            if (!ProcessWatcher.IsProcessWatcherRunning()) {
-                ProcessWatcher.StartProcessWatcher();
+        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.StartRsiLauncher)
+        {
+            if (!ProcessHandler.IsProcessHandlerRunning())
+            {
+                ProcessHandler.StartProcessHandler();
             }
 
             return;
-        }*/
+        }
 
         if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EverySixHours ||
             Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryTwelveHours ||
@@ -44,15 +46,41 @@ internal static class UpdateTranslation
             Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryFourtyEightHours ||
             Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EverySevenDays)
         {
-            StartTempTimer();
+            if (!timer.Enabled)
+                StartTempTimer();
+            return;
         }
     }
 
     public static void StopAutoUpdate()
     {
         LoggerFactory.LogInformation("Arrêt de la mise a jour automatique");
-        if (timer.Enabled)
-            StopTimer();
+        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.Never)
+        {
+            return;
+        }
+
+        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.StartRsiLauncher)
+        {
+            if (ProcessHandler.IsProcessHandlerRunning())
+            {
+                ProcessHandler.StopProcessWatcher();
+            }
+            return;
+        }
+
+        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EverySixHours ||
+            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryTwelveHours ||
+            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryTwentyFourHours ||
+            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryFourtyEightHours ||
+            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EverySevenDays)
+        {
+            if (timer.Enabled)
+                StopTimer();
+            return;
+        }
+
+
     }
 
     #endregion
@@ -146,13 +174,15 @@ internal static class UpdateTranslation
         StopTimer();
         StartTimer();
 
-        if (OnUpdateTriggered != null) {
+        if (OnUpdateTriggered != null)
+        {
             OnUpdateTriggered(sender);
         }
     }
     private static void Timer_Tick(object? sender, EventArgs e)
     {
-        if (OnUpdateTriggered != null) {
+        if (OnUpdateTriggered != null)
+        {
             OnUpdateTriggered(sender);
         }
     }
