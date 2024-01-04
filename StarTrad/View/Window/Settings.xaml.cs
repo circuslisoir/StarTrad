@@ -111,6 +111,17 @@ namespace StarTrad.View.Window
         }
 
         /// <summary>
+        /// Called when clicking on the "Configure" button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_ExternalTools_Click(object sender, System.Windows.RoutedEventArgs e)
+		{
+            ExternalTools externalToolsWindow = new ExternalTools(this);
+            externalToolsWindow.ShowDialog();
+        }
+
+        /// <summary>
         /// Called when clicking on the "Save" button.
         /// </summary>
         /// <param name="sender"></param>

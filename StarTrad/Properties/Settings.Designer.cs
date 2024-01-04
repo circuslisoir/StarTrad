@@ -82,5 +82,17 @@ namespace StarTrad.Properties {
                 this["RsiLauncherFolderPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ExternalTools {
+            get {
+                return ((string)(this["ExternalTools"]));
+            }
+            set {
+                this["ExternalTools"] = value;
+            }
+        }
     }
 }

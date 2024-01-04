@@ -7,6 +7,12 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="View\Control\ExternalToolItem.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="View\Window\ExternalTools.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="View\Window\Path.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -15,6 +21,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="View\Control\ExternalToolItem.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\Window\ExternalTools.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="View\Window\Path.xaml">
       <SubType>Designer</SubType>
     </Page>
