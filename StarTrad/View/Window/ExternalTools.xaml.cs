@@ -82,5 +82,12 @@ namespace StarTrad.View.Window
 
 			this.Close();
 		}
+
+		private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			foreach (Control.ExternalToolItem item in this.ListBox_Executables.Items) {
+				item.Width = this.ListBox_Executables.ActualWidth - 15;
+			}
+		}
 	}
 }

@@ -5,11 +5,16 @@
         Title="ExternalTools"
 		Height="247" Width="470"
 		WindowStartupLocation="CenterOwner"
-		ResizeMode="NoResize">
+		ResizeMode="CanResize" SizeChanged="Window_SizeChanged">
 	<Grid>
-		<ListBox x:Name="ListBox_Executables" SelectionMode="Single" Margin="10,10,10,35"/>
-
-		<Button Content="Ajouter un executable externe" Margin="10,0,240,10" Height="20" VerticalAlignment="Bottom" Click="Button_Add_Click"/>
-		<Button Content="Enregistrer" Margin="235,0,10,10" Height="20" VerticalAlignment="Bottom" Click="Button_Save_Click"/>
+		<ListBox x:Name="ListBox_Executables" SelectionMode="Single" Margin="10,10,10,40" />
+		<Grid Margin="10,0,10,10" Height="25" VerticalAlignment="Bottom">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+			</Grid.ColumnDefinitions>
+			<Button Content="Ajouter un executable externe" Height="25" Click="Button_Add_Click" Margin="0,0,5,0"/>
+			<Button Grid.Column="1" Content="Enregistrer" Height="25" VerticalAlignment="Center" Click="Button_Save_Click" Margin="5,0,0,0"/>
+		</Grid>
 	</Grid>
 </Window>

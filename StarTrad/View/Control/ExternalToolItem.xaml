@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 Height="32">
 	<Grid>
-		<TextBox x:Name="TextBox_ExecutablePath" Margin="5,5,86,5" TextWrapping="Wrap"/>
+		<TextBox x:Name="TextBox_ExecutablePath" Margin="5,5,86,5" TextWrapping="Wrap" VerticalContentAlignment="Center"/>
 		<Button Content="Supprimer" Margin="0,5,5,5" Click="Button_Remove_Click" HorizontalAlignment="Right" Width="71" />
 	</Grid>
 </UserControl>
