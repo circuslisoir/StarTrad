@@ -29,8 +29,8 @@ internal class ProcessHandler
     private static async void WatchRsiProcess()
     {
         // Créer un événement pour surveiller le lancement et l'arrêt de nouveaux processus
-        WqlEventQuery startQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_Process'");
-        WqlEventQuery stopQuery = new WqlEventQuery("SELECT * FROM __InstanceDeletionEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_Process'");
+        WqlEventQuery startQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_Process' AND TargetInstance.Name = 'RSI Launcher.exe'");
+        WqlEventQuery stopQuery = new WqlEventQuery("SELECT * FROM __InstanceDeletionEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_Process' AND TargetInstance.Name = 'RSI Launcher.exe'");
 
         // Créer un gestionnaire d'événements pour la création et la suppréssion de nouveaux processus
         ManagementEventWatcher startWatcher = new ManagementEventWatcher(startQuery);
