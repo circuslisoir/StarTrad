@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using StarTrad.Helper;
 using StarTrad.Helper.ComboxList;
 using StarTrad.Tool;
-using IWshRuntimeLibrary;
 
 namespace StarTrad.View.Window
 {
@@ -52,7 +51,7 @@ namespace StarTrad.View.Window
             LoggerFactory.LogInformation("Activation du démarrage de StarTrad avec windows");
 
             if (!System.IO.File.Exists(startupShortcutPath))
-                CreateShortcut(App.workingDirectoryPath, startupShortcutPath);
+                ShortcutTool.CreateShortcut(App.workingDirectoryPath, startupShortcutPath);
         }
 
         /// <summary>
@@ -106,7 +105,7 @@ namespace StarTrad.View.Window
                 return;
             }
 
-            bool success = this.CreateShortcut(App.workingDirectoryPath, desktopShortcutPath, [App.ARGUMENT_INSTALL, App.ARGUMENT_LAUNCH]);
+            bool success = ShortcutTool.CreateShortcut(App.workingDirectoryPath, desktopShortcutPath, [App.ARGUMENT_INSTALL, App.ARGUMENT_LAUNCH]);
 
             MessageBox.Show(success ? "Raccourci créé avec succès !" : "la création du raccourci a échouée.");
         }
@@ -139,38 +138,6 @@ namespace StarTrad.View.Window
         }
 
         #endregion
-
-        /// <summary>
-        /// Create shortcut in folder to file
-        /// </summary>
-        /// <param name="starTradPath">Path to exe file of application</param>
-        /// <param name="shortcutPath">Path where the shortcut will be saved</param>
-        /// <param name="arguments">One or more command line arguments to be added to the shortcut's target</param>
-        private bool CreateShortcut(string starTradPath, string shortcutPath, string[]? arguments = null)
-        {
-            LoggerFactory.LogInformation("Création d'un raccourci vers " + starTradPath + " à l'emplacement " + shortcutPath);
-
-            try {
-                WshShell shell = new WshShell();
-                IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
-
-                shortcut.TargetPath = starTradPath + @"\StarTrad.exe";
-                shortcut.WorkingDirectory = starTradPath;
-                shortcut.IconLocation = starTradPath + @"\StarTrad.ico";
-
-                if (arguments != null) {
-                    shortcut.Arguments = String.Join(' ', arguments);
-                }
-
-                shortcut.Save();
-
-                return true;
-            } catch (Exception ex) {
-                LoggerFactory.LogError(ex);
-            }
-
-            return false;
-        }
 
         /// <summary>
         /// Adds all the values of an Enum as items for a ComboBox.

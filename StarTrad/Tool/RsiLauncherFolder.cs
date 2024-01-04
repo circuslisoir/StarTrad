@@ -25,7 +25,7 @@ namespace StarTrad.Tool
             if (folderPath == null) {
                 return;
             }
-            
+
             string? exePath = folderPath + '\\' + RSI_LAUNCHER_EXECUTABLE_FILE_NAME;
 
             if (!File.Exists(exePath)) {
@@ -85,6 +85,18 @@ namespace StarTrad.Tool
 
             // Try to find from the registry
             rsiLauncherFolderPath = FindFolderPathFromRegistry();
+
+            if (rsiLauncherFolderPath != null) {
+                return rsiLauncherFolderPath;
+            }
+
+            rsiLauncherFolderPath = FindFolderPathFromStartMenu();
+
+            if (rsiLauncherFolderPath != null) {
+                return rsiLauncherFolderPath;
+            }
+
+            rsiLauncherFolderPath = FindFolderPathFromDesktop();
 
             if (rsiLauncherFolderPath != null) {
                 return rsiLauncherFolderPath;
@@ -165,6 +177,48 @@ namespace StarTrad.Tool
                         return rsiLauncherFolderPath;
                     }
                 }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Attemps to find where the RSI Launcher is installed by finding a shortcut to it in the Start Menu.
+        /// </summary>
+        /// <returns>
+        /// The absolute path to the RSI Launcher folder, or null if it cannot be found.
+        /// </returns>
+        public static string? FindFolderPathFromStartMenu()
+        {
+            // "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Roberts Space Industries\RSI Launcher.lnk"
+            string? rsiLauncherExePath = ShortcutTool.ReadTargetOfShortcut(Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms) + @"\Roberts Space Industries\RSI Launcher.lnk");
+
+            if (rsiLauncherExePath == null || !File.Exists(rsiLauncherExePath)) {
+                return null;
+            }
+
+            return Path.GetDirectoryName(rsiLauncherExePath);
+        }
+
+        /// <summary>
+        /// Attemps to find where the RSI Launcher is installed by finding a shortcut to it on the Desktop.
+        /// </summary>
+        /// <returns>
+        /// The absolute path to the RSI Launcher folder, or null if it cannot be found.
+        /// </returns>
+        public static string? FindFolderPathFromDesktop()
+        {
+            string? rsiLauncherExePath = ShortcutTool.ReadTargetOfShortcut(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory) + @"\RSI Launcher.lnk");
+
+            if (rsiLauncherExePath != null && File.Exists(rsiLauncherExePath)) {
+                return Path.GetDirectoryName(rsiLauncherExePath);
+            }
+
+            // "C:\Users\Public\Desktop\RSI Launcher.lnk"
+            rsiLauncherExePath = ShortcutTool.ReadTargetOfShortcut(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\RSI Launcher.lnk");
+
+            if (rsiLauncherExePath != null && File.Exists(rsiLauncherExePath)) {
+                return Path.GetDirectoryName(rsiLauncherExePath);
             }
 
             return null;
