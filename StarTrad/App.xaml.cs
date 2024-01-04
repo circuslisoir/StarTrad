@@ -1,11 +1,11 @@
-﻿using System;
+﻿using StarTrad.Helper;
+using StarTrad.Tool;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
-using StarTrad.Helper;
-using StarTrad.Tool;
 
 namespace StarTrad
 {
@@ -55,14 +55,14 @@ namespace StarTrad
             // Initialize update scheduler
             UpdateTranslation.OnUpdateTriggered += this.OnAutoUpdateTriggered;
             UpdateTranslation.StartAutoUpdate();
-            
+
             // Say hello
             App.Notify(ToolTipIcon.Info, "StarTrad démarré ! Retrouvez-le dans la zone de notification en bas à droite.");
 
             System.Windows.Forms.Application.Run(applicationContext);
         }
 
-		#region Static
+        #region Static
 
         /// <summary>
         /// Displays a message from the notify icon.
@@ -74,23 +74,26 @@ namespace StarTrad
             App.notifyIcon.ShowBalloonTip(2000, PROGRAM_NAME, message, icon);
         }
 
-		#endregion
+        #endregion
 
-		#region Private
+        #region Private
 
         /// <summary>
-		/// Handles arguments passed to the program.
-		/// </summary>
+        /// Handles arguments passed to the program.
+        /// </summary>
         private void HandleCommandLineArguments()
         {
             string[] args = Environment.GetCommandLineArgs();
 
-            if (!this.Contains(args, ARGUMENT_INSTALL)) {
+            if (!this.Contains(args, ARGUMENT_INSTALL))
+            {
                 return;
             }
 
-            TranslationInstaller.Install(false, (sender, success) => {
-                if (success && this.Contains(args, ARGUMENT_LAUNCH)) {
+            TranslationInstaller.Install(false, (sender, success) =>
+            {
+                if (success && this.Contains(args, ARGUMENT_LAUNCH))
+                {
                     RsiLauncherFolder.ExecuteRsiLauncher();
                 }
 
@@ -98,10 +101,10 @@ namespace StarTrad
             });
         }
 
-		/// <summary>
-		/// Creates the icon and its context menu to be displayed in the system tray.
-		/// </summary>
-		private void CreateNotifyIcon()
+        /// <summary>
+        /// Creates the icon and its context menu to be displayed in the system tray.
+        /// </summary>
+        private void CreateNotifyIcon()
         {
             ContextMenuStrip cms = new ContextMenuStrip();
 
@@ -129,8 +132,10 @@ namespace StarTrad
         /// <returns></returns>
         private bool Contains(string[] strings, string needle)
         {
-            foreach (string str in strings) {
-                if (str == needle) {
+            foreach (string str in strings)
+            {
+                if (str == needle)
+                {
                     return true;
                 }
             }
@@ -170,20 +175,20 @@ namespace StarTrad
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void WriteCrashLog(Exception e)
-		{
-			LoggerFactory.LogError(e.Message);
-			LoggerFactory.LogError(e.Source);
-			LoggerFactory.LogError(e.Data.ToString());
-			LoggerFactory.LogError(e.ToString());
-			LoggerFactory.LogError(e.StackTrace);
+        {
+            LoggerFactory.LogError(e.Message);
+            LoggerFactory.LogError(e.Source);
+            LoggerFactory.LogError(e.Data.ToString());
+            LoggerFactory.LogError(e.ToString());
+            LoggerFactory.LogError(e.StackTrace);
 
-			this.ExitApplication();
+            this.ExitApplication();
 
-			// Prevent from having a Windows messagebox about the crash
-			Process process = Process.GetCurrentProcess();
-			process.Kill();
-			process.Dispose();
-		}
+            // Prevent from having a Windows messagebox about the crash
+            Process process = Process.GetCurrentProcess();
+            process.Kill();
+            process.Dispose();
+        }
 
         #endregion
 
@@ -200,7 +205,8 @@ namespace StarTrad
 
             this.SetMenuItemsState(false);
 
-            TranslationInstaller.Install(false, (sender, success) => {
+            TranslationInstaller.Install(false, (sender, success) =>
+            {
                 this.SetMenuItemsState(true);
             });
         }
@@ -214,7 +220,8 @@ namespace StarTrad
         {
             this.SetMenuItemsState(false);
 
-            TranslationInstaller.Install(false, (sender, success) => {
+            TranslationInstaller.Install(false, (sender, success) =>
+            {
                 if (success) RsiLauncherFolder.ExecuteRsiLauncher();
                 this.SetMenuItemsState(true);
             });
@@ -284,7 +291,8 @@ namespace StarTrad
         {
             this.SetMenuItemsState(false);
 
-            TranslationInstaller.Install(true, (sender, success) => {
+            TranslationInstaller.Install(true, (sender, success) =>
+            {
                 this.SetMenuItemsState(true);
             });
         }
