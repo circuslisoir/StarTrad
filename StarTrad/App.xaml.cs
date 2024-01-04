@@ -54,6 +54,9 @@ namespace StarTrad
                 return;
             }
 
+            // Makes sure only one instance can run at a time
+            this.HandleSingleInstance();
+
             // Initialize update scheduler
             UpdateTranslation.OnUpdateTriggered += this.OnAutoUpdateTriggered;
             UpdateTranslation.StartAutoUpdate();
@@ -103,6 +106,19 @@ namespace StarTrad
             });
 
             return true;
+        }
+
+        /// <summary>
+        /// Prevents multiple instances of the program to run at the same time.
+        /// </summary>
+        private void HandleSingleInstance()
+        {
+            bool createdNew;
+            new Mutex(true, PROGRAM_NAME, out createdNew);  
+
+            if (!createdNew) {
+                this.ExitApplication();
+            }
         }
 
         /// <summary>
@@ -166,11 +182,12 @@ namespace StarTrad
             LoggerFactory.LogInformation("Fermeture de StarTrad");
 
             applicationContext.ExitThread();
-            notifyIcon.Visible = false;
-
             System.Windows.Forms.Application.Exit();
-
             this.Shutdown();
+
+            Process process = Process.GetCurrentProcess();
+            process.Kill();
+            process.Dispose();
         }
 
         /// <summary>
