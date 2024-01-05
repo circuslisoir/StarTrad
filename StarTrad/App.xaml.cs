@@ -1,4 +1,6 @@
 ﻿using StarTrad.Helper;
+using StarTrad.Helper.ComboxList;
+using StarTrad.Properties;
 using StarTrad.Tool;
 using System;
 using System.Diagnostics;
@@ -50,7 +52,8 @@ namespace StarTrad
             this.CreateNotifyIcon();
 
             // Handle command line arguments
-            if (this.HandleCommandLineArguments()) {
+            if (this.HandleCommandLineArguments())
+            {
                 return;
             }
 
@@ -60,6 +63,12 @@ namespace StarTrad
             // Initialize update scheduler
             UpdateTranslation.OnUpdateTriggered += this.OnAutoUpdateTriggered;
             UpdateTranslation.StartAutoUpdate();
+
+            // Start Process handler
+            if (((TranslationUpdateMethodEnum)Settings.Default.TranslationUpdateMethod == TranslationUpdateMethodEnum.StartRsiLauncher ||
+                !string.IsNullOrWhiteSpace(Settings.Default.ExternalTools)) &&
+                !ProcessHandler.IsProcessHandlerRunning())
+                ProcessHandler.StartProcessHandler();
 
             // Say hello
             App.Notify(ToolTipIcon.Info, "StarTrad démarré ! Retrouvez-le dans la zone de notification en bas à droite.");
@@ -114,9 +123,10 @@ namespace StarTrad
         private void HandleSingleInstance()
         {
             bool createdNew;
-            new Mutex(true, PROGRAM_NAME, out createdNew);  
+            new Mutex(true, PROGRAM_NAME, out createdNew);
 
-            if (!createdNew) {
+            if (!createdNew)
+            {
                 this.ExitApplication();
             }
         }

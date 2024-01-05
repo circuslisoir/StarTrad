@@ -1,5 +1,7 @@
 ﻿using StarTrad.Helper;
+using StarTrad.Helper.ComboxList;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
@@ -65,7 +67,12 @@ internal class ProcessHandler
         {
             LoggerFactory.LogInformation($"Le processus {rsiProcessName} a été ouvert");
             IsRsiStarted = true;
-            StartTranslationUpdate();
+
+            if ((TranslationUpdateMethodEnum)Properties.Settings.Default.TranslationUpdateMethod == TranslationUpdateMethodEnum.StartRsiLauncher)
+                StartTranslationUpdate();
+
+            if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.ExternalTools))
+                StartExternalProcess();
         }
     }
 
@@ -85,5 +92,35 @@ internal class ProcessHandler
     private static void StartTranslationUpdate()
     {
         TranslationInstaller.Install(true);
+    }
+
+    private static void StartExternalProcess()
+    {
+        List<string> processToStartList = Properties.Settings.Default.ExternalTools.Split(";").ToList();
+        List<ProcessStartInfo> processStartInfoList = new();
+
+        processStartInfoList.AddRange(
+                processToStartList.Select(processPath => new ProcessStartInfo
+                {
+                    FileName = processPath,
+                    UseShellExecute = true,
+                    CreateNoWindow = true,
+                })
+             );
+
+        try
+        {
+            processStartInfoList.ForEach(process =>
+            {
+                string processName = process.FileName.Split("\\").Last().Replace(".exe", string.Empty).Trim();
+                if (!IsProcessRunning(processName))
+                    Process.Start(process);
+            });
+        }
+        catch (Exception ex)
+        {
+            LoggerFactory.LogWarning($"Erreur lors du lancement du processus : {ex.Message}");
+        }
+
     }
 }

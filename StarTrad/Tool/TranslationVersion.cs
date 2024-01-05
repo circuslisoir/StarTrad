@@ -10,6 +10,7 @@
             this.TargetedGameVersion = part0;
             this.VersionNumber = part1;
             this.BuildNumber = part2;
+            this.FullVersionNumber = $"{part0}-{part1}-{part2}";
         }
 
         #region Static
@@ -75,6 +76,14 @@
         /// Returns the translation's build number, such as "20231226".
         /// </summary>
         public string BuildNumber
+        {
+            get; internal set;
+        }
+
+        /// <summary>
+        /// Returns the full translation version number, such as "3.22.0-1.0-20231231".
+        /// </summary>
+        public string FullVersionNumber
         {
             get; internal set;
         }

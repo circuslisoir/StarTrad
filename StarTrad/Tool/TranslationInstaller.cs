@@ -221,7 +221,7 @@ namespace StarTrad.Tool
                             continue;
                         }
 
-                        LoggerFactory.LogInformation($"Dernière version local installée : {version}");
+                        LoggerFactory.LogInformation($"Dernière version local installée : {version.FullVersionNumber}");
 
                         return version;
                     }
@@ -248,7 +248,7 @@ namespace StarTrad.Tool
 
             TranslationVersion version = TranslationVersion.Make(html);
 
-            LoggerFactory.LogInformation($"Dernière version disponnible : {version}");
+            LoggerFactory.LogInformation($"Dernière version disponnible : {version.FullVersionNumber}");
             return version;
         }
 
