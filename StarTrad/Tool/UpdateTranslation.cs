@@ -22,7 +22,7 @@ internal static class UpdateTranslation
 
     public static void StartAutoUpdate()
     {
-        LoggerFactory.LogInformation($"Lancement de la mise a jour automatique; toute les : ${Properties.Settings.Default.TranslationUpdateMethod}");
+        LoggerFactory.LogInformation($"Lancement de la mise a jour automatique, toute les : {EnumHelper.GetDescription((TranslationUpdateMethodEnum)Properties.Settings.Default.TranslationUpdateMethod)}");
 
         //Vérification du type de MAJ
         if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.Never)
