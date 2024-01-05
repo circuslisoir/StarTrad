@@ -51,7 +51,7 @@ namespace StarTrad.View.Window
             LoggerFactory.LogInformation("Activation du démarrage de StarTrad avec windows");
 
             if (!System.IO.File.Exists(startupShortcutPath))
-                ShortcutTool.CreateShortcut(App.workingDirectoryPath, startupShortcutPath);
+                ShortcutTool.CreateShortcut(App.workingDirectoryPath + @"\StarTrad.exe", startupShortcutPath);
         }
 
         /// <summary>
@@ -105,9 +105,20 @@ namespace StarTrad.View.Window
                 return;
             }
 
-            bool success = ShortcutTool.CreateShortcut(App.workingDirectoryPath, desktopShortcutPath, [App.ARGUMENT_INSTALL, App.ARGUMENT_LAUNCH]);
+            bool success = ShortcutTool.CreateShortcut(App.workingDirectoryPath + @"\StarTrad.exe", desktopShortcutPath, [App.ARGUMENT_INSTALL, App.ARGUMENT_LAUNCH]);
 
             MessageBox.Show(success ? "Raccourci créé avec succès !" : "la création du raccourci a échouée.");
+        }
+
+        /// <summary>
+        /// Called when clicking on the "Configure" button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_ExternalTools_Click(object sender, System.Windows.RoutedEventArgs e)
+		{
+            ExternalTools externalToolsWindow = new ExternalTools(this);
+            externalToolsWindow.ShowDialog();
         }
 
         /// <summary>

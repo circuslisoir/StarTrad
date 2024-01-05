@@ -50,7 +50,12 @@ namespace StarTrad
             this.CreateNotifyIcon();
 
             // Handle command line arguments
-            this.HandleCommandLineArguments();
+            if (this.HandleCommandLineArguments()) {
+                return;
+            }
+
+            // Makes sure only one instance can run at a time
+            this.HandleSingleInstance();
 
             // Initialize update scheduler
             UpdateTranslation.OnUpdateTriggered += this.OnAutoUpdateTriggered;
@@ -81,13 +86,13 @@ namespace StarTrad
         /// <summary>
         /// Handles arguments passed to the program.
         /// </summary>
-        private void HandleCommandLineArguments()
+        private bool HandleCommandLineArguments()
         {
             string[] args = Environment.GetCommandLineArgs();
 
             if (!this.Contains(args, ARGUMENT_INSTALL))
             {
-                return;
+                return false;
             }
 
             TranslationInstaller.Install(false, (sender, success) =>
@@ -99,6 +104,21 @@ namespace StarTrad
 
                 this.ExitApplication();
             });
+
+            return true;
+        }
+
+        /// <summary>
+        /// Prevents multiple instances of the program to run at the same time.
+        /// </summary>
+        private void HandleSingleInstance()
+        {
+            bool createdNew;
+            new Mutex(true, PROGRAM_NAME, out createdNew);  
+
+            if (!createdNew) {
+                this.ExitApplication();
+            }
         }
 
         /// <summary>
@@ -162,11 +182,12 @@ namespace StarTrad
             LoggerFactory.LogInformation("Fermeture de StarTrad");
 
             applicationContext.ExitThread();
-            notifyIcon.Visible = false;
-
             System.Windows.Forms.Application.Exit();
-
             this.Shutdown();
+
+            Process process = Process.GetCurrentProcess();
+            process.Kill();
+            process.Dispose();
         }
 
         /// <summary>
