@@ -1,4 +1,5 @@
 ﻿using StarTrad.Helper;
+using StarTrad.Helper.ComboxList;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,9 +14,6 @@ internal class ProcessHandler
     private readonly static string rsiProcessName = "RSI Launcher.exe";
     private readonly static string rsiShortProcessName = "RSI Launcher";
     private static bool IsRsiStarted = false;
-
-    private readonly static List<string> processToStartList = new() { "C:\\Program Files (x86)\\NaturalPoint\\TrackIR5\\TrackIR5.exe", "C:\\Program Files\\Sublime Text\\sublime_text.exe" };
-    private static List<ProcessStartInfo> processStartInfoList = new();
 
     public static void StartProcessHandler()
     {
@@ -69,8 +67,12 @@ internal class ProcessHandler
         {
             LoggerFactory.LogInformation($"Le processus {rsiProcessName} a été ouvert");
             IsRsiStarted = true;
-            StartTranslationUpdate();
-            StartExternalProcess();
+
+            if ((TranslationUpdateMethodEnum)Properties.Settings.Default.TranslationUpdateMethod == TranslationUpdateMethodEnum.StartRsiLauncher)
+                StartTranslationUpdate();
+
+            if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.ExternalTools))
+                StartExternalProcess();
         }
     }
 
@@ -94,14 +96,17 @@ internal class ProcessHandler
 
     private static void StartExternalProcess()
     {
+        List<string> processToStartList = Properties.Settings.Default.ExternalTools.Split(";").ToList();
+        List<ProcessStartInfo> processStartInfoList = new();
+
         processStartInfoList.AddRange(
-            processToStartList.Select(processPath => new ProcessStartInfo
-            {
-                FileName = processPath,
-                UseShellExecute = true,
-                CreateNoWindow = true,
-            })
-         );
+                processToStartList.Select(processPath => new ProcessStartInfo
+                {
+                    FileName = processPath,
+                    UseShellExecute = true,
+                    CreateNoWindow = true,
+                })
+             );
 
         try
         {

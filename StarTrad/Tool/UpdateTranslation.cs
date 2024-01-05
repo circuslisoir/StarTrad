@@ -24,13 +24,7 @@ internal static class UpdateTranslation
     {
         LoggerFactory.LogInformation($"Lancement de la mise a jour automatique, toute les : {EnumHelper.GetDescription((TranslationUpdateMethodEnum)Properties.Settings.Default.TranslationUpdateMethod)}");
 
-        //Vérification du type de MAJ
-        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.Never)
-        {
-            return;
-        }
-
-        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.StartRsiLauncher)
+        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.StartRsiLauncher || !string.IsNullOrWhiteSpace(Properties.Settings.Default.ExternalTools))
         {
             if (!ProcessHandler.IsProcessHandlerRunning())
             {
@@ -55,12 +49,7 @@ internal static class UpdateTranslation
     public static void StopAutoUpdate()
     {
         LoggerFactory.LogInformation("Arrêt de la mise a jour automatique");
-        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.Never)
-        {
-            return;
-        }
-
-        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.StartRsiLauncher)
+        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.StartRsiLauncher || string.IsNullOrWhiteSpace(Properties.Settings.Default.ExternalTools))
         {
             if (ProcessHandler.IsProcessHandlerRunning())
             {
