@@ -1,5 +1,6 @@
 ﻿using StarTrad.Helper;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
@@ -12,6 +13,9 @@ internal class ProcessHandler
     private readonly static string rsiProcessName = "RSI Launcher.exe";
     private readonly static string rsiShortProcessName = "RSI Launcher";
     private static bool IsRsiStarted = false;
+
+    private readonly static List<string> processToStartList = new() { "C:\\Program Files (x86)\\NaturalPoint\\TrackIR5\\TrackIR5.exe", "C:\\Program Files\\Sublime Text\\sublime_text.exe" };
+    private static List<ProcessStartInfo> processStartInfoList = new();
 
     public static void StartProcessHandler()
     {
@@ -66,6 +70,7 @@ internal class ProcessHandler
             LoggerFactory.LogInformation($"Le processus {rsiProcessName} a été ouvert");
             IsRsiStarted = true;
             StartTranslationUpdate();
+            StartExternalProcess();
         }
     }
 
@@ -85,5 +90,32 @@ internal class ProcessHandler
     private static void StartTranslationUpdate()
     {
         TranslationInstaller.Install(true);
+    }
+
+    private static void StartExternalProcess()
+    {
+        processStartInfoList.AddRange(
+            processToStartList.Select(processPath => new ProcessStartInfo
+            {
+                FileName = processPath,
+                UseShellExecute = true,
+                CreateNoWindow = true,
+            })
+         );
+
+        try
+        {
+            processStartInfoList.ForEach(process =>
+            {
+                string processName = process.FileName.Split("\\").Last().Replace(".exe", string.Empty).Trim();
+                if (!IsProcessRunning(processName))
+                    Process.Start(process);
+            });
+        }
+        catch (Exception ex)
+        {
+            LoggerFactory.LogWarning($"Erreur lors du lancement du processus : {ex.Message}");
+        }
+
     }
 }
