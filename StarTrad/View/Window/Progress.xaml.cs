@@ -1,4 +1,6 @@
-﻿namespace StarTrad.View.Window
+﻿using System.Windows.Input;
+
+namespace StarTrad.View.Window
 {
 	/// <summary>
 	/// Interaction logic for Progress.xaml
@@ -24,6 +26,17 @@
 		public string ProgressBarLabelText
 		{
 			set { this.Label_Progress.Content = value; }
+		}
+
+		/*
+		Event
+		*/
+
+		private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+		{
+			if (e.ChangedButton == MouseButton.Left) {
+				this.DragMove();
+			}
 		}
 	}
 }

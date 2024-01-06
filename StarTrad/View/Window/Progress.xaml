@@ -7,7 +7,8 @@
 		ResizeMode="NoResize"
 		Topmost="True"
 		AllowsTransparency="True"
-		WindowStyle="None">
+		WindowStyle="None"
+		MouseDown="Window_MouseDown">
 	<Grid Background="#0D202D">
 		<Label x:Name="Label_Title" Margin="10,10,10,0" VerticalAlignment="Top" Foreground="White" Height="31" FontWeight="Bold"/>
 
