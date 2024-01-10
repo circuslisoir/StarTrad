@@ -20,7 +20,7 @@ namespace StarTrad.Tool
         /// </summary>
         public static void ExecuteRsiLauncher()
 		{
-            string? folderPath = GetFolderPath();
+            string? folderPath = GetFolderPath(true);
 
             if (folderPath == null) {
                 return;
@@ -37,15 +37,19 @@ namespace StarTrad.Tool
 
         /// <summary>
         /// Gets the absolute path to the RSI Launcher folder either from the settings or by trying to find it again.
+        /// <param name="useLibraryFolder">
+        /// False to not use the path to the Library Folder for finding where the RSI Launcher is.
+        /// Prevents a dependency loop where the RsiLauncherFolder depends on the Library Folder, itself depending on the RsiLauncherFolder.
+        /// </param>
         /// </summary>
         /// <returns></returns>
-		public static string? GetFolderPath()
+		public static string? GetFolderPath(bool useLibraryFolder = false)
 		{
             if (IsValidFolderPath(Properties.Settings.Default.RsiLauncherFolderPath)) {
                 return Properties.Settings.Default.RsiLauncherFolderPath;
             }
 
-            string? rsiLauncherFolderPath = FindFolderPath();
+            string? rsiLauncherFolderPath = FindFolderPath(useLibraryFolder);
 
             if (rsiLauncherFolderPath == null) {
                 return null;
@@ -74,13 +78,18 @@ namespace StarTrad.Tool
 		/// Tries to obtain the path to the RSI Launcher folder.
 		/// </summary>
 		/// <returns></returns>
-		private static string? FindFolderPath()
+		private static string? FindFolderPath(bool useLibraryFolder = false)
         {
-            // Try to find relative to the Library Folder
-            string? rsiLauncherFolderPath = LibraryFolder.GetFolderPath() + @"\RSI Launcher";
+            string? rsiLauncherFolderPath = null;
 
-            if (IsValidFolderPath(rsiLauncherFolderPath)) {
-                return rsiLauncherFolderPath;
+            if (useLibraryFolder) {
+                // Try to find relative to the Library Folder
+                rsiLauncherFolderPath = LibraryFolder.GetFolderPath() + @"\RSI Launcher";
+
+                if (IsValidFolderPath(rsiLauncherFolderPath))
+                {
+                    return rsiLauncherFolderPath;
+                }
             }
 
             // Try to find from the registry
