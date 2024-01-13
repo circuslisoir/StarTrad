@@ -24,7 +24,7 @@ namespace StarTrad.View.Window
             this.SetupChannelsComboBox();
             this.AddComboBoxItemsFromEnum<TranslationUpdateMethodEnum>(this.ComboBox_TranslationUpdateMethod);
 
-            this.CheckBox_StartWithWindows.IsChecked = System.IO.File.Exists(startupShortcutPath);
+            this.CheckBox_StartWithWindows.IsChecked = File.Exists(startupShortcutPath);
 
             // Bind the Checked events after the initial IsChecked assignation so they won't be triggered by it
             this.CheckBox_StartWithWindows.Checked += this.CheckBox_StartWithWindows_Checked;
@@ -50,8 +50,8 @@ namespace StarTrad.View.Window
         {
             LoggerFactory.LogInformation("Activation du démarrage de StarTrad avec windows");
 
-            if (!System.IO.File.Exists(startupShortcutPath))
-                ShortcutTool.CreateShortcut(App.workingDirectoryPath + @"\StarTrad.exe", startupShortcutPath);
+            if (!File.Exists(startupShortcutPath))
+                ShortcutTool.CreateShortcut(startupShortcutPath, App.workingDirectoryPath + @"\StarTrad.exe");
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace StarTrad.View.Window
         /// <summary>
         /// Called when the channel ComboBox's dropdown gets closed.
         /// </summary>
-        private void ComboBox_Channel_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void ComboBox_Channel_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             LoggerFactory.LogInformation($"Changement de la valeur du canal par : {this.ComboBox_Channel.Text.Trim()}");
         }
@@ -85,7 +85,7 @@ namespace StarTrad.View.Window
         /// <summary>
         /// Called when the Translation update methods ComboBox's dropdown gets closed.
         /// </summary>
-        private void ComboBox_TranslationUpdateMethod_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void ComboBox_TranslationUpdateMethod_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             LoggerFactory.LogInformation($"Changement de la valeur de la méthode d'update par : {this.ComboBox_TranslationUpdateMethod.Text.Trim()}");
         }
@@ -97,15 +97,20 @@ namespace StarTrad.View.Window
         /// <param name="e"></param>
         private void Button_CreateDesktopShortcut_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            string desktopShortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\StarTrad.lnk";
+            string desktopShortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Star Citizen en français.lnk";
 
-            if (System.IO.File.Exists(desktopShortcutPath)) {
+            if (File.Exists(desktopShortcutPath)) {
                 MessageBox.Show("Le raccourci existe déjà sur le bureau.");
 
                 return;
             }
 
-            bool success = ShortcutTool.CreateShortcut(App.workingDirectoryPath + @"\StarTrad.exe", desktopShortcutPath, [App.ARGUMENT_INSTALL, App.ARGUMENT_LAUNCH]);
+            bool success = ShortcutTool.CreateShortcut(
+                desktopShortcutPath,
+                App.workingDirectoryPath + "StarTrad.exe",
+                null,
+                [App.ARGUMENT_INSTALL, App.ARGUMENT_LAUNCH]
+            );
 
             MessageBox.Show(success ? "Raccourci créé avec succès !" : "la création du raccourci a échouée.");
         }

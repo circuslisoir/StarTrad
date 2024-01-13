@@ -14,10 +14,11 @@ namespace StarTrad.Tool
 		/// <summary>
         /// Create shortcut in folder to file
         /// </summary>
-        /// <param name="targetFilePath">Absolute path to the file targeted by the shortcut</param>
         /// <param name="shortcutPath">Path where the shortcut will be saved</param>
+        /// <param name="targetFilePath">Absolute path to the file targeted by the shortcut</param>
+        /// <param name="iconFilePath">Absolute path to a file containing an icon. If null, the target's icon will be used.</param>
         /// <param name="arguments">One or more command line arguments to be added to the shortcut's target</param>
-        public static bool CreateShortcut(string targetFilePath, string shortcutPath, string[]? arguments = null)
+        public static bool CreateShortcut(string shortcutPath, string targetFilePath, string? iconFilePath = null, string[]? arguments = null)
         {
             LoggerFactory.LogInformation("Création d'un raccourci vers \"" + targetFilePath + "\" à l'emplacement \"" + shortcutPath + '"');
 
@@ -27,7 +28,7 @@ namespace StarTrad.Tool
 
                 shortcut.TargetPath = targetFilePath;
                 shortcut.WorkingDirectory = Path.GetFileName(targetFilePath);
-                shortcut.IconLocation = targetFilePath;
+                shortcut.IconLocation = iconFilePath != null ? iconFilePath : targetFilePath;
 
                 if (arguments != null) {
                     shortcut.Arguments = String.Join(' ', arguments);
