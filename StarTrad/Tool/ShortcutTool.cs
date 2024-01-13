@@ -27,7 +27,7 @@ namespace StarTrad.Tool
                 IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
 
                 shortcut.TargetPath = targetFilePath;
-                shortcut.WorkingDirectory = Path.GetFileName(targetFilePath);
+                shortcut.WorkingDirectory = Path.GetDirectoryName(targetFilePath);
                 shortcut.IconLocation = iconFilePath != null ? iconFilePath : targetFilePath;
 
                 if (arguments != null) {
