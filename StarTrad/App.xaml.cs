@@ -191,6 +191,8 @@ namespace StarTrad
         {
             LoggerFactory.LogInformation("Fermeture de StarTrad");
 
+            notifyIcon.Visible = false;
+
             applicationContext.ExitThread();
             System.Windows.Forms.Application.Exit();
             this.Shutdown();
