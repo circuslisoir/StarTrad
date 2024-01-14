@@ -108,7 +108,7 @@ namespace StarTrad.View.Window
             bool success = ShortcutTool.CreateShortcut(
                 desktopShortcutPath,
                 App.workingDirectoryPath + "StarTrad.exe",
-                null,
+                App.workingDirectoryPath + "rsist.ico",
                 [App.ARGUMENT_INSTALL, App.ARGUMENT_LAUNCH]
             );
 
