@@ -60,7 +60,7 @@ internal class ProcessHandler
     private static void ProcessStarted(object sender, EventArrivedEventArgs e)
     {
         //Récupération du nom du processus
-        string processName = (e.NewEvent["TargetInstance"] as ManagementBaseObject)?["Name"]?.ToString() ?? throw new NullReferenceException();
+        //string processName = (e.NewEvent["TargetInstance"] as ManagementBaseObject)?["Name"]?.ToString() ?? throw new NullReferenceException();
 
         //Vérification si le process run déjà
         if (IsProcessRunning(rsiShortProcessName) && !IsRsiStarted)
@@ -69,7 +69,7 @@ internal class ProcessHandler
             IsRsiStarted = true;
 
             if ((TranslationUpdateMethodEnum)Properties.Settings.Default.TranslationUpdateMethod == TranslationUpdateMethodEnum.StartRsiLauncher)
-                StartTranslationUpdate();
+                TranslationInstaller.Install(true);
 
             if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.ExternalTools))
                 StartExternalProcess();
@@ -79,7 +79,7 @@ internal class ProcessHandler
     private static void ProcessStoped(object sender, EventArrivedEventArgs e)
     {
         //Récupération du nom du processus
-        string processName = (e.NewEvent["TargetInstance"] as ManagementBaseObject)?["Name"]?.ToString() ?? throw new NullReferenceException();
+        //string processName = (e.NewEvent["TargetInstance"] as ManagementBaseObject)?["Name"]?.ToString() ?? throw new NullReferenceException();
 
         //Vérification si le process run déjà
         if (!IsProcessRunning(rsiShortProcessName) && IsRsiStarted)
@@ -87,11 +87,6 @@ internal class ProcessHandler
             IsRsiStarted = false;
             LoggerFactory.LogInformation($"Le processus {rsiProcessName} a été fermé");
         }
-    }
-
-    private static void StartTranslationUpdate()
-    {
-        TranslationInstaller.Install(true);
     }
 
     private static void StartExternalProcess()

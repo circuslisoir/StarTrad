@@ -246,9 +246,14 @@ namespace StarTrad.Tool
                 return null;
             }
 
-            TranslationVersion version = TranslationVersion.Make(html);
+            TranslationVersion? version = TranslationVersion.Make(html);
+
+            if (version == null) {
+                return null;
+            }
 
             LoggerFactory.LogInformation($"Dernière version disponnible : {version.FullVersionNumber}");
+
             return version;
         }
 

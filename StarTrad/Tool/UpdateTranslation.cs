@@ -22,26 +22,29 @@ internal static class UpdateTranslation
 
     public static void StartAutoUpdate()
     {
+        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.Never) {
+            return;
+        }
+
         LoggerFactory.LogInformation($"Lancement de la mise a jour automatique, toute les : {EnumHelper.GetDescription((TranslationUpdateMethodEnum)Properties.Settings.Default.TranslationUpdateMethod)}");
 
-        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.StartRsiLauncher || !string.IsNullOrWhiteSpace(Properties.Settings.Default.ExternalTools))
-        {
-            if (!ProcessHandler.IsProcessHandlerRunning())
-            {
+        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.StartRsiLauncher) {
+            if (!ProcessHandler.IsProcessHandlerRunning()) {
                 ProcessHandler.StartProcessHandler();
             }
 
             return;
         }
 
-        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EverySixHours ||
+        if (!timer.Enabled && (
+            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EverySixHours ||
             Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryTwelveHours ||
             Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryTwentyFourHours ||
             Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryFourtyEightHours ||
             Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EverySevenDays)
-        {
-            if (!timer.Enabled)
-                StartTempTimer();
+        ) {
+            StartTempTimer();
+            
             return;
         }
     }
@@ -49,27 +52,14 @@ internal static class UpdateTranslation
     public static void StopAutoUpdate()
     {
         LoggerFactory.LogInformation("Arrêt de la mise a jour automatique");
-        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.StartRsiLauncher || string.IsNullOrWhiteSpace(Properties.Settings.Default.ExternalTools))
-        {
-            if (ProcessHandler.IsProcessHandlerRunning())
-            {
-                ProcessHandler.StopProcessWatcher();
-            }
-            return;
+
+        if (ProcessHandler.IsProcessHandlerRunning()) {
+            ProcessHandler.StopProcessWatcher();
         }
 
-        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EverySixHours ||
-            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryTwelveHours ||
-            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryTwentyFourHours ||
-            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryFourtyEightHours ||
-            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EverySevenDays)
-        {
-            if (timer.Enabled)
-                StopTimer();
-            return;
+        if (timer.Enabled) {
+            StopTimer();
         }
-
-
     }
 
     #endregion
@@ -104,8 +94,10 @@ internal static class UpdateTranslation
         //Si la prochaine maj est à un instant T passé
         if (nextUpdateDate < DateTime.Now)
         {
-            //Faire une maj puis lancé le timer
-            TranslationInstaller.Install(true);
+            if (OnUpdateTriggered != null) {
+                OnUpdateTriggered(null);
+            }
+
             StartTimer();
         }
         else
@@ -152,10 +144,10 @@ internal static class UpdateTranslation
 
     private static void StopTimer()
     {
-        timer.Stop();
-        timer.Dispose();
         timer.Tick -= TempTimer_Tick;
         timer.Tick -= Timer_Tick;
+        timer.Stop();
+        timer.Dispose();
     }
 
     private static void TempTimer_Tick(object? sender, EventArgs e)
