@@ -48,20 +48,23 @@ namespace StarTrad
             LoggerFactory.Setup();
             LoggerFactory.LogInformation("Démarrage de StarTrad");
 
-            // Create notify icon
             this.installMenuItem = new ToolStripMenuItem("Installer la traduction", null, new EventHandler(this.InstallMenuItem_Click));
             this.installAndLaunchMenuItem = new ToolStripMenuItem("Installer la traduction et lancer le jeu", null, new EventHandler(this.InstallAndLaunchMenuItem_Click));
             this.uninstallMenuItem = new ToolStripMenuItem("Désinstaller la traduction", null, new EventHandler(this.UninstallMenuItem_Click));
+
+            // Creating the notify icon should be done before handling the command line arguments as the program would be closed 
+            // immediately otherwise. However we won't make the icon visible until after handling the command line arguments.
             this.CreateNotifyIcon();
 
-            // Handle command line arguments
-            if (this.HandleCommandLineArguments())
-            {
+            if (!this.HandleCommandLineArguments()) {
                 return;
             }
 
-            // Makes sure only one instance can run at a time
+            // Single instance should only be handled after handling the command line arguments as we don't want to prevent the /install
+            // and /launch arguments to be executed if there's already another instance of the program running in the background.
             this.HandleSingleInstance();
+
+            notifyIcon.Visible = true;
 
             // Initialize update scheduler
             UpdateTranslation.OnUpdateTriggered += this.OnAutoUpdateTriggered;
@@ -98,6 +101,9 @@ namespace StarTrad
         /// <summary>
         /// Handles arguments passed to the program.
         /// </summary>
+        /// <returns>
+        /// False if the program should be closed after handling the command line arguments, true otherwise.
+        /// </returns>
         private bool HandleCommandLineArguments()
         {
             string[] args = Environment.GetCommandLineArgs();
@@ -163,7 +169,6 @@ namespace StarTrad
 
             notifyIcon.ContextMenuStrip = cms;
             notifyIcon.Icon = new Icon(workingDirectoryPath + @"\StarTrad.ico");
-            notifyIcon.Visible = true;
             notifyIcon.Text = PROGRAM_NAME;
         }
 
