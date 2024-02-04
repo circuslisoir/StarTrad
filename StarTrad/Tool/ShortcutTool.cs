@@ -3,6 +3,7 @@ using System.IO;
 using StarTrad.Helper;
 using IWshRuntimeLibrary;
 using Shell32;
+using StarTrad.Enum;
 
 namespace StarTrad.Tool
 {
@@ -11,6 +12,8 @@ namespace StarTrad.Tool
 	/// </summary>
 	internal class ShortcutTool
 	{
+        public static string startupShortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup) + @"\StarTrad.lnk";
+
 		/// <summary>
         /// Create shortcut in folder to file
         /// </summary>
@@ -79,6 +82,37 @@ namespace StarTrad.Tool
             }
 
             return null;
+        }
+
+        public static void CreateStartupShortcut()
+        {
+            if (System.IO.File.Exists(startupShortcutPath)) {
+                return;
+            }
+
+            ShortcutTool.CreateShortcut(startupShortcutPath, App.workingDirectoryPath + @"\StarTrad.exe");
+        }
+
+        public static DesktopShortcutCreationResult CreateDesktopShortcut()
+        {
+            string desktopShortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Star Citizen en français.lnk";
+
+            if (System.IO.File.Exists(desktopShortcutPath)) {
+                return DesktopShortcutCreationResult.AlreadyExists;
+            }
+
+            bool success = ShortcutTool.CreateShortcut(
+                desktopShortcutPath,
+                App.workingDirectoryPath + "StarTrad.exe",
+                App.workingDirectoryPath + "rsist.ico",
+                [App.ARGUMENT_INSTALL, App.ARGUMENT_LAUNCH]
+            );
+
+            if (success) {
+                return DesktopShortcutCreationResult.SuccessfulyCreated;
+            }
+
+            return DesktopShortcutCreationResult.CreationFailed;
         }
 	}
 }

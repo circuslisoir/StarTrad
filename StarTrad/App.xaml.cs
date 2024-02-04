@@ -21,6 +21,9 @@ namespace StarTrad
         // Command line arguments
         public const string ARGUMENT_INSTALL = "/install";
         public const string ARGUMENT_LAUNCH = "/launch";
+        public const string ARGUMENT_SETTNGS = "/settings";
+        public const string ARGUMENT_STARTUP = "/startup";
+        public const string ARGUMENT_DESKTOP = "/desktop";
 
         // Full path to the location where this program is running
         public static readonly string workingDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
@@ -99,20 +102,30 @@ namespace StarTrad
         {
             string[] args = Environment.GetCommandLineArgs();
 
-            if (!this.Contains(args, ARGUMENT_INSTALL))
-            {
-                return false;
+            if (this.Contains(args, ARGUMENT_STARTUP)) {
+                ShortcutTool.CreateStartupShortcut();
             }
 
-            TranslationInstaller.Install(false, (sender, success) =>
-            {
-                if (success && this.Contains(args, ARGUMENT_LAUNCH))
-                {
-                    RsiLauncherFolder.ExecuteRsiLauncher();
-                }
+            if (this.Contains(args, ARGUMENT_DESKTOP)) {
+                ShortcutTool.CreateDesktopShortcut();
+            }
 
-                this.ExitApplication();
-            });
+            if (this.Contains(args, ARGUMENT_SETTNGS)) {
+                View.Window.Settings settingsWindow = new View.Window.Settings();
+                settingsWindow.ShowDialog();
+            }
+
+            if (this.Contains(args, ARGUMENT_INSTALL)) {
+                TranslationInstaller.Install(false, (sender, success) => {
+                    if (success && this.Contains(args, ARGUMENT_LAUNCH)) {
+                        RsiLauncherFolder.ExecuteRsiLauncher();
+                    }
+
+                    this.ExitApplication();
+                });
+
+                return false;
+            }
 
             return true;
         }

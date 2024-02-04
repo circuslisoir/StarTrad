@@ -6,7 +6,7 @@ namespace StarTrad.Helper.ComboxList
 {
 	public class EnumHelper
     {
-        public static string? GetDescription(Enum value)
+        public static string? GetDescription(System.Enum value)
         {
             FieldInfo? field = value.GetType().GetField(value.ToString());
 
@@ -23,9 +23,9 @@ namespace StarTrad.Helper.ComboxList
             return ((DescriptionAttribute)attribute).Description;
         }
         
-        public static string GetValueFromDescription<TEnum>(string description) where TEnum : Enum
+        public static string GetValueFromDescription<TEnum>(string description) where TEnum : System.Enum
         {
-            foreach (TEnum valeur in Enum.GetValues(typeof(TEnum)))
+            foreach (TEnum valeur in System.Enum.GetValues(typeof(TEnum)))
             {
                 if (GetDescription(valeur) == description)
                 {

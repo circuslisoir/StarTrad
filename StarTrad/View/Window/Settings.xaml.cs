@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using StarTrad.Helper;
 using StarTrad.Helper.ComboxList;
 using StarTrad.Tool;
+using StarTrad.Enum;
 
 namespace StarTrad.View.Window
 {
@@ -14,8 +15,6 @@ namespace StarTrad.View.Window
     /// </summary>
     public partial class Settings : System.Windows.Window
     {
-        private static string startupShortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup) + @"\StarTrad.lnk";
-
         public Settings()
         {
             InitializeComponent();
@@ -24,7 +23,7 @@ namespace StarTrad.View.Window
             this.SetupChannelsComboBox();
             this.AddComboBoxItemsFromEnum<TranslationUpdateMethodEnum>(this.ComboBox_TranslationUpdateMethod);
 
-            this.CheckBox_StartWithWindows.IsChecked = File.Exists(startupShortcutPath);
+            this.CheckBox_StartWithWindows.IsChecked = File.Exists(ShortcutTool.startupShortcutPath);
 
             // Bind the Checked events after the initial IsChecked assignation so they won't be triggered by it
             this.CheckBox_StartWithWindows.Checked += this.CheckBox_StartWithWindows_Checked;
@@ -49,9 +48,7 @@ namespace StarTrad.View.Window
         private void CheckBox_StartWithWindows_Checked(object sender, System.Windows.RoutedEventArgs e)
         {
             LoggerFactory.LogInformation("Activation du démarrage de StarTrad avec windows");
-
-            if (!File.Exists(startupShortcutPath))
-                ShortcutTool.CreateShortcut(startupShortcutPath, App.workingDirectoryPath + @"\StarTrad.exe");
+            ShortcutTool.CreateStartupShortcut();
         }
 
         /// <summary>
@@ -63,12 +60,12 @@ namespace StarTrad.View.Window
         {
             LoggerFactory.LogInformation("Désactivation du démarrage de StarTrad avec windows");
 
-            if (!System.IO.File.Exists(startupShortcutPath)) {
+            if (!File.Exists(ShortcutTool.startupShortcutPath)) {
                 return;
             }
 
             try {
-                System.IO.File.Delete(startupShortcutPath);
+                File.Delete(ShortcutTool.startupShortcutPath);
             } catch (Exception ex) {
                 LoggerFactory.LogError(ex);
             }
@@ -97,22 +94,13 @@ namespace StarTrad.View.Window
         /// <param name="e"></param>
         private void Button_CreateDesktopShortcut_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            string desktopShortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Star Citizen en français.lnk";
+            DesktopShortcutCreationResult result = ShortcutTool.CreateDesktopShortcut();
 
-            if (File.Exists(desktopShortcutPath)) {
-                MessageBox.Show("Le raccourci existe déjà sur le bureau.");
-
-                return;
+            switch (result) {
+                case DesktopShortcutCreationResult.AlreadyExists: MessageBox.Show("Le raccourci existe déjà sur le bureau."); break;
+                case DesktopShortcutCreationResult.CreationFailed: MessageBox.Show("la création du raccourci a échouée."); break;
+                case DesktopShortcutCreationResult.SuccessfulyCreated: MessageBox.Show("Raccourci créé avec succès !"); break;
             }
-
-            bool success = ShortcutTool.CreateShortcut(
-                desktopShortcutPath,
-                App.workingDirectoryPath + "StarTrad.exe",
-                App.workingDirectoryPath + "rsist.ico",
-                [App.ARGUMENT_INSTALL, App.ARGUMENT_LAUNCH]
-            );
-
-            MessageBox.Show(success ? "Raccourci créé avec succès !" : "la création du raccourci a échouée.");
         }
 
         /// <summary>
@@ -163,7 +151,7 @@ namespace StarTrad.View.Window
         /// <param name="e"></param>
         private void AddComboBoxItemsFromEnum<TEnum>(System.Windows.Controls.ComboBox comboBox)
         {
-            foreach (Enum value in Enum.GetValues(typeof(TEnum))) {
+            foreach (System.Enum value in System.Enum.GetValues(typeof(TEnum))) {
                 ComboBoxItem item = new ComboBoxItem();
                 item.Tag = value;
                 item.Content = EnumHelper.GetDescription(value);
