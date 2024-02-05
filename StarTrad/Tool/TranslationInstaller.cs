@@ -279,7 +279,16 @@ namespace StarTrad.Tool
                 }
             }
 
+            // Reads the version number defined in Properties > Package > General > Package Version
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            System.Diagnostics.FileVersionInfo fileVersionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+            string? fileVersion = fileVersionInfo.FileVersion; // Example: "0.9.1.0"
+
             WebClient client = new WebClient();
+            
+            if (fileVersion != null && fileVersion.Length > 0) {
+                client.Headers.Add("User-Agent", "StarTrad/" + fileVersion);
+            }
 
             client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(this.WebClient_GlobalIniFileDownloadProgress);
             client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(this.WebClient_GlobalIniFileDownloadCompleted);
