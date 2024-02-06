@@ -27,6 +27,7 @@ namespace StarTrad
 
         // Full path to the location where this program is running
         public static readonly string workingDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
+        public static readonly string? assemblyFileVersion = App.AssemblyFileVersion;
 
         private static readonly ApplicationContext applicationContext = new ApplicationContext();
         private static readonly NotifyIcon notifyIcon = new NotifyIcon();
@@ -92,6 +93,18 @@ namespace StarTrad
         public static void Notify(ToolTipIcon icon, string message)
         {
             App.notifyIcon.ShowBalloonTip(2000, PROGRAM_NAME, message, icon);
+        }
+
+        private static string? AssemblyFileVersion
+        {
+            get
+            {
+                // Reads the version number defined in Properties > Package > General > Package Version
+                System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+
+                return fileVersionInfo.FileVersion; // Example: "0.9.1.0"
+            }
         }
 
         #endregion
