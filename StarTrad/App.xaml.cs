@@ -45,10 +45,6 @@ namespace StarTrad
             System.Windows.Forms.Application.ThreadException += OnApplicationThreadException;
             System.Windows.Forms.Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
-            // Initialize logger
-            LoggerFactory.Setup();
-            LoggerFactory.LogInformation("Démarrage de StarTrad");
-
             this.installMenuItem = new ToolStripMenuItem("Installer la traduction", null, new EventHandler(this.InstallMenuItem_Click));
             this.installAndLaunchMenuItem = new ToolStripMenuItem("Installer la traduction et lancer le jeu", null, new EventHandler(this.InstallAndLaunchMenuItem_Click));
             this.uninstallMenuItem = new ToolStripMenuItem("Désinstaller la traduction", null, new EventHandler(this.UninstallMenuItem_Click));
@@ -64,6 +60,7 @@ namespace StarTrad
             // Single instance should only be handled after handling the command line arguments as we don't want to prevent the /install
             // and /launch arguments to be executed if there's already another instance of the program running in the background.
             this.HandleSingleInstance();
+            LoggerFactory.Setup();
 
             notifyIcon.Visible = true;
 
