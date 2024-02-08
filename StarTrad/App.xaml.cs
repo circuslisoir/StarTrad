@@ -180,6 +180,10 @@ namespace StarTrad
             notifyIcon.ContextMenuStrip = cms;
             notifyIcon.Icon = new Icon(workingDirectoryPath + @"\StarTrad.ico");
             notifyIcon.Text = PROGRAM_NAME;
+
+            if (assemblyFileVersion != null) {
+                notifyIcon.Text += (' ' + App.assemblyFileVersion);
+            }
         }
 
         /// <summary>
