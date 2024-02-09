@@ -147,7 +147,7 @@ namespace StarTrad.Tool
 
             this.channelsForInstallation = channelsWithoutUpTodateTranslation.ToArray();
 
-             // We'll let the user select the channels the translation should be installed on
+            // We'll let the user select the channels the translation should be installed on
             if (!this.silent && channelsWithoutUpTodateTranslation.Count > 1) {
                 View.Window.ChannelSelector channelSelectorWindow = new(this.channelsForInstallation, "Installer");
                 channelSelectorWindow.ShowDialog();
@@ -196,11 +196,11 @@ namespace StarTrad.Tool
                 View.Window.ChannelSelector channelSelectorWindow = new(channelFolders, "Désinstaller");
                 channelSelectorWindow.ShowDialog();
 
-                if (!channelSelectorWindow.OkClicked) {
+                channelFolders = channelSelectorWindow.SelectedChannelFolders;
+
+                if (this.channelsForInstallation.Length < 1) {
                     return ActionResult.UserCanceled;
                 }
-
-                channelFolders = channelSelectorWindow.SelectedChannelFolders;
             }
 
             foreach (ChannelFolder channelFolder in channelFolders) {

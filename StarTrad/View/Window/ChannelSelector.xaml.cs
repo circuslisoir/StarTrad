@@ -50,11 +50,6 @@ namespace StarTrad.View.Window
 			}
 		}
 
-		public bool OkClicked
-		{
-			get { return this.okClicked; }
-		}
-
 		/*
 		Event
 		*/
