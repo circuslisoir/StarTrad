@@ -64,7 +64,7 @@ namespace StarTrad.Tool
 		public static void AddUserAgentHeader(WebHeaderCollection headers)
 		{
 			if (App.assemblyFileVersion != null && App.assemblyFileVersion.Length > 0) {
-				headers.Add(HttpRequestHeader.UserAgent, "StarTrad/" + App.assemblyFileVersion);
+				headers.Set(HttpRequestHeader.UserAgent, "StarTrad/" + App.assemblyFileVersion);
 			}
 		}
 	}
