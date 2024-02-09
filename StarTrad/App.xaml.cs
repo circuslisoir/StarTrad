@@ -36,6 +36,7 @@ namespace StarTrad
         private readonly ToolStripMenuItem installMenuItem;
         private readonly ToolStripMenuItem installAndLaunchMenuItem;
         private readonly ToolStripMenuItem uninstallMenuItem;
+        private readonly ToolStripMenuItem settingsMenuItem;
 
         public App() : base()
         {
@@ -49,6 +50,7 @@ namespace StarTrad
             this.installMenuItem = new ToolStripMenuItem("Installer la traduction", null, new EventHandler(this.InstallMenuItem_Click));
             this.installAndLaunchMenuItem = new ToolStripMenuItem("Installer la traduction puis lancer le jeu", null, new EventHandler(this.InstallAndLaunchMenuItem_Click));
             this.uninstallMenuItem = new ToolStripMenuItem("Désinstaller la traduction", null, new EventHandler(this.UninstallMenuItem_Click));
+            this.settingsMenuItem = new ToolStripMenuItem("Options avancées", null, new EventHandler(this.SettingsMenuItem_Click));
 
             // Creating the notify icon should be done before handling the command line arguments as the program would be closed 
             // immediately otherwise. However we won't make the icon visible until after handling the command line arguments.
@@ -176,7 +178,7 @@ namespace StarTrad
             cms.Items.Add(uninstallMenuItem);
             cms.Items.Add(new ToolStripMenuItem("Afficher les traductions installées", null, new EventHandler(this.InstalledVersionsMenuItem_Click)));
             cms.Items.Add(new ToolStripSeparator());
-            cms.Items.Add(new ToolStripMenuItem("Options avancées", null, new EventHandler(this.SettingsMenuItem_Click)));
+            cms.Items.Add(settingsMenuItem);
             cms.Items.Add(new ToolStripMenuItem("Quitter", null, new EventHandler(this.ExitMenuItem_Click)));
 
             notifyIcon.ContextMenuStrip = cms;
@@ -335,9 +337,12 @@ namespace StarTrad
         /// <param name="e"></param>
         private void SettingsMenuItem_Click(object? sender, EventArgs e)
         {
-            LoggerFactory.LogInformation("Ouverture des paramètres");
+            this.settingsMenuItem.Enabled = false;
+
             View.Window.Settings settingsWindow = new View.Window.Settings();
             settingsWindow.ShowDialog();
+
+            this.settingsMenuItem.Enabled = true;
         }
 
         /// <summary>
