@@ -5,6 +5,7 @@ using StarTrad.Tool;
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
@@ -46,7 +47,7 @@ namespace StarTrad
             System.Windows.Forms.Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
             this.installMenuItem = new ToolStripMenuItem("Installer la traduction", null, new EventHandler(this.InstallMenuItem_Click));
-            this.installAndLaunchMenuItem = new ToolStripMenuItem("Installer la traduction et lancer le jeu", null, new EventHandler(this.InstallAndLaunchMenuItem_Click));
+            this.installAndLaunchMenuItem = new ToolStripMenuItem("Installer la traduction puis lancer le jeu", null, new EventHandler(this.InstallAndLaunchMenuItem_Click));
             this.uninstallMenuItem = new ToolStripMenuItem("Désinstaller la traduction", null, new EventHandler(this.UninstallMenuItem_Click));
 
             // Creating the notify icon should be done before handling the command line arguments as the program would be closed 
@@ -132,8 +133,8 @@ namespace StarTrad
             }
 
             if (this.Contains(args, ARGUMENT_INSTALL)) {
-                TranslationInstaller.Install(false, (sender, success) => {
-                    if (success && this.Contains(args, ARGUMENT_LAUNCH)) {
+                TranslationInstaller.Install(false, (sender, result) => {
+                    if (result == Enum.ActionResult.Successful && this.Contains(args, ARGUMENT_LAUNCH)) {
                         RsiLauncherFolder.ExecuteRsiLauncher();
                     }
 
@@ -173,6 +174,7 @@ namespace StarTrad
             cms.Items.Add(installMenuItem);
             cms.Items.Add(installAndLaunchMenuItem);
             cms.Items.Add(uninstallMenuItem);
+            cms.Items.Add(new ToolStripMenuItem("Afficher les traductions installées", null, new EventHandler(this.InstalledVersionsMenuItem_Click)));
             cms.Items.Add(new ToolStripSeparator());
             cms.Items.Add(new ToolStripMenuItem("Options avancées", null, new EventHandler(this.SettingsMenuItem_Click)));
             cms.Items.Add(new ToolStripMenuItem("Quitter", null, new EventHandler(this.ExitMenuItem_Click)));
@@ -270,8 +272,7 @@ namespace StarTrad
 
             this.SetMenuItemsState(false);
 
-            TranslationInstaller.Install(false, (sender, success) =>
-            {
+            TranslationInstaller.Install(false, (sender, success) => {
                 this.SetMenuItemsState(true);
             });
         }
@@ -285,9 +286,8 @@ namespace StarTrad
         {
             this.SetMenuItemsState(false);
 
-            TranslationInstaller.Install(false, (sender, success) =>
-            {
-                if (success) RsiLauncherFolder.ExecuteRsiLauncher();
+            TranslationInstaller.Install(false, (sender, result) => {
+                if (result == Enum.ActionResult.Successful) RsiLauncherFolder.ExecuteRsiLauncher();
                 this.SetMenuItemsState(true);
             });
         }
@@ -304,6 +304,28 @@ namespace StarTrad
             TranslationInstaller.Uninstall(false);
 
             this.SetMenuItemsState(true);
+        }
+
+        private void InstalledVersionsMenuItem_Click(object? sender, EventArgs e)
+        {
+            LibraryFolder? libraryFolder = LibraryFolder.Make();
+
+			if (libraryFolder == null) {
+                System.Windows.Forms.MessageBox.Show("Le dossier du jeu est introuvable.");
+
+				return;
+			}
+
+            ChannelFolder[] channelFolders = libraryFolder.EnumerateChannelFolders(false, false).ToArray();
+
+            if (channelFolders.Length < 1) {
+                System.Windows.Forms.MessageBox.Show("Aucune traduction n'est installée.");
+
+				return;
+			}
+
+            View.Window.InstalledVersions installedVersionsWindow = new(channelFolders);
+            installedVersionsWindow.ShowDialog();
         }
 
         /// <summary>

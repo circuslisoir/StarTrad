@@ -7,7 +7,16 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="View\Control\ChannelSelectorItem.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="View\Control\ExternalToolItem.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="View\Control\InstalledVersionItem.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="View\Window\ChannelSelector.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="View\Window\ExternalTools.xaml.cs">
@@ -19,9 +28,21 @@
     <Compile Update="View\Window\Progress.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="View\Window\InstalledVersions.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="View\Control\ChannelSelectorItem.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="View\Control\ExternalToolItem.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\Control\InstalledVersionItem.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\Window\ChannelSelector.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\Window\ExternalTools.xaml">
@@ -31,6 +52,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\Window\Progress.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\Window\InstalledVersions.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

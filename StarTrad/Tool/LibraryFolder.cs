@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System;
+using StarTrad.Properties;
 
 namespace StarTrad.Tool
 {
@@ -9,9 +10,9 @@ namespace StarTrad.Tool
 	/// Represents the RSI Launcher's Library Folder, by default
     /// "C:\Program Files\Roberts Space Industries".
 	/// </summary>
-	internal class LibraryFolder
+	public class LibraryFolder
 	{
-        protected const string STAR_CITIZEN_DIRECTORY_NAME = "StarCitizen";
+        public const string STAR_CITIZEN_DIRECTORY_NAME = "StarCitizen";
         public const string DEFAULT_LIBRARY_FOLDER_PATH = @"C:\Program Files\Roberts Space Industries";
 
 		protected readonly string libraryFolderPath;
@@ -70,7 +71,7 @@ namespace StarTrad.Tool
         ///     ...
         /// ]
         /// </returns>
-        public static List<string> ListAvailableChannelDirectories()
+        public static List<string> ListAvailableChannelFolderPaths()
         {
             string? libraryFolderPath = LibraryFolder.GetFolderPath();
 
@@ -130,7 +131,7 @@ namespace StarTrad.Tool
         /// </returns>
         public static string? GetFolderPath()
         {
-            string? libraryFolderPath = Properties.Settings.Default.RsiLauncherLibraryFolder;
+            string? libraryFolderPath = Settings.Default.RsiLauncherLibraryFolder;
 
             if (LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
                 return libraryFolderPath;
@@ -140,10 +141,48 @@ namespace StarTrad.Tool
             libraryFolderPath = FindLibraryFolderPath();
 
             // Keep the path in settings so we won't need to look lor it again next time
-            Properties.Settings.Default.RsiLauncherLibraryFolder = (libraryFolderPath != null ? libraryFolderPath : "");
-            Properties.Settings.Default.Save();
+            Settings.Default.RsiLauncherLibraryFolder = (libraryFolderPath != null ? libraryFolderPath : "");
+            Settings.Default.Save();
 
             return libraryFolderPath;
+        }
+
+        /// <summary>
+        /// Yields a ChannelFolder object for each available channel folders.
+        /// </summary>
+        /// <param name="settingsOnly">
+        /// If true, results will only include channels selected in the settings.
+        /// </param>
+        /// <returns></returns>
+        public IEnumerable<ChannelFolder> EnumerateChannelFolders(bool settingsOnly = false, bool withInstalledTranslation = false)
+        {
+            List<string> channelFolderPaths;
+
+            if (settingsOnly && Settings.Default.RsiLauncherChannel != View.Window.Settings.CHANNEL_ALL) {
+                channelFolderPaths = [this.BuildChannelFolderPath(Settings.Default.RsiLauncherChannel)];
+            } else {
+                channelFolderPaths = ListAvailableChannelFolderPaths();   
+            }
+
+            foreach (string channelFolderPath in channelFolderPaths) {
+                ChannelFolder? channelFolder = ChannelFolder.MakeFromPath(this, channelFolderPath);
+
+                if (channelFolder == null) {
+                   continue;
+                }
+
+                if (withInstalledTranslation) {
+                    TranslationVersion? translationVersion = channelFolder.GetInstalledTranslationVersion();
+                    if (translationVersion == null) continue;
+                }
+
+                 yield return channelFolder;
+            }
+        }
+
+        public string BuildChannelFolderPath(string channelName)
+        {
+            return this.StarCitizenDirectoryPath + '\\' + channelName;
         }
 
 		#region Library Folder path finding methods

@@ -3,7 +3,7 @@
     /// <summary>
     /// Parses the version number of a translation, such as "3.22.0-1.0-20231226".
     /// </summary>
-    internal class TranslationVersion
+    public class TranslationVersion
     {
         public TranslationVersion(string part0, string part1, string part2)
         {

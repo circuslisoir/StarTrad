@@ -36,7 +36,7 @@ namespace StarTrad.View.Window
 			item.TextBox_ExecutablePath.Text = executablePath;
 			item.OnItemRemovalRequested += OnRemoveItem;
 
-			this.ListBox_Executables.Items.Add(item);
+			this.ItemsControl_Executables.Items.Add(item);
 		}
 
 		/*
@@ -45,7 +45,7 @@ namespace StarTrad.View.Window
 
 		private void OnRemoveItem(Control.ExternalToolItem item)
 		{
-			this.ListBox_Executables.Items.Remove(item);
+			this.ItemsControl_Executables.Items.Remove(item);
 		}
 
 		private void Button_Add_Click(object sender, RoutedEventArgs e)
@@ -65,7 +65,7 @@ namespace StarTrad.View.Window
 		{
 			List<string> executables = new List<string>();
 
-			foreach (Control.ExternalToolItem item in this.ListBox_Executables.Items) {
+			foreach (Control.ExternalToolItem item in this.ItemsControl_Executables.Items) {
 				if (string.IsNullOrWhiteSpace(item.TextBox_ExecutablePath.Text)) {
 					continue;
 				}
@@ -85,8 +85,8 @@ namespace StarTrad.View.Window
 
 		private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
 		{
-			foreach (Control.ExternalToolItem item in this.ListBox_Executables.Items) {
-				item.Width = this.ListBox_Executables.ActualWidth - 15;
+			foreach (Control.ExternalToolItem item in this.ItemsControl_Executables.Items) {
+				item.Width = this.ItemsControl_Executables.ActualWidth - 15;
 			}
 		}
 	}

@@ -6,7 +6,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="RsiLauncherChannel" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">&lt;Tous&gt;</Value>
     </Setting>
     <Setting Name="TranslationUpdateMethod" Type="System.Byte" Scope="User">
       <Value Profile="(Default)">0</Value>

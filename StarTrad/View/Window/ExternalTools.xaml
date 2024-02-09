@@ -9,7 +9,9 @@
 		ResizeMode="CanResize"
 		SizeChanged="Window_SizeChanged">
 	<Grid>
-		<ListBox x:Name="ListBox_Executables" SelectionMode="Single" Margin="10,10,10,40" />
+		<ScrollViewer Margin="0,0,0,45">
+			<ItemsControl x:Name="ItemsControl_Executables" />
+		</ScrollViewer>
 		<Grid Margin="10,0,10,10" Height="25" VerticalAlignment="Bottom">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition/>

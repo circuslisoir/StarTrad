@@ -15,6 +15,8 @@ namespace StarTrad.View.Window
     /// </summary>
     public partial class Settings : System.Windows.Window
     {
+        public const string CHANNEL_ALL = "<Tous>";
+
         public Settings()
         {
             InitializeComponent();
@@ -166,7 +168,9 @@ namespace StarTrad.View.Window
         /// </summary>
         private void SetupChannelsComboBox()
         {
-            List<string> channelDirectoryPaths = LibraryFolder.ListAvailableChannelDirectories();
+            List<string> channelDirectoryPaths = LibraryFolder.ListAvailableChannelFolderPaths();
+
+            this.ComboBox_Channel.Items.Add(CHANNEL_ALL);
 
             foreach (string channelDirectoryPath in channelDirectoryPaths) {
                 this.ComboBox_Channel.Items.Add(System.IO.Path.GetFileName(channelDirectoryPath));

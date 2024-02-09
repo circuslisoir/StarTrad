@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 using StarTrad.Helper;
+using System.Text;
 
 namespace StarTrad.Tool
 {
@@ -8,19 +9,21 @@ namespace StarTrad.Tool
 	/// Represents a channel directory where the game is installed, for exemple
     /// "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE".
 	/// </summary>
-	internal class ChannelFolder : LibraryFolder 
+	public class ChannelFolder
 	{
 		public const string GLOBAL_INI_FILE_NAME = "global.ini";
         public const string PREFERED_CHANNEL_NAME = "LIVE";
 
+        private readonly LibraryFolder libraryFolder;
 		private readonly string channelName;
 
         /*
 		Constructor
 		*/
 
-		private ChannelFolder(string libraryFolderPath, string channelName) : base(libraryFolderPath)
+		private ChannelFolder(LibraryFolder libraryFolder, string channelName)
         {
+            this.libraryFolder = libraryFolder;
 			this.channelName = channelName;
         }
 
@@ -29,12 +32,32 @@ namespace StarTrad.Tool
 		*/
 
 		/// <summary>
-		/// Makes an instance of this class but only if the can find the channel directory where the game is installed.
+		/// Makes an instance of this class for the first channel directory we can find.
 		/// </summary>
 		/// <returns></returns>
-		new public static ChannelFolder? Make(bool askForPathIfNeeded = false)
+		public static ChannelFolder? MakeFirst(LibraryFolder libraryFolder, bool askForPathIfNeeded = false)
 		{
-			string? libraryFolderPath = LibraryFolder.GetFolderPath();
+			string? channelFolderPath = GetFirstExistingChannelFolderPath();
+
+            if (channelFolderPath == null) {
+                return null;
+            }
+
+            return ChannelFolder.MakeFromName(
+                libraryFolder,
+                System.IO.Path.GetFileName(channelFolderPath),
+                askForPathIfNeeded
+            );
+		}
+
+        /// <summary>
+        /// Makes an instance of this class from the name of a channel.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static ChannelFolder? MakeFromName(LibraryFolder libraryFolder, string channelFolderName, bool askForPathIfNeeded = false)
+        {
+            string? libraryFolderPath = LibraryFolder.GetFolderPath();
 
             if (askForPathIfNeeded && libraryFolderPath == null) {
                 View.Window.Path pathWindow = new View.Window.Path();
@@ -45,14 +68,20 @@ namespace StarTrad.Tool
 				return null;
 			}
 
-			string? channelFolderPath = GetFirstExistingChannelFolderPath();
+            return MakeFromPath(
+                libraryFolder,
+                libraryFolder.BuildChannelFolderPath(channelFolderName)
+            );
+        }
 
-            if (channelFolderPath == null) {
+        public static ChannelFolder? MakeFromPath(LibraryFolder libraryFolder, string channelFolderPath)
+        {
+            if (!Directory.Exists(channelFolderPath)) {
                 return null;
             }
 
-			return new ChannelFolder(libraryFolderPath, System.IO.Path.GetFileName(channelFolderPath));
-		}
+			return new ChannelFolder(libraryFolder, System.IO.Path.GetFileName(channelFolderPath));
+        }
 
 		/// <summary>
         /// Checks if the given path is a channel ("LIVE", "PTU", ...) directory where the game is installed.
@@ -66,6 +95,49 @@ namespace StarTrad.Tool
             return Directory.Exists(path)
                 && File.Exists(path + @"\Data.p4k");
         }
+
+        /// <summary>
+        /// Reads the installed translation file, if any, in order to obtain its version.
+        /// </summary>
+        /// <returns>
+        /// The installed version as an object, or null if the file cannot be found.
+        /// </returns>
+        public TranslationVersion? GetInstalledTranslationVersion()
+        {
+            string? installedGlobalIniFilePath = this.GlobalIniInstallationFilePath;
+
+            if (!File.Exists(installedGlobalIniFilePath)) {
+                return null;
+            }
+
+            string versionCommentToken = "; Version :";
+
+            using (FileStream fileStream = File.OpenRead(installedGlobalIniFilePath)) {
+                using (StreamReader streamReader = new StreamReader(fileStream, Encoding.UTF8, true, 128)) {
+                    string? line;
+
+                    while ((line = streamReader.ReadLine()) != null) {
+                        if (!line.StartsWith(versionCommentToken)) {
+                            continue;
+                        }
+
+                        TranslationVersion? version = TranslationVersion.Make(line.Replace(versionCommentToken, ""));
+
+                        if (version == null) {
+                            continue;
+                        }
+
+                        return version;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /*
+        Private
+        */
 
         /// <summary>
         /// Gets the absolute path to the first valid channel directory we can find.
@@ -84,7 +156,7 @@ namespace StarTrad.Tool
                 return pathFromSettings;
             }
 
-            List<string> channelFolderPaths = ListAvailableChannelDirectories();
+            List<string> channelFolderPaths = LibraryFolder.ListAvailableChannelFolderPaths();
 
             if (channelFolderPaths.Count < 1) {
                 return null;
@@ -111,7 +183,7 @@ namespace StarTrad.Tool
                 return null;
             }
 
-            string starCitizenDirectoryPath = libraryFolderPath + '\\' + STAR_CITIZEN_DIRECTORY_NAME + '\\' + channel;
+            string starCitizenDirectoryPath = libraryFolderPath + '\\' + LibraryFolder.STAR_CITIZEN_DIRECTORY_NAME + '\\' + channel;
 
             if (!IsValidChannelFolderPath(starCitizenDirectoryPath)) {
                 return null;
@@ -138,7 +210,7 @@ namespace StarTrad.Tool
         /// </summary>
 		public string Path
 		{
-			get { return this.StarCitizenDirectoryPath + '\\' + this.channelName; }
+			get { return this.libraryFolder.BuildChannelFolderPath(this.channelName); }
 		}
 
         /// <summary>
