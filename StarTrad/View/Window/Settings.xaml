@@ -104,8 +104,8 @@
 		<Label Content="Programmes externes à lancer avec le launcher RSI :" Margin="10,267,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}"/>
 		<Button Content="Configurer" Margin="10,298,10,0" VerticalAlignment="Top" Height="31" Click="Button_ExternalTools_Click" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
 
-		<Border BorderBrush="#FFC8C8C8" Margin="10,0,10,54" BorderThickness="2" Height="2" VerticalAlignment="Bottom"/>
+		<Border BorderBrush="{StaticResource ControlForegroundBrush}" Margin="10,0,10,56" BorderThickness="2" Height="2" VerticalAlignment="Bottom"/>
 
-		<Button Content="Enregistrer" Margin="10,0,10,10" Click="Button_Save_Click" Height="31" VerticalAlignment="Bottom" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
+		<Button Content="Enregistrer" Click="Button_Save_Click" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}" Height="41" VerticalAlignment="Bottom"/>
 	</Grid>
 </Window>

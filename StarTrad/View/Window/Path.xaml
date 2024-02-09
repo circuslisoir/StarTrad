@@ -56,6 +56,6 @@
 		</Grid>
 		<TextBox x:Name="TextBox_Path" Margin="10,312,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
 
-		<Button x:Name="Button_Validate" Content="Valider" Margin="10,0,10,10" VerticalAlignment="Bottom" Height="32" Click="Button_Validate_Click" Foreground="{StaticResource ControlForegroundBrush}"/>
+		<Button x:Name="Button_Validate" Content="Valider" Click="Button_Validate_Click" Foreground="{StaticResource ControlForegroundBrush}" Height="42" VerticalAlignment="Bottom"/>
 	</Grid>
 </Window>
