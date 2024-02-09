@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using Microsoft.Win32;
 using StarTrad.Tool;
 
 namespace StarTrad.View.Window
@@ -85,16 +84,16 @@ namespace StarTrad.View.Window
 
 		private void Rectangle_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
-			OpenFileDialog openFileDialog = new OpenFileDialog();
+			System.Windows.Forms.FolderBrowserDialog dialog = new();
 
-			if (openFileDialog.ShowDialog() != true) {
+			if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) {
 				return;
 			}
 
-			this.TextBox_Path.Text = this.SeekLibraryFolderPathFrom(openFileDialog.FileName);
+			this.TextBox_Path.Text = this.SeekLibraryFolderPathFrom(dialog.SelectedPath);
 
 			if (this.TextBox_Path.Text.Length == 0) {
-				MessageBox.Show("Le chemin du Library Folder n'a pas pu être obtenu à partir du fichier sélectionné.");
+				MessageBox.Show("Le chemin du Library Folder n'a pas pu être obtenu à partir du dossier sélectionné.");
 			}
 		}
 	}
