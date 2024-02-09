@@ -5,27 +5,107 @@
         Width="450" Height="440"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
-	<Grid>
-		<CheckBox x:Name="CheckBox_StartWithWindows" Content="Démarrage au lancement de Windows" Margin="10,10,10,0" VerticalAlignment="Top"/>
+	<Window.Resources>
+		<SolidColorBrush x:Key="ControlBackgroundBrush" Color="#42525E" />
+		<SolidColorBrush x:Key="ControlBackgroundHoverBrush" Color="#FF566977" />
+		<SolidColorBrush x:Key="ControlForegroundBrush" Color="#FFCFDEE8" />
+		<ControlTemplate x:Key="ComboBoxToggleButton" TargetType="ToggleButton">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition />
+					<ColumnDefinition Width="20" />
+				</Grid.ColumnDefinitions>
+				<Border x:Name="Border" Grid.ColumnSpan="2" Background="{StaticResource ControlForegroundBrush}" BorderThickness="1" />
+				<Border Grid.Column="0" Margin="1" Background="{StaticResource ControlBackgroundBrush}" BorderThickness="0,0,1,0" />
+				<Path x:Name="Arrow" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z" Fill="{StaticResource ControlBackgroundBrush}"/>
+			</Grid>
+		</ControlTemplate>
+		<ControlTemplate x:Key="ComboBoxTextBox" TargetType="TextBox">
+			<Border x:Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}" />
+		</ControlTemplate>
+		<Style x:Key="{x:Type ComboBox}" TargetType="ComboBox">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="ComboBox">
+						<Grid>
+							<ToggleButton Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}" Grid.Column="2" Focusable="false" Foreground="{StaticResource ControlForegroundBrush}" IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press">
+							</ToggleButton>
+							<ContentPresenter Name="ContentSite" IsHitTestVisible="False"  Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" Margin="3" />
+							<TextBox x:Name="PART_EditableTextBox" Style="{x:Null}" Template="{StaticResource ComboBoxTextBox}" Foreground="{StaticResource ControlForegroundBrush}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="3,3,23,3" Focusable="True" Background="Transparent" Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}"/>
+							<Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
+								<Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
+									<Border x:Name="DropDownBorder" Background="{StaticResource ControlBackgroundBrush}" BorderThickness="1"/>
+									<ScrollViewer SnapsToDevicePixels="True">
+										<StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+									</ScrollViewer>
+								</Grid>
+							</Popup>
+						</Grid>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style TargetType="{x:Type Button}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border>
+							<Grid>
+								<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
+								<Grid.Style>
+									<Style TargetType="{x:Type Grid}">
+										<Style.Triggers>
+											<Trigger Property="IsMouseOver" Value="False">
+												<Setter Property="Background" Value="{StaticResource ControlBackgroundBrush}"/>
+											</Trigger>
+											<Trigger Property="IsMouseOver" Value="True">
+												<Setter Property="Background" Value="{StaticResource ControlBackgroundHoverBrush}"/>
+											</Trigger>
+										</Style.Triggers>
+									</Style>
+								</Grid.Style>
+							</Grid>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</Window.Resources>
+	<Grid Background="#253139">
+		<CheckBox x:Name="CheckBox_StartWithWindows" Content="Démarrage au lancement de Windows" Margin="10,10,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
 
-		<Label Content="Chemin du jeu (champ 'Library Folder' dans les Settings du launcher RSI) :" Margin="10,30,10,0" VerticalAlignment="Top" Padding="0,5,5,5"/>
-		<TextBox x:Name="TextBox_LibraryFolder" Margin="10,61,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22"/>
+		<Label Content="Chemin du jeu (champ 'Library Folder' dans les Settings du launcher RSI) :" Margin="10,30,10,0" VerticalAlignment="Top" Padding="0,5,5,5" Foreground="{StaticResource ControlForegroundBrush}"/>
+		<TextBox x:Name="TextBox_LibraryFolder" Margin="10,61,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
 
-		<Label Content="Canal :" Margin="10,84,10,0" VerticalAlignment="Top" Padding="0,5,5,5"/>
-		<ComboBox x:Name="ComboBox_Channel" Margin="10,115,10,0" VerticalAlignment="Top" />
+		<Label Content="Canal :" Margin="10,84,10,0" VerticalAlignment="Top" Padding="0,5,5,5" Foreground="{StaticResource ControlForegroundBrush}"/>
+		<ComboBox x:Name="ComboBox_Channel" Margin="10,115,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}">
+			<ComboBox.ItemContainerStyle>
+				<Style TargetType="ComboBoxItem">
+					<Setter Property="Background" Value="#42525e"/>
+					<Setter Property="BorderBrush" Value="#42525e"/>
+				</Style>
+			</ComboBox.ItemContainerStyle>
+		</ComboBox>
 		<Label x:Name="Label_ChannelNotFound" Margin="10,115,10,0" VerticalAlignment="Top" Height="22" Padding="2,2,2,2" Foreground="#FFE03939" HorizontalContentAlignment="Center" IsHitTestVisible="False"/>
 
-		<Label Content="Recherche de mise à jour :" Margin="10,142,10,0" VerticalAlignment="Top" Padding="0,5,5,5"/>
-		<ComboBox x:Name="ComboBox_TranslationUpdateMethod" Margin="10,173,10,0" VerticalAlignment="Top" />
+		<Label Content="Recherche de mise à jour :" Margin="10,142,10,0" VerticalAlignment="Top" Padding="0,5,5,5" Foreground="{StaticResource ControlForegroundBrush}"/>
+		<ComboBox x:Name="ComboBox_TranslationUpdateMethod" Margin="10,173,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}">
+			<ComboBox.ItemContainerStyle>
+				<Style TargetType="ComboBoxItem">
+					<Setter Property="Background" Value="#42525e"/>
+					<Setter Property="BorderBrush" Value="#42525e"/>
+				</Style>
+			</ComboBox.ItemContainerStyle>
+		</ComboBox>
 
-		<Label Content="Raccourci de mise à jour de la traduction et lancement du jeu :" Margin="10,200,10,0" VerticalAlignment="Top"/>
-		<Button Content="Créer sur le bureau" Margin="10,231,10,0" Height="31" VerticalAlignment="Top" Click="Button_CreateDesktopShortcut_Click"/>
+		<Label Content="Raccourci de mise à jour de la traduction et lancement du jeu :" Margin="10,200,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}"/>
+		<Button Content="Créer sur le bureau" Margin="10,231,10,0" Height="31" VerticalAlignment="Top" Click="Button_CreateDesktopShortcut_Click" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
 
-		<Label Content="Programmes externes à lancer avec le launcher RSI :" Margin="10,267,10,0" VerticalAlignment="Top"/>
-		<Button Content="Configurer" Margin="10,298,10,0" VerticalAlignment="Top" Height="31" Click="Button_ExternalTools_Click"/>
+		<Label Content="Programmes externes à lancer avec le launcher RSI :" Margin="10,267,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}"/>
+		<Button Content="Configurer" Margin="10,298,10,0" VerticalAlignment="Top" Height="31" Click="Button_ExternalTools_Click" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
 
 		<Border BorderBrush="#FFC8C8C8" Margin="10,0,10,54" BorderThickness="2" Height="2" VerticalAlignment="Bottom"/>
 
-		<Button Content="Enregistrer" Margin="10,0,10,10" Click="Button_Save_Click" Height="31" VerticalAlignment="Bottom"/>
+		<Button Content="Enregistrer" Margin="10,0,10,10" Click="Button_Save_Click" Height="31" VerticalAlignment="Bottom" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
 	</Grid>
 </Window>

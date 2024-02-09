@@ -8,6 +8,6 @@
              d:DesignHeight="50" Width="200">
 	<Grid>
 		<CheckBox x:Name="CheckBox_Selected" HorizontalAlignment="Left" Margin="10,14,0,10" Width="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" RenderTransformOrigin="0.5,0.5" IsChecked="True" />
-		<Label x:Name="Label_ChannelName" Content="TECH-PREVIEW" Margin="35,5,10,5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14"/>
+		<Label x:Name="Label_ChannelName" Content="TECH-PREVIEW" Margin="35,5,10,5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" Foreground="#FFCFDEE8"/>
 	</Grid>
 </UserControl>

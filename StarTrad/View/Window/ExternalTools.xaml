@@ -8,7 +8,37 @@
 		WindowStartupLocation="CenterOwner"
 		ResizeMode="CanResize"
 		SizeChanged="Window_SizeChanged">
-	<Grid>
+	<Window.Resources>
+		<SolidColorBrush x:Key="ControlBackgroundBrush" Color="#42525E" />
+		<SolidColorBrush x:Key="ControlBackgroundHoverBrush" Color="#FF566977" />
+		<SolidColorBrush x:Key="ControlForegroundBrush" Color="#FFCFDEE8" />
+		<Style TargetType="{x:Type Button}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border>
+							<Grid>
+								<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
+								<Grid.Style>
+									<Style TargetType="{x:Type Grid}">
+										<Style.Triggers>
+											<Trigger Property="IsMouseOver" Value="False">
+												<Setter Property="Background" Value="{StaticResource ControlBackgroundBrush}"/>
+											</Trigger>
+											<Trigger Property="IsMouseOver" Value="True">
+												<Setter Property="Background" Value="{StaticResource ControlBackgroundHoverBrush}"/>
+											</Trigger>
+										</Style.Triggers>
+									</Style>
+								</Grid.Style>
+							</Grid>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</Window.Resources>
+	<Grid Background="#253139">
 		<ScrollViewer Margin="0,0,0,45">
 			<ItemsControl x:Name="ItemsControl_Executables" />
 		</ScrollViewer>
@@ -17,8 +47,8 @@
 				<ColumnDefinition/>
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
-			<Button Content="Ajouter" Height="25" Click="Button_Add_Click" Margin="0,0,5,0"/>
-			<Button Grid.Column="1" Content="Enregistrer" Height="25" VerticalAlignment="Center" Click="Button_Save_Click" Margin="5,0,0,0"/>
+			<Button Content="Ajouter" Height="25" Click="Button_Add_Click" Margin="0,0,5,0" Foreground="#FFCFDEE8" Background="#42525e" BorderBrush="#42525e"/>
+			<Button Grid.Column="1" Content="Enregistrer" Height="25" VerticalAlignment="Center" Click="Button_Save_Click" Margin="5,0,0,0" Foreground="#FFCFDEE8" Background="#42525e" BorderBrush="#42525e"/>
 		</Grid>
 	</Grid>
 </Window>

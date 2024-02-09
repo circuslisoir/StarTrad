@@ -3,17 +3,46 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:StarTrad.View.Window"
         mc:Ignorable="d"
         Title="Installer la traduction sur..."
         Width="250" Height="183"
         MinWidth="200" MinHeight="150"
         MaxWidth="400"
         WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
-	<Grid>
+	<Window.Resources>
+		<SolidColorBrush x:Key="ControlBackgroundBrush" Color="#42525E" />
+		<SolidColorBrush x:Key="ControlBackgroundHoverBrush" Color="#FF566977" />
+		<SolidColorBrush x:Key="ControlForegroundBrush" Color="#FFCFDEE8" />
+		<Style TargetType="{x:Type Button}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border>
+							<Grid>
+								<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"></ContentPresenter>
+								<Grid.Style>
+									<Style TargetType="{x:Type Grid}">
+										<Style.Triggers>
+											<Trigger Property="IsMouseOver" Value="False">
+												<Setter Property="Background" Value="{StaticResource ControlBackgroundBrush}"/>
+											</Trigger>
+											<Trigger Property="IsMouseOver" Value="True">
+												<Setter Property="Background" Value="{StaticResource ControlBackgroundHoverBrush}"/>
+											</Trigger>
+										</Style.Triggers>
+									</Style>
+								</Grid.Style>
+							</Grid>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</Window.Resources>
+	<Grid Background="#253139">
 		<ScrollViewer Margin="0,0,0,33">
 			<ItemsControl x:Name="ItemsControl_Channels" />
 		</ScrollViewer>
-		<Button x:Name="Button_Ok" Content="Installer" Height="33" VerticalAlignment="Bottom" Click="Button_Ok_Click"/>
+		<Button x:Name="Button_Ok" Content="Installer" Height="33" VerticalAlignment="Bottom" Click="Button_Ok_Click" Foreground="#FFCFDEE8" Background="#42525e" BorderBrush="#42525e"/>
 	</Grid>
 </Window>

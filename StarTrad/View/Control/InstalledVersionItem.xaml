@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400">
 	<Grid>
-		<Label x:Name="Label_ChannelName" Content="TECH-PREVIEW" HorizontalAlignment="Left" Margin="10,10,0,10" Width="172" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20"/>
-		<Label x:Name="Label_TranslationVersion" Content="Label" Margin="187,0,10,0" VerticalAlignment="Center" Height="80" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
+		<Label x:Name="Label_ChannelName" Content="TECH-PREVIEW" HorizontalAlignment="Left" Margin="10,10,0,10" Width="172" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20" Foreground="#FFCFDEE8"/>
+		<Label x:Name="Label_TranslationVersion" Content="version" Margin="187,0,10,0" VerticalAlignment="Center" Height="80" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Foreground="#FFCFDEE8"/>
 	</Grid>
 </UserControl>
