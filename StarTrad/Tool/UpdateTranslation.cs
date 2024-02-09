@@ -29,7 +29,7 @@ internal static class UpdateTranslation
         LoggerFactory.LogInformation($"Lancement de la mise a jour automatique, toute les : {EnumHelper.GetDescription((TranslationUpdateMethodEnum)Properties.Settings.Default.TranslationUpdateMethod)}");
 
         if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.StartRsiLauncher) {
-            if (!ProcessHandler.IsProcessHandlerRunning()) {
+            if (!ProcessHandler.IsProcessHandlerRunning) {
                 ProcessHandler.StartProcessHandler();
             }
 
@@ -53,7 +53,7 @@ internal static class UpdateTranslation
     {
         LoggerFactory.LogInformation("Arrêt de la mise a jour automatique");
 
-        if (ProcessHandler.IsProcessHandlerRunning()) {
+        if (ProcessHandler.IsProcessHandlerRunning) {
             ProcessHandler.StopProcessWatcher();
         }
 

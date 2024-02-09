@@ -8,25 +8,67 @@ using System.Management;
 using System.Threading.Tasks;
 
 namespace StarTrad.Tool;
+
 internal class ProcessHandler
 {
-    private static bool IsRunning = false;
+    private static bool isRunning = false;
     private readonly static string rsiProcessName = "RSI Launcher.exe";
     private readonly static string rsiShortProcessName = "RSI Launcher";
-    private static bool IsRsiStarted = false;
+    private static bool isRsiStarted = false;
+
+    /*
+    Public
+    */
 
     public static void StartProcessHandler()
     {
         LoggerFactory.LogInformation("Lancement du processHandler");
-        IsRunning = true;
+        isRunning = true;
         WatchRsiProcess();
     }
     public static void StopProcessWatcher()
     {
         LoggerFactory.LogInformation("Arrêt du processHandler");
-        IsRunning = false;
+        isRunning = false;
     }
-    public static bool IsProcessHandlerRunning() => IsRunning;
+
+    public static void StartExternalProcess()
+    {
+        Debug.WriteLine("ENTER StartExternalProcess()");
+
+        List<string> processToStartList = Properties.Settings.Default.ExternalTools.Split(";").ToList();
+
+        if (processToStartList.Count < 1) {
+            return;
+        }
+
+        List<ProcessStartInfo> processStartInfoList = new();
+
+        processStartInfoList.AddRange(
+            processToStartList.Select(processPath => new ProcessStartInfo {
+                FileName = processPath,
+                UseShellExecute = true,
+                CreateNoWindow = true,
+            })
+        );
+
+        try {
+            processStartInfoList.ForEach(process => {
+                string processName = process.FileName.Split("\\").Last().Replace(".exe", string.Empty).Trim();
+
+                if (!IsProcessRunning(processName)) {
+                    Process.Start(process);
+                }
+            });
+        } catch (Exception ex) {
+            LoggerFactory.LogWarning($"Erreur lors du lancement du processus : {ex.Message}");
+        }
+
+    }
+
+    /*
+    Private
+    */
 
     private static async void WatchRsiProcess()
     {
@@ -46,14 +88,13 @@ internal class ProcessHandler
         startWatcher.Start();
         stopWatcher.Start();
 
-        while (IsRunning)
+        while (isRunning)
         {
             await Task.Delay(TimeSpan.FromSeconds(1));
         }
         startWatcher.Stop();
         stopWatcher.Stop();
     }
-
 
     private static bool IsProcessRunning(string processName) => Process.GetProcessesByName(processName).Any();
 
@@ -63,10 +104,10 @@ internal class ProcessHandler
         //string processName = (e.NewEvent["TargetInstance"] as ManagementBaseObject)?["Name"]?.ToString() ?? throw new NullReferenceException();
 
         //Vérification si le process run déjà
-        if (IsProcessRunning(rsiShortProcessName) && !IsRsiStarted)
+        if (IsProcessRunning(rsiShortProcessName) && !isRsiStarted)
         {
             LoggerFactory.LogInformation($"Le processus {rsiProcessName} a été ouvert");
-            IsRsiStarted = true;
+            isRsiStarted = true;
 
             if ((TranslationUpdateMethodEnum)Properties.Settings.Default.TranslationUpdateMethod == TranslationUpdateMethodEnum.StartRsiLauncher)
                 TranslationInstaller.Install(true);
@@ -82,40 +123,19 @@ internal class ProcessHandler
         //string processName = (e.NewEvent["TargetInstance"] as ManagementBaseObject)?["Name"]?.ToString() ?? throw new NullReferenceException();
 
         //Vérification si le process run déjà
-        if (!IsProcessRunning(rsiShortProcessName) && IsRsiStarted)
+        if (!IsProcessRunning(rsiShortProcessName) && isRsiStarted)
         {
-            IsRsiStarted = false;
+            isRsiStarted = false;
             LoggerFactory.LogInformation($"Le processus {rsiProcessName} a été fermé");
         }
     }
 
-    private static void StartExternalProcess()
+    /*
+    Accessor
+    */
+
+    public static bool IsProcessHandlerRunning
     {
-        List<string> processToStartList = Properties.Settings.Default.ExternalTools.Split(";").ToList();
-        List<ProcessStartInfo> processStartInfoList = new();
-
-        processStartInfoList.AddRange(
-                processToStartList.Select(processPath => new ProcessStartInfo
-                {
-                    FileName = processPath,
-                    UseShellExecute = true,
-                    CreateNoWindow = true,
-                })
-             );
-
-        try
-        {
-            processStartInfoList.ForEach(process =>
-            {
-                string processName = process.FileName.Split("\\").Last().Replace(".exe", string.Empty).Trim();
-                if (!IsProcessRunning(processName))
-                    Process.Start(process);
-            });
-        }
-        catch (Exception ex)
-        {
-            LoggerFactory.LogWarning($"Erreur lors du lancement du processus : {ex.Message}");
-        }
-
+        get { return isRunning; }
     }
 }

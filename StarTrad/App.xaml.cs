@@ -72,7 +72,7 @@ namespace StarTrad
             // Start Process handler
             if (((TranslationUpdateMethodEnum)Settings.Default.TranslationUpdateMethod == TranslationUpdateMethodEnum.StartRsiLauncher ||
                 !string.IsNullOrWhiteSpace(Settings.Default.ExternalTools)) &&
-                !ProcessHandler.IsProcessHandlerRunning())
+                !ProcessHandler.IsProcessHandlerRunning)
                 ProcessHandler.StartProcessHandler();
 
             // Say hello

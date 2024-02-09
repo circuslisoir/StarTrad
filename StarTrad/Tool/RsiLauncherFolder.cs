@@ -33,6 +33,12 @@ namespace StarTrad.Tool
 			}
 
             Process.Start(exePath);
+            
+            // When the process handler is running it will already start the external processes as
+            // soon as it detects that the RSI launcher has been started, so no need to do it manually.
+            if (!ProcessHandler.IsProcessHandlerRunning) {
+                ProcessHandler.StartExternalProcess();
+            }
         }
 
         /// <summary>
