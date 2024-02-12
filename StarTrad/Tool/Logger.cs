@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace StarTrad.Helper
+namespace StarTrad.Tool
 {
-	public static class LoggerFactory
+	public static class Logger
 	{
-		private static TextWriterTraceListener fileListener = new TextWriterTraceListener(App.workingDirectoryPath + @"logfile.txt");
+		private static TextWriterTraceListener fileListener = new TextWriterTraceListener(App.workingDirectoryPath + "logfile.txt");
 		public static void Setup()
 		{
 			Trace.Listeners.Add(fileListener);
@@ -26,7 +26,8 @@ namespace StarTrad.Helper
 
 		public static void LogError(string? message)
 		{
-			if (message == null) {
+			if (message == null)
+			{
 				return;
 			}
 

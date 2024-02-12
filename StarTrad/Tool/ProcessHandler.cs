@@ -1,5 +1,4 @@
-﻿using StarTrad.Helper;
-using StarTrad.Helper.ComboxList;
+﻿using StarTrad.Enum;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,13 +21,13 @@ internal class ProcessHandler
 
     public static void StartProcessHandler()
     {
-        LoggerFactory.LogInformation("Lancement du processHandler");
+        Logger.LogInformation("Lancement du processHandler");
         isRunning = true;
         WatchRsiProcess();
     }
     public static void StopProcessWatcher()
     {
-        LoggerFactory.LogInformation("Arrêt du processHandler");
+        Logger.LogInformation("Arrêt du processHandler");
         isRunning = false;
     }
 
@@ -61,7 +60,7 @@ internal class ProcessHandler
                 }
             });
         } catch (Exception ex) {
-            LoggerFactory.LogWarning($"Erreur lors du lancement du processus : {ex.Message}");
+            Logger.LogWarning($"Erreur lors du lancement du processus : {ex.Message}");
         }
 
     }
@@ -106,10 +105,10 @@ internal class ProcessHandler
         //Vérification si le process run déjà
         if (IsProcessRunning(rsiShortProcessName) && !isRsiStarted)
         {
-            LoggerFactory.LogInformation($"Le processus {rsiProcessName} a été ouvert");
+            Logger.LogInformation($"Le processus {rsiProcessName} a été ouvert");
             isRsiStarted = true;
 
-            if ((TranslationUpdateMethodEnum)Properties.Settings.Default.TranslationUpdateMethod == TranslationUpdateMethodEnum.StartRsiLauncher)
+            if ((TranslationUpdateMethod)Properties.Settings.Default.TranslationUpdateMethod == TranslationUpdateMethod.StartRsiLauncher)
                 TranslationInstaller.Install(true);
 
             if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.ExternalTools))
@@ -126,7 +125,7 @@ internal class ProcessHandler
         if (!IsProcessRunning(rsiShortProcessName) && isRsiStarted)
         {
             isRsiStarted = false;
-            LoggerFactory.LogInformation($"Le processus {rsiProcessName} a été fermé");
+            Logger.LogInformation($"Le processus {rsiProcessName} a été fermé");
         }
     }
 

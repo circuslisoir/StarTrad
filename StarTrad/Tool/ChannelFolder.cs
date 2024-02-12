@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Collections.Generic;
-using StarTrad.Helper;
 using System.Text;
 
 namespace StarTrad.Tool
@@ -156,9 +155,9 @@ namespace StarTrad.Tool
                 return pathFromSettings;
             }
 
-            List<string> channelFolderPaths = LibraryFolder.ListAvailableChannelFolderPaths();
+            string[] channelFolderPaths = LibraryFolder.ListAvailableChannelFolderPaths();
 
-            if (channelFolderPaths.Count < 1) {
+            if (channelFolderPaths.Length < 1) {
                 return null;
             }
 
@@ -175,7 +174,7 @@ namespace StarTrad.Tool
         /// </returns>
         private static string? GetChannelFolderPath(string channel)
         {
-            LoggerFactory.LogInformation("Récupération du dossier d'installation SC");
+            Logger.LogInformation("Récupération du dossier d'installation SC");
             string? libraryFolderPath = LibraryFolder.GetFolderPath();
 
             if (libraryFolderPath == null)

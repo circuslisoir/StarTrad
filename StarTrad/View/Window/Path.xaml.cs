@@ -8,9 +8,14 @@ namespace StarTrad.View.Window
 	/// </summary>
 	public partial class Path : System.Windows.Window
 	{
-		public Path()
+		public Path(System.Windows.Window? owner = null)
 		{
 			InitializeComponent();
+
+			if (owner != null) {
+				this.Owner = owner;
+				this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+			}
 
 			this.TextBox_Path.Text = LibraryFolder.DEFAULT_LIBRARY_FOLDER_PATH;
 

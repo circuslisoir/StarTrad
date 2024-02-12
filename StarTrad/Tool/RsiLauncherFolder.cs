@@ -1,12 +1,11 @@
 ﻿using Microsoft.Win32;
-using StarTrad.Helper;
 using System;
 using System.Diagnostics;
 using System.IO;
 
 namespace StarTrad.Tool
 {
-	internal class RsiLauncherFolder
+    internal class RsiLauncherFolder
 	{
         private const string RSI_LAUNCHER_EXECUTABLE_FILE_NAME = "RSI Launcher.exe";
         private const string RSI_LAUNCHER_REGISTRY_KEY = "81bfc699-f883-50c7-b674-2483b6baae23";
@@ -130,7 +129,7 @@ namespace StarTrad.Tool
         {
             // 'C:\Program Files\Roberts Space Industries\RSI Launcher'
             string? installLocation = (string?)Registry.GetValue($@"HKEY_LOCAL_MACHINE\SOFTWARE\{RSI_LAUNCHER_REGISTRY_KEY}", "InstallLocation", null);
-            LoggerFactory.LogInformation("installLocation = '" + installLocation + "'");
+            Logger.LogInformation("installLocation = '" + installLocation + "'");
 
             if (installLocation != null && IsValidFolderPath(installLocation)) {
                  return installLocation;
@@ -138,7 +137,7 @@ namespace StarTrad.Tool
 
             // 'C:\Program Files\Roberts Space Industries\RSI Launcher\uninstallerIcon.ico'
             string? displayIcon = (string?)Registry.GetValue($@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{RSI_LAUNCHER_REGISTRY_KEY}", "DisplayIcon", null);
-            LoggerFactory.LogInformation("displayIcon = '" + displayIcon + "'");
+            Logger.LogInformation("displayIcon = '" + displayIcon + "'");
 
             if (displayIcon != null && File.Exists(displayIcon)) {
                 string? rsiLauncherFolderPath = Path.GetDirectoryName(displayIcon);
@@ -150,7 +149,7 @@ namespace StarTrad.Tool
 
             // "C:\Program Files\Roberts Space Industries\RSI Launcher\Uninstall RSI Launcher.exe" /allusers /S
             string? quietUninstallString = (string?)Registry.GetValue($@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{RSI_LAUNCHER_REGISTRY_KEY}", "QuietUninstallString", null);
-            LoggerFactory.LogInformation("quietUninstallString = '" + quietUninstallString + "'");
+            Logger.LogInformation("quietUninstallString = '" + quietUninstallString + "'");
 
             if (quietUninstallString != null) {
                 int firstQuotePos = quietUninstallString.IndexOf('"');
@@ -173,7 +172,7 @@ namespace StarTrad.Tool
 
             // '"C:\Program Files\Roberts Space Industries\RSI Launcher\Uninstall RSI Launcher.exe" /allusers'
             string? uninstallString = (string?)Registry.GetValue($@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{RSI_LAUNCHER_REGISTRY_KEY}", "UninstallString", null);
-            LoggerFactory.LogInformation("uninstallString = '" + uninstallString + "'");
+            Logger.LogInformation("uninstallString = '" + uninstallString + "'");
 
             if (uninstallString != null) {
                 int firstQuotePos = uninstallString.IndexOf('"');
@@ -206,7 +205,7 @@ namespace StarTrad.Tool
         public static string? FindFolderPathFromStartMenu()
         {
             // "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Roberts Space Industries\RSI Launcher.lnk"
-            string? rsiLauncherExePath = ShortcutTool.ReadTargetOfShortcut(Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms) + @"\Roberts Space Industries\RSI Launcher.lnk");
+            string? rsiLauncherExePath = Shortcut.ReadTargetOfShortcut(Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms) + @"\Roberts Space Industries\RSI Launcher.lnk");
 
             if (rsiLauncherExePath == null || !File.Exists(rsiLauncherExePath)) {
                 return null;
@@ -223,14 +222,14 @@ namespace StarTrad.Tool
         /// </returns>
         public static string? FindFolderPathFromDesktop()
         {
-            string? rsiLauncherExePath = ShortcutTool.ReadTargetOfShortcut(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory) + @"\RSI Launcher.lnk");
+            string? rsiLauncherExePath = Shortcut.ReadTargetOfShortcut(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory) + @"\RSI Launcher.lnk");
 
             if (rsiLauncherExePath != null && File.Exists(rsiLauncherExePath)) {
                 return Path.GetDirectoryName(rsiLauncherExePath);
             }
 
             // "C:\Users\Public\Desktop\RSI Launcher.lnk"
-            rsiLauncherExePath = ShortcutTool.ReadTargetOfShortcut(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\RSI Launcher.lnk");
+            rsiLauncherExePath = Shortcut.ReadTargetOfShortcut(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\RSI Launcher.lnk");
 
             if (rsiLauncherExePath != null && File.Exists(rsiLauncherExePath)) {
                 return Path.GetDirectoryName(rsiLauncherExePath);

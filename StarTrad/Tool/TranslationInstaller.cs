@@ -1,5 +1,4 @@
-﻿using StarTrad.Helper;
-using StarTrad.Properties;
+﻿using StarTrad.Properties;
 using System;
 using System.IO;
 using System.Net;
@@ -213,7 +212,7 @@ namespace StarTrad.Tool
                 try {
                     File.Delete(globalIniFilePath);
                 } catch (Exception ex) {
-                    LoggerFactory.LogError(ex);
+                    Logger.LogError(ex);
 
                     return ActionResult.Failure;
                 }
@@ -232,7 +231,7 @@ namespace StarTrad.Tool
         /// <returns></returns>
         private TranslationVersion? QueryLatestAvailableTranslationVersion()
         {
-            LoggerFactory.LogInformation("Récupération de la dernière version de la traduction");
+            Logger.LogInformation("Récupération de la dernière version de la traduction");
             string? html = CircuspesClient.GetRequest("/download/version.html");
 
             if (string.IsNullOrWhiteSpace(html))
@@ -246,7 +245,7 @@ namespace StarTrad.Tool
                 return null;
             }
 
-            LoggerFactory.LogInformation($"Dernière version disponnible : {version.FullVersionNumber}");
+            Logger.LogInformation($"Dernière version disponnible : {version.FullVersionNumber}");
 
             return version;
         }
@@ -256,10 +255,10 @@ namespace StarTrad.Tool
         /// </summary>
         private void StartGlobalIniFileDownload(string[] channelNames)
         {
-            LoggerFactory.LogInformation("Lancement du téléchargement de la dernière version de la traduction");
+            Logger.LogInformation("Lancement du téléchargement de la dernière version de la traduction");
 
             // Define where to store the to-be-downloaded file
-            string localGlobalIniFilePath = App.workingDirectoryPath + '\\' + GLOBAL_INI_FILE_NAME;
+            string localGlobalIniFilePath = App.workingDirectoryPath + GLOBAL_INI_FILE_NAME;
 
             if (File.Exists(localGlobalIniFilePath))
             {
@@ -269,7 +268,7 @@ namespace StarTrad.Tool
                 }
                 catch (Exception e)
                 {
-                    LoggerFactory.LogError(e);
+                    Logger.LogError(e);
                 }
             }
 
@@ -288,7 +287,7 @@ namespace StarTrad.Tool
             client.DownloadFileAsync(new Uri(CircuspesClient.HOST + "/download/" + GLOBAL_INI_FILE_NAME), localGlobalIniFilePath);
             client.Dispose();
 
-            LoggerFactory.LogInformation("Téléchargement de la traduction terminée");
+            Logger.LogInformation("Téléchargement de la traduction terminée");
         }
 
         /// <summary>
@@ -302,7 +301,7 @@ namespace StarTrad.Tool
         /// </returns>
         private bool InstallGlobalIniFile(ChannelFolder channelFolder, string downloadedGlobalIniFilePath)
         {
-            LoggerFactory.LogInformation($"Installation du nouveau fichier Global.ini");
+            Logger.LogInformation($"Installation du nouveau fichier Global.ini");
             string globalIniDestinationDirectoryPath = channelFolder.GlobalIniInstallationDirectoryPath;
 
             try
@@ -311,7 +310,7 @@ namespace StarTrad.Tool
                 if (!Directory.Exists(globalIniDestinationDirectoryPath))
                 {
                     Directory.CreateDirectory(globalIniDestinationDirectoryPath);
-                    LoggerFactory.LogInformation($"Création du dossier suivant : {globalIniDestinationDirectoryPath}");
+                    Logger.LogInformation($"Création du dossier suivant : {globalIniDestinationDirectoryPath}");
                     Directory.CreateDirectory(globalIniDestinationDirectoryPath);
                 }
 
@@ -320,7 +319,7 @@ namespace StarTrad.Tool
             }
             catch (Exception e)
             {
-                LoggerFactory.LogError(e);
+                Logger.LogError(e);
 
                 return false;
             }
@@ -339,7 +338,7 @@ namespace StarTrad.Tool
                 {
                     // Si le fichier n'existe pas, le créer avec la ligne g_language
                     File.WriteAllText(channelFolder.UserCfgFilePath, g_language);
-                    LoggerFactory.LogWarning($"Création du fichier User.cfg, avec la clé : {g_language}");
+                    Logger.LogWarning($"Création du fichier User.cfg, avec la clé : {g_language}");
 
                     return true;
                 }
@@ -359,7 +358,7 @@ namespace StarTrad.Tool
                         {
                             // Modification de la ligne
                             lines[i] = g_language;
-                            LoggerFactory.LogInformation($"Mise à jour de la ligne : {lines[i]}. Dans le fichier User.cfg");
+                            Logger.LogInformation($"Mise à jour de la ligne : {lines[i]}. Dans le fichier User.cfg");
                         }
 
                         gLanguageFound = true;
@@ -373,7 +372,7 @@ namespace StarTrad.Tool
                     // Ajout de la nouvelle ligne à la fin du fichier
                     Array.Resize(ref lines, lines.Length + 1);
                     lines[lines.Length - 1] = g_language;
-                    LoggerFactory.LogInformation($"Nouvelle ligne ajouté, au fichier User.cfg : {lines[lines.Length - 1]}");
+                    Logger.LogInformation($"Nouvelle ligne ajouté, au fichier User.cfg : {lines[lines.Length - 1]}");
                 }
 
                 // Écriture des modifications dans le fichier
@@ -381,7 +380,7 @@ namespace StarTrad.Tool
             }
             catch (Exception e)
             {
-                LoggerFactory.LogError(e);
+                Logger.LogError(e);
 
                 return false;
             }
@@ -403,7 +402,7 @@ namespace StarTrad.Tool
             if (e.Error != null)
             {
                 this.Notify(ToolTipIcon.Error, MESSAGE_DOWNLOAD_ERROR);
-                LoggerFactory.LogError(e.Error);
+                Logger.LogError(e.Error);
 
                 return ActionResult.Failure;
             }
@@ -413,7 +412,7 @@ namespace StarTrad.Tool
             if (!File.Exists(localGlobalIniFilePath))
             {
                 this.Notify(ToolTipIcon.Warning, MESSAGE_DOWNLOAD_ERROR);
-                LoggerFactory.LogWarning($"Fichier global.ini téléchargé mais non trouvé, chemin de recherche : {localGlobalIniFilePath}");
+                Logger.LogWarning($"Fichier global.ini téléchargé mais non trouvé, chemin de recherche : {localGlobalIniFilePath}");
 
                 return ActionResult.Failure;
             }
@@ -424,7 +423,7 @@ namespace StarTrad.Tool
             if (length <= 0)
             {
                 this.Notify(ToolTipIcon.Warning, MESSAGE_DOWNLOAD_ERROR);
-                LoggerFactory.LogWarning("Erreur de téléchargement, fichier vide");
+                Logger.LogWarning("Erreur de téléchargement, fichier vide");
 
                 return ActionResult.Failure;
             }
@@ -440,7 +439,7 @@ namespace StarTrad.Tool
             try {
                 File.Delete(localGlobalIniFilePath);
             } catch (Exception ex) {
-                LoggerFactory.LogError(ex);
+                Logger.LogError(ex);
             }
 
             if (!success) {
@@ -487,11 +486,11 @@ namespace StarTrad.Tool
             {
                 if (icon == ToolTipIcon.Info)
                 {
-                    LoggerFactory.LogInformation(message);
+                    Logger.LogInformation(message);
                 }
                 else if (icon == ToolTipIcon.Warning)
                 {
-                    LoggerFactory.LogWarning(message);
+                    Logger.LogWarning(message);
                 }
             }
         }

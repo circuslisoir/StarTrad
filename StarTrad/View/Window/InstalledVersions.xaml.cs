@@ -11,7 +11,7 @@ namespace StarTrad.View.Window
 		{
 			InitializeComponent();
 
-            foreach (ChannelFolder channelFolder in channelFolders) {
+			foreach (ChannelFolder channelFolder in channelFolders) {
 				TranslationVersion? translationVersion = channelFolder.GetInstalledTranslationVersion();
 
 				View.Control.InstalledVersionItem item = new();
@@ -19,7 +19,7 @@ namespace StarTrad.View.Window
 				item.TranslationVersion = translationVersion == null ? "traduction non installée" : translationVersion.FullVersionNumber;
 
 				this.ItemsControl_InstalledVersions.Items.Add(item);
-            }
+			}
 
 			this.Height = 100 * this.ItemsControl_InstalledVersions.Items.Count;
 		}

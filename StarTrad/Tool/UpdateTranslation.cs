@@ -1,5 +1,4 @@
-﻿using StarTrad.Helper;
-using StarTrad.Helper.ComboxList;
+﻿using StarTrad.Enum;
 using System;
 
 namespace StarTrad.Tool;
@@ -22,13 +21,13 @@ internal static class UpdateTranslation
 
     public static void StartAutoUpdate()
     {
-        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.Never) {
+        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethod.Never) {
             return;
         }
 
-        LoggerFactory.LogInformation($"Lancement de la mise a jour automatique, toute les : {EnumHelper.GetDescription((TranslationUpdateMethodEnum)Properties.Settings.Default.TranslationUpdateMethod)}");
+        Logger.LogInformation($"Lancement de la mise a jour automatique, toute les : {EnumHelper.GetDescription((TranslationUpdateMethod)Properties.Settings.Default.TranslationUpdateMethod)}");
 
-        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.StartRsiLauncher) {
+        if (Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethod.StartRsiLauncher) {
             if (!ProcessHandler.IsProcessHandlerRunning) {
                 ProcessHandler.StartProcessHandler();
             }
@@ -37,11 +36,11 @@ internal static class UpdateTranslation
         }
 
         if (!timer.Enabled && (
-            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EverySixHours ||
-            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryTwelveHours ||
-            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryTwentyFourHours ||
-            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EveryFourtyEightHours ||
-            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethodEnum.EverySevenDays)
+            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethod.EverySixHours ||
+            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethod.EveryTwelveHours ||
+            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethod.EveryTwentyFourHours ||
+            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethod.EveryFourtyEightHours ||
+            Properties.Settings.Default.TranslationUpdateMethod == (byte)TranslationUpdateMethod.EverySevenDays)
         ) {
             StartTempTimer();
             
@@ -51,7 +50,7 @@ internal static class UpdateTranslation
 
     public static void StopAutoUpdate()
     {
-        LoggerFactory.LogInformation("Arrêt de la mise a jour automatique");
+        Logger.LogInformation("Arrêt de la mise a jour automatique");
 
         if (ProcessHandler.IsProcessHandlerRunning) {
             ProcessHandler.StopProcessWatcher();
@@ -74,19 +73,19 @@ internal static class UpdateTranslation
         //Calcul de la date de prochaine maj
         switch (Properties.Settings.Default.TranslationUpdateMethod)
         {
-            case (byte)TranslationUpdateMethodEnum.EverySixHours:
+            case (byte)TranslationUpdateMethod.EverySixHours:
                 nextUpdateDate.AddHours(6);
                 break;
-            case (byte)TranslationUpdateMethodEnum.EveryTwelveHours:
+            case (byte)TranslationUpdateMethod.EveryTwelveHours:
                 nextUpdateDate.AddHours(12);
                 break;
-            case (byte)TranslationUpdateMethodEnum.EveryTwentyFourHours:
+            case (byte)TranslationUpdateMethod.EveryTwentyFourHours:
                 nextUpdateDate.AddHours(24);
                 break;
-            case (byte)TranslationUpdateMethodEnum.EveryFourtyEightHours:
+            case (byte)TranslationUpdateMethod.EveryFourtyEightHours:
                 nextUpdateDate.AddHours(48);
                 break;
-            case (byte)TranslationUpdateMethodEnum.EverySevenDays:
+            case (byte)TranslationUpdateMethod.EverySevenDays:
                 nextUpdateDate.AddDays(7);
                 break;
         }
@@ -115,23 +114,23 @@ internal static class UpdateTranslation
         //Configure le temps du timer en fonction de la périodicité de la maj
         switch (Properties.Settings.Default.TranslationUpdateMethod)
         {
-            case (byte)TranslationUpdateMethodEnum.EverySixHours:
+            case (byte)TranslationUpdateMethod.EverySixHours:
                 //Toutes les 6 heures
                 timer.Interval = (int)TimeSpan.FromHours(6).TotalMilliseconds;
                 break;
-            case (byte)TranslationUpdateMethodEnum.EveryTwelveHours:
+            case (byte)TranslationUpdateMethod.EveryTwelveHours:
                 //Toutes les 12 heures
                 timer.Interval = (int)TimeSpan.FromHours(12).TotalMilliseconds;
                 break;
-            case (byte)TranslationUpdateMethodEnum.EveryTwentyFourHours:
+            case (byte)TranslationUpdateMethod.EveryTwentyFourHours:
                 //Toutes les 12 heures
                 timer.Interval = (int)TimeSpan.FromHours(24).TotalMilliseconds;
                 break;
-            case (byte)TranslationUpdateMethodEnum.EveryFourtyEightHours:
+            case (byte)TranslationUpdateMethod.EveryFourtyEightHours:
                 //Toutes les 12 heures
                 timer.Interval = (int)TimeSpan.FromHours(48).TotalMilliseconds;
                 break;
-            case (byte)TranslationUpdateMethodEnum.EverySevenDays:
+            case (byte)TranslationUpdateMethod.EverySevenDays:
                 //Toutes les 12 heures
                 timer.Interval = (int)TimeSpan.FromDays(7).TotalMilliseconds;
                 break;

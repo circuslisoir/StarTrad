@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 
-namespace StarTrad.Helper.ComboxList
+namespace StarTrad.Enum
 {
-    public enum TranslationUpdateMethodEnum
+    public enum TranslationUpdateMethod
     {
         [Description("Jamais")]
         Never,

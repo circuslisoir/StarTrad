@@ -57,7 +57,7 @@ namespace StarTrad.Tool
         /// <returns></returns>
         public static bool IsValidLibraryFolderPath(string path)
         {
-            return ListAvailableChannelDirectoriesAt(path).Count >= 1;
+            return ListAvailableChannelDirectoriesAt(path).Length >= 1;
         }
 
 		/// <summary>
@@ -71,12 +71,12 @@ namespace StarTrad.Tool
         ///     ...
         /// ]
         /// </returns>
-        public static List<string> ListAvailableChannelFolderPaths()
+        public static string[] ListAvailableChannelFolderPaths()
         {
             string? libraryFolderPath = LibraryFolder.GetFolderPath();
 
             if (libraryFolderPath == null) {
-                return new List<string>();
+                return [];
             }
 
             return ListAvailableChannelDirectoriesAt(libraryFolderPath);
@@ -88,16 +88,16 @@ namespace StarTrad.Tool
         /// </summary>
         /// <param name="libraryFolderPath"></param>
         /// <returns></returns>
-        private static List<string> ListAvailableChannelDirectoriesAt(string libraryFolderPath)
+        private static string[] ListAvailableChannelDirectoriesAt(string libraryFolderPath)
         {
             if (!Directory.Exists(libraryFolderPath)) {
-                return new List<string>();
+                return [];
             }
             
             string startCitizenDirectoryPath = libraryFolderPath + '\\' + STAR_CITIZEN_DIRECTORY_NAME;
 
             if (!Directory.Exists(startCitizenDirectoryPath)) {
-                return new List<string>();
+                return [];
             }
 
             List<string> channelDirectoryPaths = new List<string>();
@@ -118,7 +118,7 @@ namespace StarTrad.Tool
                 return 1;
             });
 
-            return channelDirectoryPaths;
+            return channelDirectoryPaths.ToArray();
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace StarTrad.Tool
         /// <returns></returns>
         public IEnumerable<ChannelFolder> EnumerateChannelFolders(bool settingsOnly = false, bool withInstalledTranslation = false)
         {
-            List<string> channelFolderPaths;
+            string[] channelFolderPaths;
 
             if (settingsOnly && Settings.Default.RsiLauncherChannel != View.Window.Settings.CHANNEL_ALL) {
                 channelFolderPaths = [this.BuildChannelFolderPath(Settings.Default.RsiLauncherChannel)];

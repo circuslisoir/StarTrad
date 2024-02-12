@@ -2,9 +2,6 @@
 using System.IO;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using StarTrad.Helper;
-using StarTrad.Helper.ComboxList;
 using StarTrad.Tool;
 using StarTrad.Enum;
 
@@ -23,9 +20,9 @@ namespace StarTrad.View.Window
 
             // Add ComboBox items
             this.SetupChannelsComboBox();
-            this.AddComboBoxItemsFromEnum<TranslationUpdateMethodEnum>(this.ComboBox_TranslationUpdateMethod);
+            this.AddComboBoxItemsFromEnum<TranslationUpdateMethod>(this.ComboBox_TranslationUpdateMethod);
 
-            this.CheckBox_StartWithWindows.IsChecked = File.Exists(ShortcutTool.startupShortcutPath);
+            this.CheckBox_StartWithWindows.IsChecked = File.Exists(Tool.Shortcut.StartupShortcutPath);
 
             // Bind the Checked events after the initial IsChecked assignation so they won't be triggered by it
             this.CheckBox_StartWithWindows.Checked += this.CheckBox_StartWithWindows_Checked;
@@ -49,8 +46,8 @@ namespace StarTrad.View.Window
         /// <param name="e"></param>
         private void CheckBox_StartWithWindows_Checked(object sender, System.Windows.RoutedEventArgs e)
         {
-            LoggerFactory.LogInformation("Activation du démarrage de StarTrad avec windows");
-            ShortcutTool.CreateStartupShortcut();
+            Logger.LogInformation("Activation du démarrage de StarTrad avec windows");
+            Tool.Shortcut.CreateStartupShortcut(true);
         }
 
         /// <summary>
@@ -60,16 +57,18 @@ namespace StarTrad.View.Window
         /// <param name="e"></param>
         private void CheckBox_StartWithWindows_Unchecked(object sender, System.Windows.RoutedEventArgs e)
         {
-            LoggerFactory.LogInformation("Désactivation du démarrage de StarTrad avec windows");
+            Logger.LogInformation("Désactivation du démarrage de StarTrad avec windows");
 
-            if (!File.Exists(ShortcutTool.startupShortcutPath)) {
+            string startupShortcutPath = Tool.Shortcut.StartupShortcutPath;
+
+            if (!File.Exists(startupShortcutPath)) {
                 return;
             }
 
             try {
-                File.Delete(ShortcutTool.startupShortcutPath);
+                File.Delete(startupShortcutPath);
             } catch (Exception ex) {
-                LoggerFactory.LogError(ex);
+                Logger.LogError(ex);
             }
         }
 
@@ -78,7 +77,7 @@ namespace StarTrad.View.Window
         /// </summary>
         private void ComboBox_Channel_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            LoggerFactory.LogInformation($"Changement de la valeur du canal par : {this.ComboBox_Channel.Text.Trim()}");
+            Logger.LogInformation($"Changement de la valeur du canal par : {this.ComboBox_Channel.Text.Trim()}");
         }
 
         /// <summary>
@@ -86,7 +85,7 @@ namespace StarTrad.View.Window
         /// </summary>
         private void ComboBox_TranslationUpdateMethod_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            LoggerFactory.LogInformation($"Changement de la valeur de la méthode d'update par : {this.ComboBox_TranslationUpdateMethod.Text.Trim()}");
+            Logger.LogInformation($"Changement de la valeur de la méthode d'update par : {this.ComboBox_TranslationUpdateMethod.Text.Trim()}");
         }
 
         /// <summary>
@@ -96,12 +95,12 @@ namespace StarTrad.View.Window
         /// <param name="e"></param>
         private void Button_CreateDesktopShortcut_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            DesktopShortcutCreationResult result = ShortcutTool.CreateDesktopShortcut();
+            ShortcutCreationResult result = Tool.Shortcut.CreateDesktopShortcut(true);
 
             switch (result) {
-                case DesktopShortcutCreationResult.AlreadyExists: MessageBox.Show("Le raccourci existe déjà sur le bureau."); break;
-                case DesktopShortcutCreationResult.CreationFailed: MessageBox.Show("la création du raccourci a échouée."); break;
-                case DesktopShortcutCreationResult.SuccessfulyCreated: MessageBox.Show("Raccourci créé avec succès !"); break;
+                case ShortcutCreationResult.AlreadyExists: MessageBox.Show("Le raccourci existe déjà sur le bureau."); break;
+                case ShortcutCreationResult.CreationFailed: MessageBox.Show("la création du raccourci a échouée."); break;
+                case ShortcutCreationResult.SuccessfulyCreated: MessageBox.Show("Raccourci créé avec succès !"); break;
             }
         }
 
@@ -123,18 +122,18 @@ namespace StarTrad.View.Window
         /// <param name="e"></param>
         private void Button_Save_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            LoggerFactory.LogInformation("Sauvegarde et fermeture des paramètres");
+            Logger.LogInformation("Sauvegarde et fermeture des paramètres");
             string libraryFolderPath = this.TextBox_LibraryFolder.Text.Trim();
 
-            if (libraryFolderPath.Length > 0 && !Directory.Exists(this.TextBox_LibraryFolder.Text)) {
-                MessageBox.Show($"Le dossier \"{this.TextBox_LibraryFolder.Text}\" n'existe pas.\n\nVous pouvez laisser le champ vide pour que le programme le détecte automatiquement.");
+            if (!LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
+                MessageBox.Show($"Le dossier \"{libraryFolderPath}\" ne semble pas être le chemin correct vers le Library Folder.");
 
                 return;
             }
 
             Properties.Settings.Default.RsiLauncherLibraryFolder = libraryFolderPath;
             Properties.Settings.Default.RsiLauncherChannel = this.ComboBox_Channel.Text;
-            Properties.Settings.Default.TranslationUpdateMethod = (byte)(TranslationUpdateMethodEnum)((ComboBoxItem)this.ComboBox_TranslationUpdateMethod.SelectedItem).Tag;
+            Properties.Settings.Default.TranslationUpdateMethod = (byte)(TranslationUpdateMethod)((ComboBoxItem)this.ComboBox_TranslationUpdateMethod.SelectedItem).Tag;
 
             Properties.Settings.Default.Save();
 
@@ -168,7 +167,7 @@ namespace StarTrad.View.Window
         /// </summary>
         private void SetupChannelsComboBox()
         {
-            List<string> channelDirectoryPaths = LibraryFolder.ListAvailableChannelFolderPaths();
+            string[] channelDirectoryPaths = LibraryFolder.ListAvailableChannelFolderPaths();
 
             this.ComboBox_Channel.Items.Add(CHANNEL_ALL);
 
@@ -176,7 +175,7 @@ namespace StarTrad.View.Window
                 this.ComboBox_Channel.Items.Add(System.IO.Path.GetFileName(channelDirectoryPath));
             }
 
-            if (channelDirectoryPaths.Count < 1) {
+            if (channelDirectoryPaths.Length < 1) {
                 Properties.Settings.Default.RsiLauncherChannel = "";
                 this.ComboBox_Channel.IsEnabled = false;
                 this.Label_ChannelNotFound.Content = "Aucun canal trouvé";
@@ -186,5 +185,21 @@ namespace StarTrad.View.Window
 
             Properties.Settings.Default.Save();
         }
-    }
+
+		private void Button_ShortcutOptions_Click(object sender, System.Windows.RoutedEventArgs e)
+		{
+            View.Window.ShortcutCreator window = new(this);
+            window.ShowDialog();
+        }
+
+		private void Button_LibraryFolderBrowse_Click(object sender, System.Windows.RoutedEventArgs e)
+		{
+            View.Window.Path window = new(this);
+            string? libraryFolderPath = window.LibraryFolderPath;
+
+            if (libraryFolderPath != null) {
+                this.TextBox_LibraryFolder.Text = libraryFolderPath;
+            }
+		}
+	}
 }

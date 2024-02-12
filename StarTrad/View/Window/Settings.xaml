@@ -75,7 +75,8 @@
 		<CheckBox x:Name="CheckBox_StartWithWindows" Content="Démarrage au lancement de Windows" Margin="10,10,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
 
 		<Label Content="Chemin du jeu (champ 'Library Folder' dans les Settings du launcher RSI) :" Margin="10,30,10,0" VerticalAlignment="Top" Padding="0,5,5,5" Foreground="{StaticResource ControlForegroundBrush}"/>
-		<TextBox x:Name="TextBox_LibraryFolder" Margin="10,61,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="22" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
+		<TextBox x:Name="TextBox_LibraryFolder" Margin="10,61,47,0" TextWrapping="NoWrap" VerticalAlignment="Top" Height="22" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
+		<Button Content="..." Margin="0,61,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="32" Foreground="{StaticResource ControlForegroundBrush}" Height="22" Click="Button_LibraryFolderBrowse_Click"/>
 
 		<Label Content="Canal :" Margin="10,84,10,0" VerticalAlignment="Top" Padding="0,5,5,5" Foreground="{StaticResource ControlForegroundBrush}"/>
 		<ComboBox x:Name="ComboBox_Channel" Margin="10,115,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}">
@@ -98,10 +99,11 @@
 			</ComboBox.ItemContainerStyle>
 		</ComboBox>
 
-		<Label Content="Raccourci de mise à jour de la traduction et lancement du jeu :" Margin="10,200,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}"/>
-		<Button Content="Créer sur le bureau" Margin="10,231,10,0" Height="31" VerticalAlignment="Top" Click="Button_CreateDesktopShortcut_Click" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
+		<Label Content="Raccourci de mise à jour de la traduction et lancement du jeu :" Margin="10,200,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" Padding="0,5,5,5"/>
+		<Button Content="Créer sur le bureau" Margin="10,231,79,0" Height="31" VerticalAlignment="Top" Click="Button_CreateDesktopShortcut_Click" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
+		<Button Content="Options..." Margin="0,231,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="64" Height="31" Foreground="{StaticResource ControlForegroundBrush}" Click="Button_ShortcutOptions_Click"/>
 
-		<Label Content="Programmes externes à lancer avec le launcher RSI :" Margin="10,267,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}"/>
+		<Label Content="Programmes externes à lancer avec le launcher RSI :" Margin="10,267,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" Padding="0,5,5,5"/>
 		<Button Content="Configurer" Margin="10,298,10,0" VerticalAlignment="Top" Height="31" Click="Button_ExternalTools_Click" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
 
 		<Border BorderBrush="{StaticResource ControlForegroundBrush}" Margin="10,0,10,56" BorderThickness="2" Height="2" VerticalAlignment="Bottom"/>

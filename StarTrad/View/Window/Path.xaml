@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Sélection du Library Folder"
-        Height="454" Width="395"
+        Height="412" Width="395"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         AllowDrop="True">
@@ -38,23 +38,20 @@
 		</Style>
 	</Window.Resources>
 	<Grid Background="{StaticResource WindowBackgroundBrush}">
-		<RichTextBox BorderBrush="{x:Null}" Height="117" VerticalAlignment="Top" IsHitTestVisible="False" Focusable="False" AllowDrop="False" Margin="0,10,0,0" Background="{StaticResource WindowBackgroundBrush}" Foreground="{StaticResource ControlForegroundBrush}">
+		<RichTextBox BorderBrush="{x:Null}" Height="63" VerticalAlignment="Top" IsHitTestVisible="False" Focusable="False" AllowDrop="False" Margin="0,10,0,0" Background="{StaticResource WindowBackgroundBrush}" Foreground="{StaticResource ControlForegroundBrush}">
 			<FlowDocument>
-				<Paragraph>
-					<Run Text="Le dossier d'installation du jeu n'a pas pu être trouvé automatiquement."/>
-				</Paragraph>
 				<Paragraph>
 					<Run Text="Indiquez le chemin du Library Folder se trouvant dans les Settings du Launcher RSI, ou déposez ci-dessous n'importe quel fichier ou dossier qui s'y trouve."/>
 				</Paragraph>
 			</FlowDocument>
 		</RichTextBox>
 
-		<Grid Margin="10,132,10,0" Height="175" VerticalAlignment="Top">
+		<Grid Margin="10,86,10,0" Height="175" VerticalAlignment="Top">
 			<Rectangle Stroke="{StaticResource ControlBackgroundHoverBrush}" StrokeThickness="1" StrokeDashArray="8 8" SnapsToDevicePixels="True" Drop="Rectangle_Drop" AllowDrop="True" Focusable="True" Fill="{StaticResource ControlBackgroundBrush}" MouseDown="Rectangle_MouseDown"/>
 			<Label Content="Déposer un fichier ici" Margin="10,57,10,0" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20" Height="42" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}"/>
 			<TextBlock Text="ou cliquer pour parcourir..." Margin="10,91,10,0" IsHitTestVisible="False" Height="26" VerticalAlignment="Top" TextAlignment="Center" Foreground="{StaticResource ControlForegroundBrush}"/>
 		</Grid>
-		<TextBox x:Name="TextBox_Path" Margin="10,312,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
+		<TextBox x:Name="TextBox_Path" Margin="10,266,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
 
 		<Button x:Name="Button_Validate" Content="Valider" Click="Button_Validate_Click" Foreground="{StaticResource ControlForegroundBrush}" Height="42" VerticalAlignment="Bottom"/>
 	</Grid>

@@ -31,6 +31,9 @@
     <Compile Update="View\Window\InstalledVersions.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="View\Window\ShortcutCreator.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="View\Control\ChannelSelectorItem.xaml">
@@ -55,6 +58,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\Window\InstalledVersions.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\Window\ShortcutCreator.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

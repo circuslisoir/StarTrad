@@ -1,5 +1,4 @@
-﻿using StarTrad.Helper;
-using StarTrad.Helper.ComboxList;
+﻿using StarTrad.Enum;
 using StarTrad.Properties;
 using StarTrad.Tool;
 using System;
@@ -64,7 +63,7 @@ namespace StarTrad
             // Single instance should only be handled after handling the command line arguments as we don't want to prevent the /install
             // and /launch arguments to be executed if there's already another instance of the program running in the background.
             this.HandleSingleInstance();
-            LoggerFactory.Setup();
+            Logger.Setup();
 
             notifyIcon.Visible = true;
 
@@ -73,7 +72,7 @@ namespace StarTrad
             UpdateTranslation.StartAutoUpdate();
 
             // Start Process handler
-            if (((TranslationUpdateMethodEnum)Settings.Default.TranslationUpdateMethod == TranslationUpdateMethodEnum.StartRsiLauncher ||
+            if (((TranslationUpdateMethod)Settings.Default.TranslationUpdateMethod == TranslationUpdateMethod.StartRsiLauncher ||
                 !string.IsNullOrWhiteSpace(Settings.Default.ExternalTools)) &&
                 !ProcessHandler.IsProcessHandlerRunning)
                 ProcessHandler.StartProcessHandler();
@@ -124,11 +123,11 @@ namespace StarTrad
             bool keepRunning = !this.Contains(args, ARGUMENT_QUIT);
 
             if (this.Contains(args, ARGUMENT_STARTUP)) {
-                ShortcutTool.CreateStartupShortcut();
+                Tool.Shortcut.CreateStartupShortcut(true);
             }
 
             if (this.Contains(args, ARGUMENT_DESKTOP)) {
-                ShortcutTool.CreateDesktopShortcut();
+                Tool.Shortcut.CreateDesktopShortcut(true);
             }
 
             if (this.Contains(args, ARGUMENT_SETTNGS)) {
@@ -195,7 +194,7 @@ namespace StarTrad
             cms.Items.Add(new ToolStripMenuItem("Quitter", null, new EventHandler(this.ExitMenuItem_Click)));
 
             notifyIcon.ContextMenuStrip = cms;
-            notifyIcon.Icon = new Icon(workingDirectoryPath + @"\StarTrad.ico");
+            notifyIcon.Icon = new Icon(workingDirectoryPath + "StarTrad.ico");
             notifyIcon.Text = PROGRAM_NAME;
 
             if (assemblyFileVersion != null) {
@@ -238,7 +237,7 @@ namespace StarTrad
         /// </summary>
         private void ExitApplication()
         {
-            LoggerFactory.LogInformation("Fermeture de StarTrad");
+            Logger.LogInformation("Fermeture de StarTrad");
 
             notifyIcon.Visible = false;
 
@@ -258,11 +257,11 @@ namespace StarTrad
 		/// <param name="e"></param>
 		private void WriteCrashLog(Exception e)
         {
-            LoggerFactory.LogError(e.Message);
-            LoggerFactory.LogError(e.Source);
-            LoggerFactory.LogError(e.Data.ToString());
-            LoggerFactory.LogError(e.ToString());
-            LoggerFactory.LogError(e.StackTrace);
+            Logger.LogError(e.Message);
+            Logger.LogError(e.Source);
+            Logger.LogError(e.Data.ToString());
+            Logger.LogError(e.ToString());
+            Logger.LogError(e.StackTrace);
 
             this.ExitApplication();
 
@@ -283,7 +282,7 @@ namespace StarTrad
         /// <param name="e"></param>
         private void InstallMenuItem_Click(object? sender, EventArgs e)
         {
-            LoggerFactory.LogInformation("Lancement de la recherche de mise a jour");
+            Logger.LogInformation("Lancement de la recherche de mise a jour");
 
             this.SetMenuItemsState(false);
 
