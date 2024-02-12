@@ -146,6 +146,11 @@ namespace StarTrad
                 return false;
             }
 
+            // Allows the creation of a shortcut which starts the RSI launcher then leaves StarTrad open.
+            if (this.Contains(args, ARGUMENT_LAUNCH)) {
+                RsiLauncherFolder.ExecuteRsiLauncher();
+            }
+
             return true;
         }
 
