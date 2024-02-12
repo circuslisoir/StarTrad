@@ -93,6 +93,10 @@ namespace StarTrad.Tool
             ShortcutTool.CreateShortcut(startupShortcutPath, App.workingDirectoryPath + @"\StarTrad.exe");
         }
 
+        /// <summary>
+        /// Creates a shortcut on the user's desktop which installs the translation then starts the RSI launcher.
+        /// </summary>
+        /// <returns></returns>
         public static DesktopShortcutCreationResult CreateDesktopShortcut()
         {
             string desktopShortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\Star Citizen en français.lnk";
@@ -105,7 +109,7 @@ namespace StarTrad.Tool
                 desktopShortcutPath,
                 App.workingDirectoryPath + "StarTrad.exe",
                 App.workingDirectoryPath + "rsist.ico",
-                [App.ARGUMENT_INSTALL, App.ARGUMENT_LAUNCH]
+                [App.ARGUMENT_INSTALL, App.ARGUMENT_LAUNCH, App.ARGUMENT_QUIT]
             );
 
             if (success) {

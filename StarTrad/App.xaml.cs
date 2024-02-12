@@ -21,10 +21,11 @@ namespace StarTrad
 
         // Command line arguments
         public const string ARGUMENT_INSTALL = "/install";
-        public const string ARGUMENT_LAUNCH = "/launch";
+        public const string ARGUMENT_LAUNCH  = "/launch";
         public const string ARGUMENT_SETTNGS = "/settings";
         public const string ARGUMENT_STARTUP = "/startup";
         public const string ARGUMENT_DESKTOP = "/desktop";
+        public const string ARGUMENT_QUIT    = "/quit";
 
         // Full path to the location where this program is running
         public static readonly string workingDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
@@ -120,6 +121,7 @@ namespace StarTrad
         private bool HandleCommandLineArguments()
         {
             string[] args = Environment.GetCommandLineArgs();
+            bool keepRunning = !this.Contains(args, ARGUMENT_QUIT);
 
             if (this.Contains(args, ARGUMENT_STARTUP)) {
                 ShortcutTool.CreateStartupShortcut();
@@ -140,10 +142,12 @@ namespace StarTrad
                         RsiLauncherFolder.ExecuteRsiLauncher();
                     }
 
-                    this.ExitApplication();
+                    if (!keepRunning) {
+                        this.ExitApplication();
+                    }
                 });
 
-                return false;
+                return keepRunning;
             }
 
             // Allows the creation of a shortcut which starts the RSI launcher then leaves StarTrad open.
@@ -151,7 +155,11 @@ namespace StarTrad
                 RsiLauncherFolder.ExecuteRsiLauncher();
             }
 
-            return true;
+            if (!keepRunning) {
+                this.ExitApplication();
+            }
+
+            return keepRunning;
         }
 
         /// <summary>
