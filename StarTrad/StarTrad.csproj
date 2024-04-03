@@ -33,7 +33,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="StarTrad.ico" />
+    <Content Include="StarTrad.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

@@ -11,8 +11,6 @@ namespace StarTrad.Tool;
 internal class ProcessHandler
 {
     private static bool isRunning = false;
-    private readonly static string rsiProcessName = "RSI Launcher.exe";
-    private readonly static string rsiShortProcessName = "RSI Launcher";
     private static bool isRsiStarted = false;
 
     /*
@@ -37,29 +35,36 @@ internal class ProcessHandler
 
         List<string> processToStartList = Properties.Settings.Default.ExternalTools.Split(";").ToList();
 
-        if (processToStartList.Count < 1) {
+        if (processToStartList.Count < 1)
+        {
             return;
         }
 
         List<ProcessStartInfo> processStartInfoList = new();
 
         processStartInfoList.AddRange(
-            processToStartList.Select(processPath => new ProcessStartInfo {
+            processToStartList.Select(processPath => new ProcessStartInfo
+            {
                 FileName = processPath,
                 UseShellExecute = true,
                 CreateNoWindow = true,
             })
         );
 
-        try {
-            processStartInfoList.ForEach(process => {
+        try
+        {
+            processStartInfoList.ForEach(process =>
+            {
                 string processName = process.FileName.Split("\\").Last().Replace(".exe", string.Empty).Trim();
 
-                if (!IsProcessRunning(processName)) {
+                if (!IsProcessRunning(processName))
+                {
                     Process.Start(process);
                 }
             });
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             Logger.LogWarning($"Erreur lors du lancement du processus : {ex.Message}");
         }
 
@@ -72,8 +77,8 @@ internal class ProcessHandler
     private static async void WatchRsiProcess()
     {
         // Créer un événement pour surveiller le lancement et l'arrêt de nouveaux processus
-        WqlEventQuery startQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_Process' AND TargetInstance.Name = 'RSI Launcher.exe'");
-        WqlEventQuery stopQuery = new WqlEventQuery("SELECT * FROM __InstanceDeletionEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_Process' AND TargetInstance.Name = 'RSI Launcher.exe'");
+        WqlEventQuery startQuery = new WqlEventQuery($"SELECT * FROM __InstanceCreationEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_Process' AND TargetInstance.Name = '{Properties.Settings.Default.LauncherName}.exe'");
+        WqlEventQuery stopQuery = new WqlEventQuery($"SELECT * FROM __InstanceDeletionEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_Process' AND TargetInstance.Name = '{Properties.Settings.Default.LauncherName}.exe'");
 
         // Créer un gestionnaire d'événements pour la création et la suppréssion de nouveaux processus
         ManagementEventWatcher startWatcher = new ManagementEventWatcher(startQuery);
@@ -103,9 +108,9 @@ internal class ProcessHandler
         //string processName = (e.NewEvent["TargetInstance"] as ManagementBaseObject)?["Name"]?.ToString() ?? throw new NullReferenceException();
 
         //Vérification si le process run déjà
-        if (IsProcessRunning(rsiShortProcessName) && !isRsiStarted)
+        if (IsProcessRunning(Properties.Settings.Default.LauncherName) && !isRsiStarted)
         {
-            Logger.LogInformation($"Le processus {rsiProcessName} a été ouvert");
+            Logger.LogInformation($"Le processus {Properties.Settings.Default.LauncherName} a été ouvert");
             isRsiStarted = true;
 
             if ((TranslationUpdateMethod)Properties.Settings.Default.TranslationUpdateMethod == TranslationUpdateMethod.StartRsiLauncher)
@@ -122,10 +127,10 @@ internal class ProcessHandler
         //string processName = (e.NewEvent["TargetInstance"] as ManagementBaseObject)?["Name"]?.ToString() ?? throw new NullReferenceException();
 
         //Vérification si le process run déjà
-        if (!IsProcessRunning(rsiShortProcessName) && isRsiStarted)
+        if (!IsProcessRunning(Properties.Settings.Default.LauncherName) && isRsiStarted)
         {
             isRsiStarted = false;
-            Logger.LogInformation($"Le processus {rsiProcessName} a été fermé");
+            Logger.LogInformation($"Le processus {Properties.Settings.Default.LauncherName} a été fermé");
         }
     }
 

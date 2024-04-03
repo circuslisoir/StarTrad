@@ -1,9 +1,9 @@
-﻿using System;
+﻿using StarTrad.Enum;
+using StarTrad.Tool;
+using System;
 using System.IO;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using StarTrad.Tool;
-using StarTrad.Enum;
 
 namespace StarTrad.View.Window
 {
@@ -35,6 +35,10 @@ namespace StarTrad.View.Window
 
             this.ComboBox_TranslationUpdateMethod.SelectedIndex = Properties.Settings.Default.TranslationUpdateMethod;
             this.ComboBox_TranslationUpdateMethod.SelectionChanged += this.ComboBox_TranslationUpdateMethod_SelectionChanged;
+
+            this.CheckBox_UseNewLauncher.IsChecked = Properties.Settings.Default.LauncherName != "RSI Launcher";
+            this.CheckBox_UseNewLauncher.Checked += this.CheckBox_UseNewLauncher_Checked;
+            this.CheckBox_UseNewLauncher.Unchecked += this.CheckBox_UseNewLauncher_Unchecked;
         }
 
         #region Events
@@ -61,13 +65,17 @@ namespace StarTrad.View.Window
 
             string startupShortcutPath = Tool.Shortcut.StartupShortcutPath;
 
-            if (!File.Exists(startupShortcutPath)) {
+            if (!File.Exists(startupShortcutPath))
+            {
                 return;
             }
 
-            try {
+            try
+            {
                 File.Delete(startupShortcutPath);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Logger.LogError(ex);
             }
         }
@@ -97,7 +105,8 @@ namespace StarTrad.View.Window
         {
             ShortcutCreationResult result = Tool.Shortcut.CreateDesktopShortcut(true);
 
-            switch (result) {
+            switch (result)
+            {
                 case ShortcutCreationResult.AlreadyExists: MessageBox.Show("Le raccourci existe déjà sur le bureau."); break;
                 case ShortcutCreationResult.CreationFailed: MessageBox.Show("la création du raccourci a échouée."); break;
                 case ShortcutCreationResult.SuccessfulyCreated: MessageBox.Show("Raccourci créé avec succès !"); break;
@@ -110,7 +119,7 @@ namespace StarTrad.View.Window
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Button_ExternalTools_Click(object sender, System.Windows.RoutedEventArgs e)
-		{
+        {
             ExternalTools externalToolsWindow = new ExternalTools(this);
             externalToolsWindow.ShowDialog();
         }
@@ -125,7 +134,8 @@ namespace StarTrad.View.Window
             Logger.LogInformation("Sauvegarde et fermeture des paramètres");
             string libraryFolderPath = this.TextBox_LibraryFolder.Text.Trim();
 
-            if (!LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
+            if (!LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath))
+            {
                 MessageBox.Show($"Le dossier \"{libraryFolderPath}\" ne semble pas être le chemin correct vers le Library Folder.");
 
                 return;
@@ -142,6 +152,28 @@ namespace StarTrad.View.Window
             this.Close();
         }
 
+        /// <summary>
+        /// Use the new launcher checkbox checked event.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CheckBox_UseNewLauncher_Checked(object sender, System.Windows.RoutedEventArgs e)
+        {
+            Logger.LogInformation("Utilisation du nouveau launcher RSI V2");
+            Properties.Settings.Default.LauncherName = "RSI RC Launcher";
+        }
+
+        /// <summary>
+        /// Use the new launcher checkbox unchecked event.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CheckBox_UseNewLauncher_Unchecked(object sender, System.Windows.RoutedEventArgs e)
+        {
+            Logger.LogInformation("Utilisation du launcher RSI V1");
+            Properties.Settings.Default.LauncherName = "RSI Launcher";
+        }
+
         #endregion
 
         /// <summary>
@@ -152,7 +184,8 @@ namespace StarTrad.View.Window
         /// <param name="e"></param>
         private void AddComboBoxItemsFromEnum<TEnum>(System.Windows.Controls.ComboBox comboBox)
         {
-            foreach (System.Enum value in System.Enum.GetValues(typeof(TEnum))) {
+            foreach (System.Enum value in System.Enum.GetValues(typeof(TEnum)))
+            {
                 ComboBoxItem item = new ComboBoxItem();
                 item.Tag = value;
                 item.Content = EnumHelper.GetDescription(value);
@@ -171,35 +204,40 @@ namespace StarTrad.View.Window
 
             this.ComboBox_Channel.Items.Add(CHANNEL_ALL);
 
-            foreach (string channelDirectoryPath in channelDirectoryPaths) {
+            foreach (string channelDirectoryPath in channelDirectoryPaths)
+            {
                 this.ComboBox_Channel.Items.Add(System.IO.Path.GetFileName(channelDirectoryPath));
             }
 
-            if (channelDirectoryPaths.Length < 1) {
+            if (channelDirectoryPaths.Length < 1)
+            {
                 Properties.Settings.Default.RsiLauncherChannel = "";
                 this.ComboBox_Channel.IsEnabled = false;
                 this.Label_ChannelNotFound.Content = "Aucun canal trouvé";
-            } else if (!this.ComboBox_Channel.Items.Contains(Properties.Settings.Default.RsiLauncherChannel)) {
+            }
+            else if (!this.ComboBox_Channel.Items.Contains(Properties.Settings.Default.RsiLauncherChannel))
+            {
                 Properties.Settings.Default.RsiLauncherChannel = System.IO.Path.GetFileName(channelDirectoryPaths[0]);
             }
 
             Properties.Settings.Default.Save();
         }
 
-		private void Button_ShortcutOptions_Click(object sender, System.Windows.RoutedEventArgs e)
-		{
+        private void Button_ShortcutOptions_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
             View.Window.ShortcutCreator window = new(this);
             window.ShowDialog();
         }
 
-		private void Button_LibraryFolderBrowse_Click(object sender, System.Windows.RoutedEventArgs e)
-		{
+        private void Button_LibraryFolderBrowse_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
             View.Window.Path window = new(this);
             string? libraryFolderPath = window.LibraryFolderPath;
 
-            if (libraryFolderPath != null) {
+            if (libraryFolderPath != null)
+            {
                 this.TextBox_LibraryFolder.Text = libraryFolderPath;
             }
-		}
-	}
+        }
+    }
 }
