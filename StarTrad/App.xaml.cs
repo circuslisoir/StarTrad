@@ -17,6 +17,7 @@ namespace StarTrad
     public partial class App : System.Windows.Application
     {
         public const string PROGRAM_NAME = "StarTrad";
+        public const string DEFAULT_RSI_LAUNCHER_NAME = "RSI Launcher";
 
         // Command line arguments
         public const string ARGUMENT_INSTALL = "/install";

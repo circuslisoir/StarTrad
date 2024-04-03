@@ -7,7 +7,6 @@ namespace StarTrad.Tool
 {
     internal class RsiLauncherFolder
     {
-        private const string RSI_LAUNCHER_EXECUTABLE_FILE_NAME = "RSI Launcher.exe";
         private const string RSI_LAUNCHER_REGISTRY_KEY = "81bfc699-f883-50c7-b674-2483b6baae23";
 
         /*
@@ -26,7 +25,7 @@ namespace StarTrad.Tool
                 return;
             }
 
-            string? exePath = folderPath + '\\' + RSI_LAUNCHER_EXECUTABLE_FILE_NAME;
+            string? exePath = folderPath + '\\' + Properties.Settings.Default.LauncherName + ".exe";
 
             if (!File.Exists(exePath))
             {
@@ -79,7 +78,7 @@ namespace StarTrad.Tool
         private static bool IsValidFolderPath(string path)
         {
             return Directory.Exists(path)
-                && File.Exists(path + '\\' + RSI_LAUNCHER_EXECUTABLE_FILE_NAME);
+                && File.Exists(path + '\\' + Properties.Settings.Default.LauncherName + ".exe");
         }
 
         #region Rsi launcher folder path finding methods
