@@ -19,6 +19,10 @@ namespace StarTrad
         public const string PROGRAM_NAME = "StarTrad";
         public const string DEFAULT_RSI_LAUNCHER_NAME = "RSI Launcher";
 
+        // Autoupdate from GitHub
+        public const string GITHUB_REPOSITORY     = "/circuslisoir/StarTrad";
+		public const string GITHUB_LATEST_RELEASE = "/releases/latest";
+
         // Command line arguments
         public const string ARGUMENT_INSTALL = "/install";
         public const string ARGUMENT_LAUNCH  = "/launch";
@@ -276,6 +280,39 @@ namespace StarTrad
         }
 
         #endregion
+
+        /*
+        Accessor
+        */
+
+        /// <summary>
+		/// Returns the full URL to the GitHub repository.
+		/// </summary>
+		public static string GithubRepositoryUrl
+		{
+			get { return "https://github.com" + GITHUB_REPOSITORY; }
+		}
+
+        public static int AssemblyFileVersionAsNumber
+        {
+            get
+            {
+                string version = App.assemblyFileVersion.Replace(".", "");
+
+                int number = 0;
+                bool success = int.TryParse(version, out number);
+
+                if (!success) {
+                    return 0;
+                }
+
+                return number;
+            }
+        }
+
+        /*
+        Event
+        */
 
         #region Event
 
