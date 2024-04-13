@@ -31,8 +31,6 @@ internal class ProcessHandler
 
     public static void StartExternalProcess()
     {
-        Debug.WriteLine("ENTER StartExternalProcess()");
-
         List<string> processToStartList = Properties.Settings.Default.ExternalTools.Split(";").ToList();
 
         if (processToStartList.Count < 1)

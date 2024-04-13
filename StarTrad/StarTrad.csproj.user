@@ -16,6 +16,9 @@
     <Compile Update="View\Control\InstalledVersionItem.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="View\Window\About.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="View\Window\ChannelSelector.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -43,6 +46,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\Control\InstalledVersionItem.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\Window\About.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\Window\ChannelSelector.xaml">

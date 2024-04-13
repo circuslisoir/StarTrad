@@ -38,6 +38,7 @@ namespace StarTrad
         private readonly ToolStripMenuItem installAndLaunchMenuItem;
         private readonly ToolStripMenuItem uninstallMenuItem;
         private readonly ToolStripMenuItem settingsMenuItem;
+        private readonly ToolStripMenuItem aboutMenuItem;
 
         public App() : base()
         {
@@ -52,6 +53,7 @@ namespace StarTrad
             this.installAndLaunchMenuItem = new ToolStripMenuItem("Installer la traduction puis lancer le jeu", null, new EventHandler(this.InstallAndLaunchMenuItem_Click));
             this.uninstallMenuItem = new ToolStripMenuItem("Désinstaller la traduction", null, new EventHandler(this.UninstallMenuItem_Click));
             this.settingsMenuItem = new ToolStripMenuItem("Options avancées", null, new EventHandler(this.SettingsMenuItem_Click));
+            this.aboutMenuItem = new ToolStripMenuItem("À propos", null, new EventHandler(this.AboutMenuItem_Click));
 
             // Creating the notify icon should be done before handling the command line arguments as the program would be closed 
             // immediately otherwise. However we won't make the icon visible until after handling the command line arguments.
@@ -192,6 +194,7 @@ namespace StarTrad
             cms.Items.Add(new ToolStripMenuItem("Afficher les traductions installées", null, new EventHandler(this.InstalledVersionsMenuItem_Click)));
             cms.Items.Add(new ToolStripSeparator());
             cms.Items.Add(settingsMenuItem);
+            cms.Items.Add(aboutMenuItem);
             cms.Items.Add(new ToolStripMenuItem("Quitter", null, new EventHandler(this.ExitMenuItem_Click)));
 
             notifyIcon.ContextMenuStrip = cms;
@@ -356,6 +359,16 @@ namespace StarTrad
             settingsWindow.ShowDialog();
 
             this.settingsMenuItem.Enabled = true;
+        }
+
+        private void AboutMenuItem_Click(object? sender, EventArgs e)
+        {
+            this.aboutMenuItem.Enabled = false;
+
+            View.Window.About aboutWindow = new View.Window.About();
+            aboutWindow.ShowDialog();
+
+            this.aboutMenuItem.Enabled = true;
         }
 
         /// <summary>
