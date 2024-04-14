@@ -1,27 +1,27 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="StarTrad.Properties" GeneratedClassName="Settings">
-	<Profiles />
-	<Settings>
-		<Setting Name="RsiLauncherLibraryFolder" Type="System.String" Scope="User">
-			<Value Profile="(Default)" />
-		</Setting>
-		<Setting Name="RsiLauncherChannel" Type="System.String" Scope="User">
-			<Value Profile="(Default)">&lt;Tous&gt;</Value>
-		</Setting>
-		<Setting Name="TranslationUpdateMethod" Type="System.Byte" Scope="User">
-			<Value Profile="(Default)">0</Value>
-		</Setting>
-		<Setting Name="LastUpdateDate" Type="System.DateTime" Scope="User">
-			<Value Profile="(Default)">2024-01-02</Value>
-		</Setting>
-		<Setting Name="LauncherName" Type="System.String" Scope="User">
-			<Value Profile="(Default)">RSI Launcher.exe</Value>
-		</Setting>
-		<Setting Name="RsiLauncherFolderPath" Type="System.String" Scope="User">
-			<Value Profile="(Default)" />
-		</Setting>
-		<Setting Name="ExternalTools" Type="System.String" Scope="User">
-			<Value Profile="(Default)" />
-		</Setting>
-	</Settings>
+  <Profiles />
+  <Settings>
+    <Setting Name="RsiLauncherLibraryFolder" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="RsiLauncherChannel" Type="System.String" Scope="User">
+      <Value Profile="(Default)">&lt;Tous&gt;</Value>
+    </Setting>
+    <Setting Name="TranslationUpdateMethod" Type="System.Byte" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="LastUpdateDate" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)">2024-01-02</Value>
+    </Setting>
+    <Setting Name="RsiLauncherFolderPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ExternalTools" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LauncherName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">RSI Launcher</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

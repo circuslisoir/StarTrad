@@ -73,18 +73,6 @@ namespace StarTrad.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("RSI Launcher.exe")]
-        public string LauncherName {
-            get {
-                return ((string)(this["LauncherName"]));
-            }
-            set {
-                this["LauncherName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string RsiLauncherFolderPath {
             get {
@@ -104,6 +92,18 @@ namespace StarTrad.Properties {
             }
             set {
                 this["ExternalTools"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("RSI Launcher")]
+        public string LauncherName {
+            get {
+                return ((string)(this["LauncherName"]));
+            }
+            set {
+                this["LauncherName"] = value;
             }
         }
     }
