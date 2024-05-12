@@ -14,7 +14,7 @@ namespace StarTrad.View.Window
 		{
 			InitializeComponent();
 
-			this.Title = action + " la traduction pour...";
+			this.Title = action + " pour...";
 			this.Button_Ok.Content = action;
 
 			foreach (ChannelFolder channelFolder in channelFolders) {

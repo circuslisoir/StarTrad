@@ -203,8 +203,9 @@ namespace StarTrad.Tool
 		}
 
         /// <summary>
-        /// The absolute path to the Library Folder, by default:
-        /// "C:\Program Files\Roberts Space Industries".
+        /// The absolute path to a channel folder under the Library Folder.
+        /// If the channel is "LIVE", then by default this would be:
+        /// "C:\Program Files\Roberts Space Industries\LIVE".
         /// </summary>
 		public string Path
 		{

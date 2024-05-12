@@ -4,6 +4,7 @@ using StarTrad.Tool;
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
@@ -185,8 +186,11 @@ namespace StarTrad
         {
             ContextMenuStrip cms = new ContextMenuStrip();
 
-            ToolStripMenuItem titleMenuItem = new ToolStripMenuItem("Traduction :");
-            titleMenuItem.Enabled = false;
+            ToolStripMenuItem openMenuItem = new ToolStripMenuItem("Ouvrir");
+            openMenuItem.DropDownItems.Add(new ToolStripMenuItem("Dossier d'installation de StarTrad", null, new EventHandler(OnOpenStarTradInstallFolder)));
+            openMenuItem.DropDownItems.Add(new ToolStripMenuItem("Dossier d'installation de la traduction", null, new EventHandler(OnOpenTranslationInstallFolder)));
+            openMenuItem.DropDownItems.Add(new ToolStripMenuItem("Dossier d'installation du jeu", null, new EventHandler(OnOpenGameInstallFolder)));
+            openMenuItem.DropDownItems.Add(new ToolStripMenuItem("Dossier des screenshots", null, new EventHandler(OnOpenScreenshotInstallFolder)));
 
             cms.Items.Add(installMenuItem);
             cms.Items.Add(installAndLaunchMenuItem);
@@ -194,6 +198,7 @@ namespace StarTrad
             cms.Items.Add(new ToolStripMenuItem("Afficher les traductions installées", null, new EventHandler(this.InstalledVersionsMenuItem_Click)));
             cms.Items.Add(new ToolStripSeparator());
             cms.Items.Add(settingsMenuItem);
+            cms.Items.Add(openMenuItem);
             cms.Items.Add(aboutMenuItem);
             cms.Items.Add(new ToolStripMenuItem("Quitter", null, new EventHandler(this.ExitMenuItem_Click)));
 
@@ -273,6 +278,63 @@ namespace StarTrad
             Process process = Process.GetCurrentProcess();
             process.Kill();
             process.Dispose();
+        }
+
+        /// <param name="relativeDirectoryPath">
+        /// The relative path to a directory inside of one of the channel folder.
+        /// For example, "\data\Localization\french_(france)" would open this folder: "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE\data\Localization\french_(france)".
+        /// </param>
+        private void OpenChannelFolderDirectory(string relativeDirectoryPath)
+        {
+            LibraryFolder? libraryFolder = LibraryFolder.Make();
+
+            if (libraryFolder == null) {
+                App.Notify(ToolTipIcon.Warning, "Le jeu ne semble pas être installé !");
+
+                return;
+            }
+
+            ChannelFolder[] channelFolders = libraryFolder.EnumerateChannelFolders(true, true).ToArray();
+
+            if (channelFolders.Length < 1) {
+                App.Notify(ToolTipIcon.Warning, "Le jeu ne semble pas être installé !");
+
+                return;
+            }
+
+            if (channelFolders.Length > 1) {
+                View.Window.ChannelSelector channelSelectorWindow = new(channelFolders, "Ouvrir");
+                channelSelectorWindow.ShowDialog();
+
+                channelFolders = channelSelectorWindow.SelectedChannelFolders;
+
+                if (channelFolders.Length < 1) {
+                    return;
+                }
+            }
+
+            foreach (ChannelFolder channelFolder in channelFolders) {
+                OpenDirectory(channelFolder.Path + relativeDirectoryPath);
+            }
+        }
+
+        private void OpenDirectory(string absoluteDirectoryPath)
+        {
+            if (!Path.Exists(absoluteDirectoryPath)) {
+                App.Notify(ToolTipIcon.Warning, "Ce chemin n'existe pas: " + absoluteDirectoryPath);
+
+                return;
+            }
+
+            try {
+                Process.Start(new ProcessStartInfo() {
+                    FileName = absoluteDirectoryPath,
+                    UseShellExecute = true,
+                    Verb = "open"
+                });
+            } catch (Exception ex) {
+                Logger.LogError(ex);
+            }
         }
 
         #endregion
@@ -413,6 +475,26 @@ namespace StarTrad
             {
                 this.SetMenuItemsState(true);
             });
+        }
+
+        private void OnOpenStarTradInstallFolder(object? sender, EventArgs e)
+        {
+            OpenDirectory(App.workingDirectoryPath);
+        }
+
+        private void OnOpenTranslationInstallFolder(object? sender, EventArgs e)
+        {
+            this.OpenChannelFolderDirectory(@"\data\Localization\french_(france)");
+        }
+
+        private void OnOpenGameInstallFolder(object? sender, EventArgs e)
+        {
+            this.OpenChannelFolderDirectory(@"\");
+        }
+
+        private void OnOpenScreenshotInstallFolder(object? sender, EventArgs e)
+        {
+            this.OpenChannelFolderDirectory(@"\ScreenShots");
         }
 
         #endregion
