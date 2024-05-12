@@ -103,12 +103,14 @@
 		<Button Content="Créer sur le bureau" Margin="10,231,79,0" Height="31" VerticalAlignment="Top" Click="Button_CreateDesktopShortcut_Click" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
 		<Button Content="Options..." Margin="0,231,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="64" Height="31" Foreground="{StaticResource ControlForegroundBrush}" Click="Button_ShortcutOptions_Click"/>
 
-        <CheckBox x:Name="CheckBox_UseNewLauncher" Content="Utiliser le nouveau Launcher RSI V2" Margin="10,276,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
 
-        <Label Content="Programmes externes à lancer avec le launcher RSI :" Margin="10,295,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" Padding="0,5,5,5"/>
-		<Button Content="Configurer" Margin="10,320,10,0" VerticalAlignment="Top" Height="31" Click="Button_ExternalTools_Click" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
+        <Label Content="Programmes externes à lancer avec le launcher RSI :" Margin="10,276,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" Padding="0,5,5,5"/>
+		<Button Content="Configurer" Margin="10,301,10,0" VerticalAlignment="Top" Height="31" Click="Button_ExternalTools_Click" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
 
-		<Border BorderBrush="{StaticResource ControlForegroundBrush}" Margin="10,0,10,56" BorderThickness="2" Height="2" VerticalAlignment="Bottom"/>
+        <!--Uncomment this to enable the new launcher option-->
+        <!--<CheckBox x:Name="CheckBox_UseNewLauncher" Content="Utiliser le nouveau Launcher RSI V2" Margin="10,339,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>-->
+		
+        <Border BorderBrush="{StaticResource ControlForegroundBrush}" Margin="10,0,10,56" BorderThickness="2" Height="2" VerticalAlignment="Bottom"/>
 
 		<Button Content="Enregistrer" Click="Button_Save_Click" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}" Height="41" VerticalAlignment="Bottom"/>
 	</Grid>
