@@ -12,342 +12,342 @@ using System.Windows.Forms;
 
 namespace StarTrad
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : System.Windows.Application
-    {
-        public const string PROGRAM_NAME = "StarTrad";
-        public const string DEFAULT_RSI_LAUNCHER_NAME = "RSI Launcher";
+	/// <summary>
+	/// Interaction logic for App.xaml
+	/// </summary>
+	public partial class App : System.Windows.Application
+	{
+		public const string PROGRAM_NAME = "StarTrad";
+		public const string DEFAULT_RSI_LAUNCHER_NAME = "RSI Launcher";
 
-        // Autoupdate from GitHub
-        public const string GITHUB_REPOSITORY     = "/circuslisoir/StarTrad";
+		// Autoupdate from GitHub
+		public const string GITHUB_REPOSITORY     = "/circuslisoir/StarTrad";
 		public const string GITHUB_LATEST_RELEASE = "/releases/latest";
 
-        // Command line arguments
-        public const string ARGUMENT_INSTALL = "/install";
-        public const string ARGUMENT_LAUNCH  = "/launch";
-        public const string ARGUMENT_SETTNGS = "/settings";
-        public const string ARGUMENT_STARTUP = "/startup";
-        public const string ARGUMENT_DESKTOP = "/desktop";
-        public const string ARGUMENT_QUIT    = "/quit";
+		// Command line arguments
+		public const string ARGUMENT_INSTALL = "/install";
+		public const string ARGUMENT_LAUNCH  = "/launch";
+		public const string ARGUMENT_SETTNGS = "/settings";
+		public const string ARGUMENT_STARTUP = "/startup";
+		public const string ARGUMENT_DESKTOP = "/desktop";
+		public const string ARGUMENT_QUIT    = "/quit";
 
-        // Full path to the location where this program is running
-        public static readonly string workingDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
-        public static readonly string? assemblyFileVersion = App.AssemblyFileVersion;
+		// Full path to the location where this program is running
+		public static readonly string workingDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
+		public static readonly string? assemblyFileVersion = App.AssemblyFileVersion;
 
-        private static readonly ApplicationContext applicationContext = new ApplicationContext();
-        private static readonly NotifyIcon notifyIcon = new NotifyIcon();
+		private static readonly ApplicationContext applicationContext = new ApplicationContext();
+		private static readonly NotifyIcon notifyIcon = new NotifyIcon();
 
-        private readonly ToolStripMenuItem installMenuItem;
-        private readonly ToolStripMenuItem installAndLaunchMenuItem;
-        private readonly ToolStripMenuItem uninstallMenuItem;
-        private readonly ToolStripMenuItem settingsMenuItem;
-        private readonly ToolStripMenuItem aboutMenuItem;
+		private readonly ToolStripMenuItem installMenuItem;
+		private readonly ToolStripMenuItem installAndLaunchMenuItem;
+		private readonly ToolStripMenuItem uninstallMenuItem;
+		private readonly ToolStripMenuItem settingsMenuItem;
+		private readonly ToolStripMenuItem aboutMenuItem;
 
-        public App() : base()
-        {
-            this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+		public App() : base()
+		{
+			this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-            // Setup exception handlers
-            AppDomain.CurrentDomain.UnhandledException += OnAppDomainUnhandledException;
-            System.Windows.Forms.Application.ThreadException += OnApplicationThreadException;
-            System.Windows.Forms.Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+			// Setup exception handlers
+			AppDomain.CurrentDomain.UnhandledException += OnAppDomainUnhandledException;
+			System.Windows.Forms.Application.ThreadException += OnApplicationThreadException;
+			System.Windows.Forms.Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
-            this.installMenuItem = new ToolStripMenuItem("Installer la traduction", null, new EventHandler(this.InstallMenuItem_Click));
-            this.installAndLaunchMenuItem = new ToolStripMenuItem("Installer la traduction puis lancer le jeu", null, new EventHandler(this.InstallAndLaunchMenuItem_Click));
-            this.uninstallMenuItem = new ToolStripMenuItem("Désinstaller la traduction", null, new EventHandler(this.UninstallMenuItem_Click));
-            this.settingsMenuItem = new ToolStripMenuItem("Options avancées", null, new EventHandler(this.SettingsMenuItem_Click));
-            this.aboutMenuItem = new ToolStripMenuItem("À propos", null, new EventHandler(this.AboutMenuItem_Click));
+			this.installMenuItem = new ToolStripMenuItem("Installer la traduction", null, new EventHandler(this.InstallMenuItem_Click));
+			this.installAndLaunchMenuItem = new ToolStripMenuItem("Installer la traduction puis lancer le jeu", null, new EventHandler(this.InstallAndLaunchMenuItem_Click));
+			this.uninstallMenuItem = new ToolStripMenuItem("Désinstaller la traduction", null, new EventHandler(this.UninstallMenuItem_Click));
+			this.settingsMenuItem = new ToolStripMenuItem("Options avancées", null, new EventHandler(this.SettingsMenuItem_Click));
+			this.aboutMenuItem = new ToolStripMenuItem("À propos", null, new EventHandler(this.AboutMenuItem_Click));
 
-            // Creating the notify icon should be done before handling the command line arguments as the program would be closed 
-            // immediately otherwise. However we won't make the icon visible until after handling the command line arguments.
-            this.CreateNotifyIcon();
+			// Creating the notify icon should be done before handling the command line arguments as the program would be closed
+			// immediately otherwise. However we won't make the icon visible until after handling the command line arguments.
+			this.CreateNotifyIcon();
 
-            if (!this.HandleCommandLineArguments()) {
-                return;
-            }
+			if (!this.HandleCommandLineArguments()) {
+				return;
+			}
 
-            // Single instance should only be handled after handling the command line arguments as we don't want to prevent the /install
-            // and /launch arguments to be executed if there's already another instance of the program running in the background.
-            this.HandleSingleInstance();
-            Logger.Setup();
+			// Single instance should only be handled after handling the command line arguments as we don't want to prevent the /install
+			// and /launch arguments to be executed if there's already another instance of the program running in the background.
+			this.HandleSingleInstance();
+			Logger.Setup();
 
-            notifyIcon.Visible = true;
+			notifyIcon.Visible = true;
 
-            // Initialize update scheduler
-            UpdateTranslation.OnUpdateTriggered += this.OnAutoUpdateTriggered;
-            UpdateTranslation.StartAutoUpdate();
+			// Initialize update scheduler
+			UpdateTranslation.OnUpdateTriggered += this.OnAutoUpdateTriggered;
+			UpdateTranslation.StartAutoUpdate();
 
-            // Start Process handler
-            if (((TranslationUpdateMethod)Settings.Default.TranslationUpdateMethod == TranslationUpdateMethod.StartRsiLauncher ||
-                !string.IsNullOrWhiteSpace(Settings.Default.ExternalTools)) &&
-                !ProcessHandler.IsProcessHandlerRunning)
-                ProcessHandler.StartProcessHandler();
+			// Start Process handler
+			if (((TranslationUpdateMethod)Settings.Default.TranslationUpdateMethod == TranslationUpdateMethod.StartRsiLauncher ||
+				!string.IsNullOrWhiteSpace(Settings.Default.ExternalTools)) &&
+				!ProcessHandler.IsProcessHandlerRunning)
+				ProcessHandler.StartProcessHandler();
 
-            // Say hello
-            App.Notify(ToolTipIcon.Info, "StarTrad démarré ! Retrouvez-le dans la zone de notification en bas à droite.");
+			// Say hello
+			App.Notify(ToolTipIcon.Info, "StarTrad démarré ! Retrouvez-le dans la zone de notification en bas à droite.");
 
-            System.Windows.Forms.Application.Run(applicationContext);
-        }
+			System.Windows.Forms.Application.Run(applicationContext);
+		}
 
-        #region Static
+		#region Static
 
-        /// <summary>
-        /// Displays a message from the notify icon.
-        /// </summary>
-        /// <param name="icon"></param>
-        /// <param name="message"></param>
-        public static void Notify(ToolTipIcon icon, string message)
-        {
-            App.notifyIcon.ShowBalloonTip(2000, PROGRAM_NAME, message, icon);
-        }
+		/// <summary>
+		/// Displays a message from the notify icon.
+		/// </summary>
+		/// <param name="icon"></param>
+		/// <param name="message"></param>
+		public static void Notify(ToolTipIcon icon, string message)
+		{
+			App.notifyIcon.ShowBalloonTip(2000, PROGRAM_NAME, message, icon);
+		}
 
-        private static string? AssemblyFileVersion
-        {
-            get
-            {
-                // Reads the version number defined in Properties > Package > General > Package Version
-                System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+		private static string? AssemblyFileVersion
+		{
+			get
+			{
+				// Reads the version number defined in Properties > Package > General > Package Version
+				System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+				FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
 
-                return fileVersionInfo.FileVersion; // Example: "0.9.1.0"
-            }
-        }
+				return fileVersionInfo.FileVersion; // Example: "0.9.1.0"
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Private
+		#region Private
 
-        /// <summary>
-        /// Handles arguments passed to the program.
-        /// </summary>
-        /// <returns>
-        /// False if the program should be closed after handling the command line arguments, true otherwise.
-        /// </returns>
-        private bool HandleCommandLineArguments()
-        {
-            string[] args = Environment.GetCommandLineArgs();
-            bool keepRunning = !this.Contains(args, ARGUMENT_QUIT);
+		/// <summary>
+		/// Handles arguments passed to the program.
+		/// </summary>
+		/// <returns>
+		/// False if the program should be closed after handling the command line arguments, true otherwise.
+		/// </returns>
+		private bool HandleCommandLineArguments()
+		{
+			string[] args = Environment.GetCommandLineArgs();
+			bool keepRunning = !this.Contains(args, ARGUMENT_QUIT);
 
-            if (this.Contains(args, ARGUMENT_STARTUP)) {
-                Tool.Shortcut.CreateStartupShortcut(true);
-            }
+			if (this.Contains(args, ARGUMENT_STARTUP)) {
+				Tool.Shortcut.CreateStartupShortcut(true);
+			}
 
-            if (this.Contains(args, ARGUMENT_DESKTOP)) {
-                Tool.Shortcut.CreateDesktopShortcut(true);
-            }
+			if (this.Contains(args, ARGUMENT_DESKTOP)) {
+				Tool.Shortcut.CreateDesktopShortcut(true);
+			}
 
-            if (this.Contains(args, ARGUMENT_SETTNGS)) {
-                View.Window.Settings settingsWindow = new View.Window.Settings();
-                settingsWindow.ShowDialog();
-            }
+			if (this.Contains(args, ARGUMENT_SETTNGS)) {
+				View.Window.Settings settingsWindow = new View.Window.Settings();
+				settingsWindow.ShowDialog();
+			}
 
-            if (this.Contains(args, ARGUMENT_INSTALL)) {
-                TranslationInstaller.Install(false, (sender, result) => {
-                    if (result == Enum.ActionResult.Successful && this.Contains(args, ARGUMENT_LAUNCH)) {
-                        RsiLauncherFolder.ExecuteRsiLauncher();
-                    }
+			if (this.Contains(args, ARGUMENT_INSTALL)) {
+				TranslationInstaller.Install(false, (sender, result) => {
+					if (result == Enum.ActionResult.Successful && this.Contains(args, ARGUMENT_LAUNCH)) {
+						RsiLauncherFolder.ExecuteRsiLauncher();
+					}
 
-                    if (!keepRunning) {
-                        this.ExitApplication();
-                    }
-                });
+					if (!keepRunning) {
+						this.ExitApplication();
+					}
+				});
 
-                return keepRunning;
-            }
+				return keepRunning;
+			}
 
-            // Allows the creation of a shortcut which starts the RSI launcher then leaves StarTrad open.
-            if (this.Contains(args, ARGUMENT_LAUNCH)) {
-                RsiLauncherFolder.ExecuteRsiLauncher();
-            }
+			// Allows the creation of a shortcut which starts the RSI launcher then leaves StarTrad open.
+			if (this.Contains(args, ARGUMENT_LAUNCH)) {
+				RsiLauncherFolder.ExecuteRsiLauncher();
+			}
 
-            if (!keepRunning) {
-                this.ExitApplication();
-            }
+			if (!keepRunning) {
+				this.ExitApplication();
+			}
 
-            return keepRunning;
-        }
+			return keepRunning;
+		}
 
-        /// <summary>
-        /// Prevents multiple instances of the program to run at the same time.
-        /// </summary>
-        private void HandleSingleInstance()
-        {
-            bool createdNew;
-            new Mutex(true, PROGRAM_NAME, out createdNew);
+		/// <summary>
+		/// Prevents multiple instances of the program to run at the same time.
+		/// </summary>
+		private void HandleSingleInstance()
+		{
+			bool createdNew;
+			new Mutex(true, PROGRAM_NAME, out createdNew);
 
-            if (!createdNew)
-            {
-                this.ExitApplication();
-            }
-        }
+			if (!createdNew)
+			{
+				this.ExitApplication();
+			}
+		}
 
-        /// <summary>
-        /// Creates the icon and its context menu to be displayed in the system tray.
-        /// </summary>
-        private void CreateNotifyIcon()
-        {
-            ContextMenuStrip cms = new ContextMenuStrip();
+		/// <summary>
+		/// Creates the icon and its context menu to be displayed in the system tray.
+		/// </summary>
+		private void CreateNotifyIcon()
+		{
+			ContextMenuStrip cms = new ContextMenuStrip();
 
-            ToolStripMenuItem openMenuItem = new ToolStripMenuItem("Ouvrir");
-            openMenuItem.DropDownItems.Add(new ToolStripMenuItem("Dossier d'installation de StarTrad", null, new EventHandler(OnOpenStarTradInstallFolder)));
-            openMenuItem.DropDownItems.Add(new ToolStripMenuItem("Dossier d'installation de la traduction", null, new EventHandler(OnOpenTranslationInstallFolder)));
-            openMenuItem.DropDownItems.Add(new ToolStripMenuItem("Dossier d'installation du jeu", null, new EventHandler(OnOpenGameInstallFolder)));
-            openMenuItem.DropDownItems.Add(new ToolStripMenuItem("Dossier des screenshots", null, new EventHandler(OnOpenScreenshotInstallFolder)));
+			ToolStripMenuItem openMenuItem = new ToolStripMenuItem("Ouvrir");
+			openMenuItem.DropDownItems.Add(new ToolStripMenuItem("Dossier d'installation de StarTrad", null, new EventHandler(OnOpenStarTradInstallFolder)));
+			openMenuItem.DropDownItems.Add(new ToolStripMenuItem("Dossier d'installation de la traduction", null, new EventHandler(OnOpenTranslationInstallFolder)));
+			openMenuItem.DropDownItems.Add(new ToolStripMenuItem("Dossier d'installation du jeu", null, new EventHandler(OnOpenGameInstallFolder)));
+			openMenuItem.DropDownItems.Add(new ToolStripMenuItem("Dossier des screenshots", null, new EventHandler(OnOpenScreenshotInstallFolder)));
 
-            cms.Items.Add(installMenuItem);
-            cms.Items.Add(installAndLaunchMenuItem);
-            cms.Items.Add(uninstallMenuItem);
-            cms.Items.Add(new ToolStripMenuItem("Afficher les traductions installées", null, new EventHandler(this.InstalledVersionsMenuItem_Click)));
-            cms.Items.Add(new ToolStripSeparator());
-            cms.Items.Add(settingsMenuItem);
-            cms.Items.Add(openMenuItem);
-            cms.Items.Add(aboutMenuItem);
-            cms.Items.Add(new ToolStripMenuItem("Quitter", null, new EventHandler(this.ExitMenuItem_Click)));
+			cms.Items.Add(installMenuItem);
+			cms.Items.Add(installAndLaunchMenuItem);
+			cms.Items.Add(uninstallMenuItem);
+			cms.Items.Add(new ToolStripMenuItem("Afficher les traductions installées", null, new EventHandler(this.InstalledVersionsMenuItem_Click)));
+			cms.Items.Add(new ToolStripSeparator());
+			cms.Items.Add(settingsMenuItem);
+			cms.Items.Add(openMenuItem);
+			cms.Items.Add(aboutMenuItem);
+			cms.Items.Add(new ToolStripMenuItem("Quitter", null, new EventHandler(this.ExitMenuItem_Click)));
 
-            notifyIcon.ContextMenuStrip = cms;
-            notifyIcon.Icon = new Icon(workingDirectoryPath + "StarTrad.ico");
-            notifyIcon.Text = PROGRAM_NAME;
+			notifyIcon.ContextMenuStrip = cms;
+			notifyIcon.Icon = new Icon(workingDirectoryPath + "StarTrad.ico");
+			notifyIcon.Text = PROGRAM_NAME;
 
-            if (assemblyFileVersion != null) {
-                notifyIcon.Text += (' ' + App.assemblyFileVersion);
-            }
-        }
+			if (assemblyFileVersion != null) {
+				notifyIcon.Text += (' ' + App.assemblyFileVersion);
+			}
+		}
 
-        /// <summary>
-        /// Checks if a given string list contains a certain string.
-        /// </summary>
-        /// <param name="strings"></param>
-        /// <param name="needle"></param>
-        /// <returns></returns>
-        private bool Contains(string[] strings, string needle)
-        {
-            foreach (string str in strings)
-            {
-                if (str == needle)
-                {
-                    return true;
-                }
-            }
+		/// <summary>
+		/// Checks if a given string list contains a certain string.
+		/// </summary>
+		/// <param name="strings"></param>
+		/// <param name="needle"></param>
+		/// <returns></returns>
+		private bool Contains(string[] strings, string needle)
+		{
+			foreach (string str in strings)
+			{
+				if (str == needle)
+				{
+					return true;
+				}
+			}
 
-            return false;
-        }
+			return false;
+		}
 
-        /// <summary>
-        /// Enables or disables the notify icon's menu items.
-        /// </summary>
-        /// <param name="enabled"></param>
-        private void SetMenuItemsState(bool enabled)
-        {
-            this.installMenuItem.Enabled = enabled;
-            this.installAndLaunchMenuItem.Enabled = enabled;
-            this.uninstallMenuItem.Enabled = enabled;
-        }
+		/// <summary>
+		/// Enables or disables the notify icon's menu items.
+		/// </summary>
+		/// <param name="enabled"></param>
+		private void SetMenuItemsState(bool enabled)
+		{
+			this.installMenuItem.Enabled = enabled;
+			this.installAndLaunchMenuItem.Enabled = enabled;
+			this.uninstallMenuItem.Enabled = enabled;
+		}
 
-        /// <summary>
-        /// Terminates the application.
-        /// </summary>
-        private void ExitApplication()
-        {
-            Logger.LogInformation("Fermeture de StarTrad");
+		/// <summary>
+		/// Terminates the application.
+		/// </summary>
+		private void ExitApplication()
+		{
+			Logger.LogInformation("Fermeture de StarTrad");
 
-            notifyIcon.Visible = false;
+			notifyIcon.Visible = false;
 
-            applicationContext.ExitThread();
-            System.Windows.Forms.Application.Exit();
-            this.Shutdown();
+			applicationContext.ExitThread();
+			System.Windows.Forms.Application.Exit();
+			this.Shutdown();
 
-            Process process = Process.GetCurrentProcess();
-            process.Kill();
-            process.Dispose();
-        }
+			Process process = Process.GetCurrentProcess();
+			process.Kill();
+			process.Dispose();
+		}
 
-        /// <summary>
+		/// <summary>
 		/// Writes a crash log file from an exception.
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void WriteCrashLog(Exception e)
-        {
-            Logger.LogError(e.Message);
-            Logger.LogError(e.Source);
-            Logger.LogError(e.Data.ToString());
-            Logger.LogError(e.ToString());
-            Logger.LogError(e.StackTrace);
+		{
+			Logger.LogError(e.Message);
+			Logger.LogError(e.Source);
+			Logger.LogError(e.Data.ToString());
+			Logger.LogError(e.ToString());
+			Logger.LogError(e.StackTrace);
 
-            this.ExitApplication();
+			this.ExitApplication();
 
-            // Prevent from having a Windows messagebox about the crash
-            Process process = Process.GetCurrentProcess();
-            process.Kill();
-            process.Dispose();
-        }
+			// Prevent from having a Windows messagebox about the crash
+			Process process = Process.GetCurrentProcess();
+			process.Kill();
+			process.Dispose();
+		}
 
-        /// <param name="relativeDirectoryPath">
-        /// The relative path to a directory inside of one of the channel folder.
-        /// For example, "\data\Localization\french_(france)" would open this folder: "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE\data\Localization\french_(france)".
-        /// </param>
-        private void OpenChannelFolderDirectory(string relativeDirectoryPath)
-        {
-            LibraryFolder? libraryFolder = LibraryFolder.Make();
+		/// <param name="relativeDirectoryPath">
+		/// The relative path to a directory inside of one of the channel folder.
+		/// For example, "\data\Localization\french_(france)" would open this folder: "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE\data\Localization\french_(france)".
+		/// </param>
+		private void OpenChannelFolderDirectory(string relativeDirectoryPath)
+		{
+			LibraryFolder? libraryFolder = LibraryFolder.Make();
 
-            if (libraryFolder == null) {
-                App.Notify(ToolTipIcon.Warning, "Le jeu ne semble pas être installé !");
+			if (libraryFolder == null) {
+				App.Notify(ToolTipIcon.Warning, "Le jeu ne semble pas être installé !");
 
-                return;
-            }
+				return;
+			}
 
-            ChannelFolder[] channelFolders = libraryFolder.EnumerateChannelFolders(true, true).ToArray();
+			ChannelFolder[] channelFolders = libraryFolder.EnumerateChannelFolders(true, true).ToArray();
 
-            if (channelFolders.Length < 1) {
-                App.Notify(ToolTipIcon.Warning, "Le jeu ne semble pas être installé !");
+			if (channelFolders.Length < 1) {
+				App.Notify(ToolTipIcon.Warning, "Le jeu ne semble pas être installé !");
 
-                return;
-            }
+				return;
+			}
 
-            if (channelFolders.Length > 1) {
-                View.Window.ChannelSelector channelSelectorWindow = new(channelFolders, "Ouvrir");
-                channelSelectorWindow.ShowDialog();
+			if (channelFolders.Length > 1) {
+				View.Window.ChannelSelector channelSelectorWindow = new(channelFolders, "Ouvrir");
+				channelSelectorWindow.ShowDialog();
 
-                channelFolders = channelSelectorWindow.SelectedChannelFolders;
+				channelFolders = channelSelectorWindow.SelectedChannelFolders;
 
-                if (channelFolders.Length < 1) {
-                    return;
-                }
-            }
+				if (channelFolders.Length < 1) {
+					return;
+				}
+			}
 
-            foreach (ChannelFolder channelFolder in channelFolders) {
-                OpenDirectory(channelFolder.Path + relativeDirectoryPath);
-            }
-        }
+			foreach (ChannelFolder channelFolder in channelFolders) {
+				OpenDirectory(channelFolder.Path + relativeDirectoryPath);
+			}
+		}
 
-        private void OpenDirectory(string absoluteDirectoryPath)
-        {
-            if (!Path.Exists(absoluteDirectoryPath)) {
-                App.Notify(ToolTipIcon.Warning, "Ce chemin n'existe pas: " + absoluteDirectoryPath);
+		private void OpenDirectory(string absoluteDirectoryPath)
+		{
+			if (!Path.Exists(absoluteDirectoryPath)) {
+				App.Notify(ToolTipIcon.Warning, "Ce chemin n'existe pas: " + absoluteDirectoryPath);
 
-                return;
-            }
+				return;
+			}
 
-            try {
-                Process.Start(new ProcessStartInfo() {
-                    FileName = absoluteDirectoryPath,
-                    UseShellExecute = true,
-                    Verb = "open"
-                });
-            } catch (Exception ex) {
-                Logger.LogError(ex);
-            }
-        }
+			try {
+				Process.Start(new ProcessStartInfo() {
+					FileName = absoluteDirectoryPath,
+					UseShellExecute = true,
+					Verb = "open"
+				});
+			} catch (Exception ex) {
+				Logger.LogError(ex);
+			}
+		}
 
-        #endregion
+		#endregion
 
-        /*
-        Accessor
-        */
+		/*
+		Accessor
+		*/
 
-        /// <summary>
+		/// <summary>
 		/// Returns the full URL to the GitHub repository.
 		/// </summary>
 		public static string GithubRepositoryUrl
@@ -355,185 +355,185 @@ namespace StarTrad
 			get { return "https://github.com" + GITHUB_REPOSITORY; }
 		}
 
-        public static int AssemblyFileVersionAsNumber
-        {
-            get
-            {
-                string version = App.assemblyFileVersion.Replace(".", "");
+		public static int AssemblyFileVersionAsNumber
+		{
+			get
+			{
+				string version = App.assemblyFileVersion.Replace(".", "");
 
-                int number = 0;
-                bool success = int.TryParse(version, out number);
+				int number = 0;
+				bool success = int.TryParse(version, out number);
 
-                if (!success) {
-                    return 0;
-                }
+				if (!success) {
+					return 0;
+				}
 
-                return number;
-            }
-        }
+				return number;
+			}
+		}
 
-        /*
-        Event
-        */
+		/*
+		Event
+		*/
 
-        #region Event
+		#region Event
 
-        /// <summary>
-        /// Called when clicking on the "Install" tray menu item.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void InstallMenuItem_Click(object? sender, EventArgs e)
-        {
-            Logger.LogInformation("Lancement de la recherche de mise a jour");
+		/// <summary>
+		/// Called when clicking on the "Install" tray menu item.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void InstallMenuItem_Click(object? sender, EventArgs e)
+		{
+			Logger.LogInformation("Lancement de la recherche de mise a jour");
 
-            this.SetMenuItemsState(false);
+			this.SetMenuItemsState(false);
 
-            TranslationInstaller.Install(false, (sender, success) => {
-                this.SetMenuItemsState(true);
-            });
-        }
+			TranslationInstaller.Install(false, (sender, success) => {
+				this.SetMenuItemsState(true);
+			});
+		}
 
-        /// <summary>
-        /// Called when clicking on the "Install & Launch" tray menu item.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void InstallAndLaunchMenuItem_Click(object? sender, EventArgs e)
-        {
-            this.SetMenuItemsState(false);
+		/// <summary>
+		/// Called when clicking on the "Install & Launch" tray menu item.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void InstallAndLaunchMenuItem_Click(object? sender, EventArgs e)
+		{
+			this.SetMenuItemsState(false);
 
-            TranslationInstaller.Install(false, (sender, result) => {
-                if (result == Enum.ActionResult.Successful) RsiLauncherFolder.ExecuteRsiLauncher();
-                this.SetMenuItemsState(true);
-            });
-        }
+			TranslationInstaller.Install(false, (sender, result) => {
+				if (result == Enum.ActionResult.Successful) RsiLauncherFolder.ExecuteRsiLauncher();
+				this.SetMenuItemsState(true);
+			});
+		}
 
-        /// <summary>
-        /// Called when clicking on the "Uninstall" tray menu item.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void UninstallMenuItem_Click(object? sender, EventArgs e)
-        {
-            this.SetMenuItemsState(false);
+		/// <summary>
+		/// Called when clicking on the "Uninstall" tray menu item.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void UninstallMenuItem_Click(object? sender, EventArgs e)
+		{
+			this.SetMenuItemsState(false);
 
-            TranslationInstaller.Uninstall(false);
+			TranslationInstaller.Uninstall(false);
 
-            this.SetMenuItemsState(true);
-        }
+			this.SetMenuItemsState(true);
+		}
 
-        private void InstalledVersionsMenuItem_Click(object? sender, EventArgs e)
-        {
-            LibraryFolder? libraryFolder = LibraryFolder.Make();
+		private void InstalledVersionsMenuItem_Click(object? sender, EventArgs e)
+		{
+			LibraryFolder? libraryFolder = LibraryFolder.Make();
 
 			if (libraryFolder == null) {
-                System.Windows.Forms.MessageBox.Show("Le dossier du jeu est introuvable.");
+				System.Windows.Forms.MessageBox.Show("Le dossier du jeu est introuvable.");
 
 				return;
 			}
 
-            ChannelFolder[] channelFolders = libraryFolder.EnumerateChannelFolders(false, false).ToArray();
+			ChannelFolder[] channelFolders = libraryFolder.EnumerateChannelFolders(false, false).ToArray();
 
-            if (channelFolders.Length < 1) {
-                System.Windows.Forms.MessageBox.Show("Aucune traduction n'est installée.");
+			if (channelFolders.Length < 1) {
+				System.Windows.Forms.MessageBox.Show("Aucune traduction n'est installée.");
 
 				return;
 			}
 
-            View.Window.InstalledVersions installedVersionsWindow = new(channelFolders);
-            installedVersionsWindow.ShowDialog();
-        }
+			View.Window.InstalledVersions installedVersionsWindow = new(channelFolders);
+			installedVersionsWindow.ShowDialog();
+		}
 
-        /// <summary>
-        /// Called when clicking on the "Settings" tray menu item.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SettingsMenuItem_Click(object? sender, EventArgs e)
-        {
-            this.settingsMenuItem.Enabled = false;
+		/// <summary>
+		/// Called when clicking on the "Settings" tray menu item.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void SettingsMenuItem_Click(object? sender, EventArgs e)
+		{
+			this.settingsMenuItem.Enabled = false;
 
-            View.Window.Settings settingsWindow = new View.Window.Settings();
-            settingsWindow.ShowDialog();
+			View.Window.Settings settingsWindow = new View.Window.Settings();
+			settingsWindow.ShowDialog();
 
-            this.settingsMenuItem.Enabled = true;
-        }
+			this.settingsMenuItem.Enabled = true;
+		}
 
-        private void AboutMenuItem_Click(object? sender, EventArgs e)
-        {
-            this.aboutMenuItem.Enabled = false;
+		private void AboutMenuItem_Click(object? sender, EventArgs e)
+		{
+			this.aboutMenuItem.Enabled = false;
 
-            View.Window.About aboutWindow = new View.Window.About();
-            aboutWindow.ShowDialog();
+			View.Window.About aboutWindow = new View.Window.About();
+			aboutWindow.ShowDialog();
 
-            this.aboutMenuItem.Enabled = true;
-        }
+			this.aboutMenuItem.Enabled = true;
+		}
 
-        /// <summary>
-        /// Called when clicking on the "Exit" tray menu item.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ExitMenuItem_Click(object? sender, EventArgs e)
-        {
-            this.ExitApplication();
-        }
+		/// <summary>
+		/// Called when clicking on the "Exit" tray menu item.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void ExitMenuItem_Click(object? sender, EventArgs e)
+		{
+			this.ExitApplication();
+		}
 
-        /// <summary>
-        /// Called when an unhandled exception happens on the Application thread.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnApplicationThreadException(object sender, ThreadExceptionEventArgs e)
-        {
-            this.WriteCrashLog(e.Exception);
-        }
+		/// <summary>
+		/// Called when an unhandled exception happens on the Application thread.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnApplicationThreadException(object sender, ThreadExceptionEventArgs e)
+		{
+			this.WriteCrashLog(e.Exception);
+		}
 
-        /// <summary>
-        /// Called when an unhandled exception happens for the current AppDomain.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnAppDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            this.WriteCrashLog((Exception)e.ExceptionObject);
-        }
+		/// <summary>
+		/// Called when an unhandled exception happens for the current AppDomain.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnAppDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			this.WriteCrashLog((Exception)e.ExceptionObject);
+		}
 
-        /// <summary>
-        /// Called when the UpdateTranslation() tool triggers an automatic update of the translation.
-        /// </summary>
-        /// <param name="sender"></param>
-        private void OnAutoUpdateTriggered(object? sender)
-        {
-            this.SetMenuItemsState(false);
+		/// <summary>
+		/// Called when the UpdateTranslation() tool triggers an automatic update of the translation.
+		/// </summary>
+		/// <param name="sender"></param>
+		private void OnAutoUpdateTriggered(object? sender)
+		{
+			this.SetMenuItemsState(false);
 
-            TranslationInstaller.Install(true, (sender, success) =>
-            {
-                this.SetMenuItemsState(true);
-            });
-        }
+			TranslationInstaller.Install(true, (sender, success) =>
+			{
+				this.SetMenuItemsState(true);
+			});
+		}
 
-        private void OnOpenStarTradInstallFolder(object? sender, EventArgs e)
-        {
-            OpenDirectory(App.workingDirectoryPath);
-        }
+		private void OnOpenStarTradInstallFolder(object? sender, EventArgs e)
+		{
+			OpenDirectory(App.workingDirectoryPath);
+		}
 
-        private void OnOpenTranslationInstallFolder(object? sender, EventArgs e)
-        {
-            this.OpenChannelFolderDirectory(@"\data\Localization\french_(france)");
-        }
+		private void OnOpenTranslationInstallFolder(object? sender, EventArgs e)
+		{
+			this.OpenChannelFolderDirectory(@"\data\Localization\french_(france)");
+		}
 
-        private void OnOpenGameInstallFolder(object? sender, EventArgs e)
-        {
-            this.OpenChannelFolderDirectory(@"\");
-        }
+		private void OnOpenGameInstallFolder(object? sender, EventArgs e)
+		{
+			this.OpenChannelFolderDirectory(@"\");
+		}
 
-        private void OnOpenScreenshotInstallFolder(object? sender, EventArgs e)
-        {
-            this.OpenChannelFolderDirectory(@"\ScreenShots");
-        }
+		private void OnOpenScreenshotInstallFolder(object? sender, EventArgs e)
+		{
+			this.OpenChannelFolderDirectory(@"\ScreenShots");
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

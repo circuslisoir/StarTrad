@@ -11,7 +11,7 @@ namespace StarTrad.View.Window
 	public partial class About : System.Windows.Window
 	{
 		private View.Window.Updater? m_updaterWindow = null;
-		
+
 		public About()
 		{
 			InitializeComponent();
@@ -35,13 +35,13 @@ namespace StarTrad.View.Window
 			}));
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Checks if there's a new release on GitHub.
 		/// </summary>
 		/// <param name="messageWhenUpToDate"></param>
 		private async Task CheckForNewRelease()
 		{
-            Supremes.Nodes.Document? doc = null;
+			Supremes.Nodes.Document? doc = null;
 
 			try {
 				doc = Supremes.Dcsoup.Parse(new Uri(App.GithubRepositoryUrl + App.GITHUB_LATEST_RELEASE), 5000);
@@ -80,7 +80,7 @@ namespace StarTrad.View.Window
 					return;
 				}
 
-                string githubReleaseVersion = href.Replace(".", "") + "0";
+				string githubReleaseVersion = href.Replace(".", "") + "0";
 				int release;
 
 				if (!int.TryParse(githubReleaseVersion, out release)) {
