@@ -37,6 +37,6 @@ namespace StarTrad.View.Control
 			if (OnItemRemovalRequested != null) {
 				OnItemRemovalRequested(this);
 			}
-        }
-    }
+		}
+	}
 }

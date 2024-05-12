@@ -6,12 +6,12 @@ using System.Diagnostics;
 
 namespace StarTrad.View.Window
 {
-    /// <summary>
-    /// Interaction logic for Updater.xaml
-    /// </summary>
-    public partial class Updater : System.Windows.Window
-    {
-        const string TEMPDIR   = @"temp\";
+	/// <summary>
+	/// Interaction logic for Updater.xaml
+	/// </summary>
+	public partial class Updater : System.Windows.Window
+	{
+		const string TEMPDIR   = @"temp\";
 		const string ARCHIVE   = "extract.zip";
 		const string EXTRACTED = "extracted";
 		const string UPDATER   = "Updater.exe";
@@ -24,7 +24,7 @@ namespace StarTrad.View.Window
 			InitializeComponent();
 
 			this.release = release;
-			this.Title = App.PROGRAM_NAME + " " + release; 
+			this.Title = App.PROGRAM_NAME + " " + release;
 			this.button_Cancel.IsEnabled = this.button_Update.IsEnabled = true;
 		}
 
@@ -279,5 +279,5 @@ namespace StarTrad.View.Window
 		}
 
 		#endregion Event
-    }
+	}
 }

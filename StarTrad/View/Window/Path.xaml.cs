@@ -82,7 +82,7 @@ namespace StarTrad.View.Window
 			}
 
 			Properties.Settings.Default.RsiLauncherLibraryFolder = this.TextBox_Path.Text;
-            Properties.Settings.Default.Save();
+			Properties.Settings.Default.Save();
 
 			this.Close();
 		}

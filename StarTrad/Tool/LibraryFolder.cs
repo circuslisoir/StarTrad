@@ -8,23 +8,23 @@ namespace StarTrad.Tool
 {
 	/// <summary>
 	/// Represents the RSI Launcher's Library Folder, by default
-    /// "C:\Program Files\Roberts Space Industries".
+	/// "C:\Program Files\Roberts Space Industries".
 	/// </summary>
 	public class LibraryFolder
 	{
-        public const string STAR_CITIZEN_DIRECTORY_NAME = "StarCitizen";
-        public const string DEFAULT_LIBRARY_FOLDER_PATH = @"C:\Program Files\Roberts Space Industries";
+		public const string STAR_CITIZEN_DIRECTORY_NAME = "StarCitizen";
+		public const string DEFAULT_LIBRARY_FOLDER_PATH = @"C:\Program Files\Roberts Space Industries";
 
 		protected readonly string libraryFolderPath;
 
-        /*
+		/*
 		Constructor
 		*/
 
 		protected LibraryFolder(string libraryFolderPath)
-        {
-            this.libraryFolderPath = libraryFolderPath;
-        }
+		{
+			this.libraryFolderPath = libraryFolderPath;
+		}
 
 		/*
 		Static
@@ -38,10 +38,10 @@ namespace StarTrad.Tool
 		{
 			string? libraryFolderPath = LibraryFolder.GetFolderPath();
 
-            if (askForPathIfNeeded && libraryFolderPath == null) {
-                View.Window.Path pathWindow = new View.Window.Path();
-                libraryFolderPath = pathWindow.LibraryFolderPath;
-            }
+			if (askForPathIfNeeded && libraryFolderPath == null) {
+				View.Window.Path pathWindow = new View.Window.Path();
+				libraryFolderPath = pathWindow.LibraryFolderPath;
+			}
 
 			if (libraryFolderPath == null) {
 				return null;
@@ -50,176 +50,176 @@ namespace StarTrad.Tool
 			return new LibraryFolder(libraryFolderPath);
 		}
 
-        /// <summary>
-        /// Checks if the given path is a valid Library Folder path.
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static bool IsValidLibraryFolderPath(string path)
-        {
-            return ListAvailableChannelDirectoriesAt(path).Length >= 1;
-        }
+		/// <summary>
+		/// Checks if the given path is a valid Library Folder path.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		public static bool IsValidLibraryFolderPath(string path)
+		{
+			return ListAvailableChannelDirectoriesAt(path).Length >= 1;
+		}
 
 		/// <summary>
-        /// Lists all the existing channel directories inside the StarCitizen directory.
-        /// Also, the "LIVE" channel will always be the first item of the returned list, unless it's unavailable.
-        /// </summary>
-        /// <returns>
-        /// Example: [
-        ///     "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE",
-        ///     "C:\Program Files\Roberts Space Industries\StarCitizen\PTU",
-        ///     ...
-        /// ]
-        /// </returns>
-        public static string[] ListAvailableChannelFolderPaths()
-        {
-            string? libraryFolderPath = LibraryFolder.GetFolderPath();
+		/// Lists all the existing channel directories inside the StarCitizen directory.
+		/// Also, the "LIVE" channel will always be the first item of the returned list, unless it's unavailable.
+		/// </summary>
+		/// <returns>
+		/// Example: [
+		///     "C:\Program Files\Roberts Space Industries\StarCitizen\LIVE",
+		///     "C:\Program Files\Roberts Space Industries\StarCitizen\PTU",
+		///     ...
+		/// ]
+		/// </returns>
+		public static string[] ListAvailableChannelFolderPaths()
+		{
+			string? libraryFolderPath = LibraryFolder.GetFolderPath();
 
-            if (libraryFolderPath == null) {
-                return [];
-            }
+			if (libraryFolderPath == null) {
+				return [];
+			}
 
-            return ListAvailableChannelDirectoriesAt(libraryFolderPath);
-        }
+			return ListAvailableChannelDirectoriesAt(libraryFolderPath);
+		}
 
-        /// <summary>
-        /// Tries to list the channel folders located under the given library folder path.
-        /// Also, the "LIVE" channel will always be the first item of the returned list, unless it's unavailable.
-        /// </summary>
-        /// <param name="libraryFolderPath"></param>
-        /// <returns></returns>
-        private static string[] ListAvailableChannelDirectoriesAt(string libraryFolderPath)
-        {
-            if (!Directory.Exists(libraryFolderPath)) {
-                return [];
-            }
-            
-            string startCitizenDirectoryPath = libraryFolderPath + '\\' + STAR_CITIZEN_DIRECTORY_NAME;
+		/// <summary>
+		/// Tries to list the channel folders located under the given library folder path.
+		/// Also, the "LIVE" channel will always be the first item of the returned list, unless it's unavailable.
+		/// </summary>
+		/// <param name="libraryFolderPath"></param>
+		/// <returns></returns>
+		private static string[] ListAvailableChannelDirectoriesAt(string libraryFolderPath)
+		{
+			if (!Directory.Exists(libraryFolderPath)) {
+				return [];
+			}
 
-            if (!Directory.Exists(startCitizenDirectoryPath)) {
-                return [];
-            }
+			string startCitizenDirectoryPath = libraryFolderPath + '\\' + STAR_CITIZEN_DIRECTORY_NAME;
 
-            List<string> channelDirectoryPaths = new List<string>();
+			if (!Directory.Exists(startCitizenDirectoryPath)) {
+				return [];
+			}
 
-            foreach (string directoryPath in Directory.GetDirectories(startCitizenDirectoryPath)) {
-                if (ChannelFolder.IsValidChannelFolderPath(directoryPath)) {
-                   channelDirectoryPaths.Add(directoryPath);
-                }
-            }
+			List<string> channelDirectoryPaths = new List<string>();
 
-            channelDirectoryPaths.Sort(delegate(string a, string b) {
-                // Always put the LIVE channel at the top of the list
-                if (Path.GetFileName(a) == ChannelFolder.PREFERED_CHANNEL_NAME) {
-                    return -1;
-                }
+			foreach (string directoryPath in Directory.GetDirectories(startCitizenDirectoryPath)) {
+				if (ChannelFolder.IsValidChannelFolderPath(directoryPath)) {
+				   channelDirectoryPaths.Add(directoryPath);
+				}
+			}
 
-                // Every other channels will be put at the bottom
-                return 1;
-            });
+			channelDirectoryPaths.Sort(delegate(string a, string b) {
+				// Always put the LIVE channel at the top of the list
+				if (Path.GetFileName(a) == ChannelFolder.PREFERED_CHANNEL_NAME) {
+					return -1;
+				}
 
-            return channelDirectoryPaths.ToArray();
-        }
+				// Every other channels will be put at the bottom
+				return 1;
+			});
 
-        /// <summary>
-        /// Obtains the path to the Star Citizen's Library Folder from the settings.
-        /// If the stored path is no longer valid, tries to find it again.
-        /// </summary>
-        /// <returns>
-        /// The absolute path to a directory, or null if it cannot be found.
-        /// Example: "C:\Program Files\Roberts Space Industries".
-        /// </returns>
-        public static string? GetFolderPath()
-        {
-            string? libraryFolderPath = Settings.Default.RsiLauncherLibraryFolder;
+			return channelDirectoryPaths.ToArray();
+		}
 
-            if (LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
-                return libraryFolderPath;
-            }
+		/// <summary>
+		/// Obtains the path to the Star Citizen's Library Folder from the settings.
+		/// If the stored path is no longer valid, tries to find it again.
+		/// </summary>
+		/// <returns>
+		/// The absolute path to a directory, or null if it cannot be found.
+		/// Example: "C:\Program Files\Roberts Space Industries".
+		/// </returns>
+		public static string? GetFolderPath()
+		{
+			string? libraryFolderPath = Settings.Default.RsiLauncherLibraryFolder;
 
-            // The library folder path stored in settings is no longer valid, we'll try to find it again
-            libraryFolderPath = FindLibraryFolderPath();
+			if (LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
+				return libraryFolderPath;
+			}
 
-            // Keep the path in settings so we won't need to look lor it again next time
-            Settings.Default.RsiLauncherLibraryFolder = (libraryFolderPath != null ? libraryFolderPath : "");
-            Settings.Default.Save();
+			// The library folder path stored in settings is no longer valid, we'll try to find it again
+			libraryFolderPath = FindLibraryFolderPath();
 
-            return libraryFolderPath;
-        }
+			// Keep the path in settings so we won't need to look lor it again next time
+			Settings.Default.RsiLauncherLibraryFolder = (libraryFolderPath != null ? libraryFolderPath : "");
+			Settings.Default.Save();
 
-        /// <summary>
-        /// Yields a ChannelFolder object for each available channel folders.
-        /// </summary>
-        /// <param name="settingsOnly">
-        /// If true, results will only include channels selected in the settings.
-        /// </param>
-        /// <returns></returns>
-        public IEnumerable<ChannelFolder> EnumerateChannelFolders(bool settingsOnly = false, bool withInstalledTranslation = false)
-        {
-            string[] channelFolderPaths;
+			return libraryFolderPath;
+		}
 
-            if (settingsOnly && Settings.Default.RsiLauncherChannel != View.Window.Settings.CHANNEL_ALL) {
-                channelFolderPaths = [this.BuildChannelFolderPath(Settings.Default.RsiLauncherChannel)];
-            } else {
-                channelFolderPaths = ListAvailableChannelFolderPaths();   
-            }
+		/// <summary>
+		/// Yields a ChannelFolder object for each available channel folders.
+		/// </summary>
+		/// <param name="settingsOnly">
+		/// If true, results will only include channels selected in the settings.
+		/// </param>
+		/// <returns></returns>
+		public IEnumerable<ChannelFolder> EnumerateChannelFolders(bool settingsOnly = false, bool withInstalledTranslation = false)
+		{
+			string[] channelFolderPaths;
 
-            foreach (string channelFolderPath in channelFolderPaths) {
-                ChannelFolder? channelFolder = ChannelFolder.MakeFromPath(this, channelFolderPath);
+			if (settingsOnly && Settings.Default.RsiLauncherChannel != View.Window.Settings.CHANNEL_ALL) {
+				channelFolderPaths = [this.BuildChannelFolderPath(Settings.Default.RsiLauncherChannel)];
+			} else {
+				channelFolderPaths = ListAvailableChannelFolderPaths();
+			}
 
-                if (channelFolder == null) {
-                   continue;
-                }
+			foreach (string channelFolderPath in channelFolderPaths) {
+				ChannelFolder? channelFolder = ChannelFolder.MakeFromPath(this, channelFolderPath);
 
-                if (withInstalledTranslation) {
-                    TranslationVersion? translationVersion = channelFolder.GetInstalledTranslationVersion();
-                    if (translationVersion == null) continue;
-                }
+				if (channelFolder == null) {
+				   continue;
+				}
 
-                 yield return channelFolder;
-            }
-        }
+				if (withInstalledTranslation) {
+					TranslationVersion? translationVersion = channelFolder.GetInstalledTranslationVersion();
+					if (translationVersion == null) continue;
+				}
 
-        public string BuildChannelFolderPath(string channelName)
-        {
-            return this.StarCitizenDirectoryPath + '\\' + channelName;
-        }
+				 yield return channelFolder;
+			}
+		}
+
+		public string BuildChannelFolderPath(string channelName)
+		{
+			return this.StarCitizenDirectoryPath + '\\' + channelName;
+		}
 
 		#region Library Folder path finding methods
 
-        /// <summary>
-        /// Tries to find the path to the Star Citizen's Library Folder using various methods.
-        /// </summary>
-        /// <returns>
-        /// The absolute path to a directory, or null if it cannot be found.
-        /// Example: "C:\Program Files\Roberts Space Industries".
-        /// </returns>
-        private static string? FindLibraryFolderPath()
-        {
-            if (LibraryFolder.IsValidLibraryFolderPath(DEFAULT_LIBRARY_FOLDER_PATH)) {
-                return DEFAULT_LIBRARY_FOLDER_PATH;
-            }
+		/// <summary>
+		/// Tries to find the path to the Star Citizen's Library Folder using various methods.
+		/// </summary>
+		/// <returns>
+		/// The absolute path to a directory, or null if it cannot be found.
+		/// Example: "C:\Program Files\Roberts Space Industries".
+		/// </returns>
+		private static string? FindLibraryFolderPath()
+		{
+			if (LibraryFolder.IsValidLibraryFolderPath(DEFAULT_LIBRARY_FOLDER_PATH)) {
+				return DEFAULT_LIBRARY_FOLDER_PATH;
+			}
 
-            string? libraryfolderPath = FindLibraryFolderPathFromRegistry();
+			string? libraryfolderPath = FindLibraryFolderPathFromRegistry();
 
-            if (libraryfolderPath != null) {
-                return libraryfolderPath;
-            }
+			if (libraryfolderPath != null) {
+				return libraryfolderPath;
+			}
 
-            libraryfolderPath = FindLibraryFolderPathFromLauncherLocalStorage();
+			libraryfolderPath = FindLibraryFolderPathFromLauncherLocalStorage();
 
-            if (libraryfolderPath != null) {
-                return libraryfolderPath;
-            }
+			if (libraryfolderPath != null) {
+				return libraryfolderPath;
+			}
 
-            libraryfolderPath = FindLibraryFolderPathFromLauncherLogFile();
+			libraryfolderPath = FindLibraryFolderPathFromLauncherLogFile();
 
-            if (libraryfolderPath != null) {
-                return libraryfolderPath;
-            }
+			if (libraryfolderPath != null) {
+				return libraryfolderPath;
+			}
 
-            return null;
-        }
+			return null;
+		}
 
 		/// <summary>
 		/// Attemps to find the library folder by reading the RSI Launcher's Local Storage database.
@@ -229,113 +229,113 @@ namespace StarTrad.Tool
 		/// Example: "C:\Program Files\Roberts Space Industries".
 		/// </returns>
 		private static string? FindLibraryFolderPathFromLauncherLocalStorage()
-        {
-            string leveldbDirectoryPath = UserDirectory + @"\AppData\Roaming\rsilauncher\Local Storage\leveldb";
+		{
+			string leveldbDirectoryPath = UserDirectory + @"\AppData\Roaming\rsilauncher\Local Storage\leveldb";
 
-            if (!Directory.Exists(leveldbDirectoryPath)) {
-                return null;
-            }
+			if (!Directory.Exists(leveldbDirectoryPath)) {
+				return null;
+			}
 
-            // Open a connection to a new DB and create if not found
-            LevelDB.Options options = new LevelDB.Options { CreateIfMissing = false };
-            LevelDB.DB db;
+			// Open a connection to a new DB and create if not found
+			LevelDB.Options options = new LevelDB.Options { CreateIfMissing = false };
+			LevelDB.DB db;
 
-            // Accessing the local storage might fail if the launcher is running
-            try {
-                db = new LevelDB.DB(options, leveldbDirectoryPath);
-            } catch (UnauthorizedAccessException) {
-                return null;
-            }
+			// Accessing the local storage might fail if the launcher is running
+			try {
+				db = new LevelDB.DB(options, leveldbDirectoryPath);
+			} catch (UnauthorizedAccessException) {
+				return null;
+			}
 
-            string libraryFolderPath = db.Get("library-folder");
+			string libraryFolderPath = db.Get("library-folder");
 
-            db.Close();
+			db.Close();
 
-            if (String.IsNullOrWhiteSpace(libraryFolderPath)) {
-                return null;
-            }
+			if (String.IsNullOrWhiteSpace(libraryFolderPath)) {
+				return null;
+			}
 
-            if (!LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
-                return null;
-            }
+			if (!LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
+				return null;
+			}
 
-            return libraryFolderPath;
-        }
+			return libraryFolderPath;
+		}
 
-        /// <summary>
-        /// Attemps to find where the launcher is located then using that to find where the Library Folder is.
-        /// </summary>
-        /// <returns></returns>
-        private static string? FindLibraryFolderPathFromRegistry()
-        {
-            string? rsiLauncherFolderPath = RsiLauncherFolder.GetFolderPath();
+		/// <summary>
+		/// Attemps to find where the launcher is located then using that to find where the Library Folder is.
+		/// </summary>
+		/// <returns></returns>
+		private static string? FindLibraryFolderPathFromRegistry()
+		{
+			string? rsiLauncherFolderPath = RsiLauncherFolder.GetFolderPath();
 
-            if (rsiLauncherFolderPath == null) {
-                return null;
-            }
+			if (rsiLauncherFolderPath == null) {
+				return null;
+			}
 
-            string? libraryFolderPath = Path.GetDirectoryName(rsiLauncherFolderPath);
+			string? libraryFolderPath = Path.GetDirectoryName(rsiLauncherFolderPath);
 
-            if (libraryFolderPath == null || !LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
-                return null;
-            }
+			if (libraryFolderPath == null || !LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath)) {
+				return null;
+			}
 
-            return libraryFolderPath;
-        }
+			return libraryFolderPath;
+		}
 
-        /// <summary>
-        /// Attemps to find the library folder by reading the RSI Launcher's log file.
-        /// </summary>
-        /// <returns>
-        /// The absolute path to a directory, or null if it cannot be found.
-        /// Example: "C:\Program Files\Roberts Space Industries".
-        /// </returns>
-        private static string? FindLibraryFolderPathFromLauncherLogFile()
-        {
-            string logFilePath = UserDirectory + @"\AppData\Roaming\rsilauncher\logs\log.log";
+		/// <summary>
+		/// Attemps to find the library folder by reading the RSI Launcher's log file.
+		/// </summary>
+		/// <returns>
+		/// The absolute path to a directory, or null if it cannot be found.
+		/// Example: "C:\Program Files\Roberts Space Industries".
+		/// </returns>
+		private static string? FindLibraryFolderPathFromLauncherLogFile()
+		{
+			string logFilePath = UserDirectory + @"\AppData\Roaming\rsilauncher\logs\log.log";
 
-            if (!File.Exists(logFilePath)) {
-                return null;
-            }
+			if (!File.Exists(logFilePath)) {
+				return null;
+			}
 
-            uint lineNumber = 0;
-            uint changeEventLineNumber = 0;
-            string? libraryFolderLine = null;
+			uint lineNumber = 0;
+			uint changeEventLineNumber = 0;
+			string? libraryFolderLine = null;
 
-            using (FileStream fileStream = File.OpenRead(logFilePath)) {
-                using (StreamReader streamReader = new StreamReader(fileStream, Encoding.UTF8, true, 128)) {
-                    string? line;
+			using (FileStream fileStream = File.OpenRead(logFilePath)) {
+				using (StreamReader streamReader = new StreamReader(fileStream, Encoding.UTF8, true, 128)) {
+					string? line;
 
-                    while ((line = streamReader.ReadLine()) != null) {
-                        lineNumber++;
+					while ((line = streamReader.ReadLine()) != null) {
+						lineNumber++;
 
-                        if (line.Contains("CHANGE_LIBRARY_FOLDER")) {
-                            changeEventLineNumber = lineNumber;
+						if (line.Contains("CHANGE_LIBRARY_FOLDER")) {
+							changeEventLineNumber = lineNumber;
 
-                            continue;
-                        }
+							continue;
+						}
 
-                        if (changeEventLineNumber > 0 && lineNumber == (changeEventLineNumber + 3)) {
-                            libraryFolderLine = line;
+						if (changeEventLineNumber > 0 && lineNumber == (changeEventLineNumber + 3)) {
+							libraryFolderLine = line;
 
-                            continue;
-                        }
-                    }
-                }
-            }
+							continue;
+						}
+					}
+				}
+			}
 
-            if (libraryFolderLine == null) {
-                return null;
-            }
+			if (libraryFolderLine == null) {
+				return null;
+			}
 
-            libraryFolderLine = libraryFolderLine.Trim("\" ".ToCharArray());
+			libraryFolderLine = libraryFolderLine.Trim("\" ".ToCharArray());
 
-            if (!Directory.Exists(libraryFolderLine)) {
-                return null;
-            }
+			if (!Directory.Exists(libraryFolderLine)) {
+				return null;
+			}
 
-            return libraryFolderLine.Replace(@"\\", @"\");
-        }
+			return libraryFolderLine.Replace(@"\\", @"\");
+		}
 
 		#endregion
 
@@ -352,12 +352,12 @@ namespace StarTrad.Tool
 			get { return this.libraryFolderPath + '\\' + STAR_CITIZEN_DIRECTORY_NAME; }
 		}
 
-        /// <summary>
-        /// Returns the path to the user directory, for exemple "C:\Users\<UserName>"
-        /// </summary>
-        private static string UserDirectory
-        {
-            get { return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); }
-        }
+		/// <summary>
+		/// Returns the path to the user directory, for exemple "C:\Users\<UserName>"
+		/// </summary>
+		private static string UserDirectory
+		{
+			get { return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); }
+		}
 	}
 }
