@@ -35,10 +35,6 @@ namespace StarTrad.View.Window
 
 			this.ComboBox_TranslationUpdateMethod.SelectedIndex = Properties.Settings.Default.TranslationUpdateMethod;
 			this.ComboBox_TranslationUpdateMethod.SelectionChanged += this.ComboBox_TranslationUpdateMethod_SelectionChanged;
-
-			this.CheckBox_UseNewLauncher.IsChecked = Properties.Settings.Default.LauncherName != App.DEFAULT_RSI_LAUNCHER_NAME;
-			this.CheckBox_UseNewLauncher.Checked += this.CheckBox_UseNewLauncher_Checked;
-			this.CheckBox_UseNewLauncher.Unchecked += this.CheckBox_UseNewLauncher_Unchecked;
 		}
 
 		#region Events
@@ -150,28 +146,6 @@ namespace StarTrad.View.Window
 			UpdateTranslation.ReloadAutoUpdate();
 
 			this.Close();
-		}
-
-		/// <summary>
-		/// Use the new launcher checkbox checked event.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void CheckBox_UseNewLauncher_Checked(object sender, System.Windows.RoutedEventArgs e)
-		{
-			Logger.LogInformation("Utilisation du nouveau launcher RSI V2");
-			Properties.Settings.Default.LauncherName = "RSI RC Launcher";
-		}
-
-		/// <summary>
-		/// Use the new launcher checkbox unchecked event.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void CheckBox_UseNewLauncher_Unchecked(object sender, System.Windows.RoutedEventArgs e)
-		{
-			Logger.LogInformation("Utilisation du launcher RSI V1");
-			Properties.Settings.Default.LauncherName = App.DEFAULT_RSI_LAUNCHER_NAME;
 		}
 
 		#endregion
