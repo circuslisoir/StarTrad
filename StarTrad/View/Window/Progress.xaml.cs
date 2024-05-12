@@ -7,11 +7,11 @@ namespace StarTrad.View.Window
 	/// </summary>
 	public partial class Progress : System.Windows.Window
 	{
-		public Progress(string channel)
+		public Progress()
 		{
 			InitializeComponent();
 
-			this.Label_Title.Content += $"Téléchargement de la traduction ({channel})";
+			this.Label_Title.Content += "Téléchargement de la traduction";
 		}
 
 		/*

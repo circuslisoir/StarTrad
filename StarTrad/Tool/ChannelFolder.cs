@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Collections.Generic;
 using System.Text;
 
 namespace StarTrad.Tool
@@ -237,6 +236,11 @@ namespace StarTrad.Tool
         public string GlobalIniInstallationFilePath
         {
             get { return this.GlobalIniInstallationDirectoryPath + '\\' + GLOBAL_INI_FILE_NAME; }
+        }
+
+        public bool IsLiveChannel
+        {
+            get { return this.channelName == "LIVE"; }
         }
 	}
 }
