@@ -298,7 +298,7 @@ namespace StarTrad
 				return;
 			}
 
-			ChannelFolder[] channelFolders = libraryFolder.EnumerateChannelFolders(true, true).ToArray();
+			ChannelFolder[] channelFolders = libraryFolder.EnumerateChannelFolders(true, false).ToArray();
 
 			if (channelFolders.Length < 1) {
 				App.Notify(ToolTipIcon.Warning, "Le jeu ne semble pas être installé !");
