@@ -80,7 +80,18 @@ namespace StarTrad.View.Window
 					return;
 				}
 
-				string githubReleaseVersion = href.Replace(".", "") + "0";
+				string githubReleaseVersion = href.Replace(".", "");
+
+				// Must contain either 3 digits ("096") or 4 digits ("0961")
+				if (githubReleaseVersion.Length < 3 || githubReleaseVersion.Length > 4) {
+					return;
+				}
+
+				// 3-digits numbers will be converted to 4 digits numbers ("096" -> "0960")
+				if (githubReleaseVersion.Length == 3) {
+					githubReleaseVersion += "0";
+				}
+
 				int release;
 
 				if (!int.TryParse(githubReleaseVersion, out release)) {
