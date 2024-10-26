@@ -132,7 +132,7 @@ namespace StarTrad.View.Window
 
 			if (!LibraryFolder.IsValidLibraryFolderPath(libraryFolderPath))
 			{
-				MessageBox.Show($"Le dossier \"{libraryFolderPath}\" ne semble pas être le chemin correct vers le Library Folder.");
+				MessageBox.Show($"Le dossier \"{libraryFolderPath}\" ne semble pas être le chemin correct vers le dossier \"RSI Library Location\".");
 
 				return;
 			}

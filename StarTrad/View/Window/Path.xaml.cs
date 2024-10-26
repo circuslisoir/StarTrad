@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using System.Windows.Media.Imaging;
 using StarTrad.Tool;
 
 namespace StarTrad.View.Window
@@ -17,7 +19,12 @@ namespace StarTrad.View.Window
 				this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 			}
 
+			BitmapImage imageSource = new BitmapImage(new Uri(App.workingDirectoryPath + "rsi_library_location.png"));
+			imageSource.DecodePixelWidth = 411;
+			imageSource.DecodePixelHeight = 48;
+
 			this.TextBox_Path.Text = LibraryFolder.DEFAULT_LIBRARY_FOLDER_PATH;
+			this.Image_RsiLibraryLocation.Source = imageSource;
 
 			this.ShowDialog();
 		}
@@ -44,6 +51,21 @@ namespace StarTrad.View.Window
 			return "";
 		}
 
+		private void BrowseForPath()
+		{
+			System.Windows.Forms.FolderBrowserDialog dialog = new();
+
+			if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) {
+				return;
+			}
+
+			this.TextBox_Path.Text = this.SeekLibraryFolderPathFrom(dialog.SelectedPath);
+
+			if (this.TextBox_Path.Text.Length == 0) {
+				MessageBox.Show("Le chemin du dossier \"RSI Library Location\" n'a pas pu être obtenu à partir du dossier sélectionné.");
+			}
+		}
+
 		/*
 		Accessor
 		*/
@@ -68,7 +90,7 @@ namespace StarTrad.View.Window
 			this.TextBox_Path.Text = this.SeekLibraryFolderPathFrom(files[0]);
 
 			if (this.TextBox_Path.Text.Length == 0) {
-				MessageBox.Show("Le chemin du Library Folder n'a pas pu être obtenu à partir de ce fichier.");
+				MessageBox.Show("Le chemin du dossier \"RSI Library Location\" n'a pas pu être obtenu à partir de ce fichier.");
 			}
 		}
 
@@ -89,17 +111,12 @@ namespace StarTrad.View.Window
 
 		private void Rectangle_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
-			System.Windows.Forms.FolderBrowserDialog dialog = new();
+			this.BrowseForPath();
+		}
 
-			if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) {
-				return;
-			}
-
-			this.TextBox_Path.Text = this.SeekLibraryFolderPathFrom(dialog.SelectedPath);
-
-			if (this.TextBox_Path.Text.Length == 0) {
-				MessageBox.Show("Le chemin du Library Folder n'a pas pu être obtenu à partir du dossier sélectionné.");
-			}
+		private void Button_Browse_Click(object sender, RoutedEventArgs e)
+		{
+			this.BrowseForPath();
 		}
 	}
 }
