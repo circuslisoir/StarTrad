@@ -43,12 +43,12 @@
 		<Label Content="Créer le raccourci..." Margin="10,10,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" Padding="0,5,5,5"/>
 
 		<RadioButton x:Name="RadioButton_Desktop" Content="Sur le bureau" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" IsChecked="True" Foreground="{StaticResource ControlForegroundBrush}" GroupName="radioGroup_targetLocation" Checked="RadioButton_Desktop_Checked"/>
-		<RadioButton x:Name="RadioButton_Location" Content="A cet emplacement :" HorizontalAlignment="Left" Margin="104,41,0,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" GroupName="radioGroup_targetLocation" Checked="RadioButton_Location_Checked"/>
+		<RadioButton x:Name="RadioButton_Location" Content="À cet emplacement :" HorizontalAlignment="Left" Margin="104,41,0,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" GroupName="radioGroup_targetLocation" Checked="RadioButton_Location_Checked"/>
 
 		<TextBox x:Name="TextBox_Location" Margin="10,61,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBorderBrush}" HorizontalAlignment="Left" Width="197" Height="18" IsEnabled="False"/>
 		<Button x:Name="Button_Browse" Content="..." HorizontalAlignment="Left" Margin="212,61,0,0" VerticalAlignment="Top" Height="18" Width="19" Foreground="{StaticResource ControlForegroundBrush}" BorderBrush="{StaticResource ControlBorderBrush}" Click="Button_Browse_Click" IsEnabled="False"/>
 
-		<Label Content="Au double clique sur le raccourci..." Margin="10,84,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" Padding="0,5,5,5"/>
+		<Label Content="Au double clic sur le raccourci..." Margin="10,84,10,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}" Padding="0,5,5,5"/>
 
 		<CheckBox x:Name="CheckBox_Install" Content="Installer la traduction" HorizontalAlignment="Left" Margin="10,115,0,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}"/>
 		<CheckBox x:Name="CheckBox_Launch" Content="Lancer le launcher RSI" HorizontalAlignment="Left" Margin="10,135,0,0" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}"/>
