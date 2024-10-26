@@ -6,9 +6,10 @@
 		MinWidth="385" MinHeight="232"
         WindowStartupLocation="CenterScreen">
 	<Window.Resources>
-		<SolidColorBrush x:Key="ControlBackgroundBrush" Color="#42525E" />
-		<SolidColorBrush x:Key="ControlBackgroundHoverBrush" Color="#FF566977" />
+		<SolidColorBrush x:Key="ControlBackgroundBrush" Color="#143A52" />
+		<SolidColorBrush x:Key="ControlBackgroundHoverBrush" Color="#FF174568" />
 		<SolidColorBrush x:Key="ControlForegroundBrush" Color="#FFCFDEE8" />
+		<SolidColorBrush x:Key="ControlBorderBrush" Color="#194967" />
 		<ControlTemplate x:Key="ComboBoxToggleButton" TargetType="ToggleButton">
 			<Grid>
 				<Grid.ColumnDefinitions>
@@ -71,10 +72,10 @@
 			</Setter>
 		</Style>
 	</Window.Resources>
-	<Grid Background="#253139">
+	<Grid Background="#0F2C3E">
 		<WebBrowser x:Name="WebBrowser_Changelog" Margin="10,10,10,83" />
 
-		<ProgressBar x:Name="downloadProgress" Margin="10,0,10,50" Height="20" VerticalAlignment="Bottom" Foreground="#1C4D6E" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{x:Null}"/>
+		<ProgressBar x:Name="downloadProgress" Margin="10,0,10,50" Height="20" VerticalAlignment="Bottom" Foreground="#1C4D6E" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBorderBrush}"/>
 		<Label x:Name="downloadStatus" Margin="10,0,10,50" Content="En attente du démarrage du téléchargement" RenderTransformOrigin="0.577,1.192" HorizontalContentAlignment="Center" Foreground="{StaticResource ControlForegroundBrush}" VerticalContentAlignment="Center" FontSize="11" Padding="0" Height="20" VerticalAlignment="Bottom"/>
 
 		<Grid Margin="10,0,10,10" Height="26" VerticalAlignment="Bottom">
@@ -82,8 +83,8 @@
 				<ColumnDefinition/>
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
-			<Button x:Name="button_Update" Content="Mettre à jour" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}" Click="Button_Update_Click" IsEnabled="False" Margin="10,0,0,0" Grid.Column="1"/>
-			<Button x:Name="button_Cancel" Content="Annuler" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}" Click="Button_Cancel_Click" IsEnabled="False" Margin="0,0,10,0"/>
+			<Button x:Name="button_Update" Content="Mettre à jour" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBorderBrush}" Click="Button_Update_Click" IsEnabled="False" Margin="10,0,0,0" Grid.Column="1"/>
+			<Button x:Name="button_Cancel" Content="Annuler" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBorderBrush}" Click="Button_Cancel_Click" IsEnabled="False" Margin="0,0,10,0"/>
 		</Grid>
 	</Grid>
 </Window>

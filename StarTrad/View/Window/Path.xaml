@@ -7,9 +7,9 @@
         WindowStartupLocation="CenterScreen"
         AllowDrop="True">
 	<Window.Resources>
-		<SolidColorBrush x:Key="WindowBackgroundBrush" Color="#253139" />
-		<SolidColorBrush x:Key="ControlBackgroundBrush" Color="#42525E" />
-		<SolidColorBrush x:Key="ControlBackgroundHoverBrush" Color="#FF566977" />
+		<SolidColorBrush x:Key="WindowBackgroundBrush" Color="#0F2C3E" />
+		<SolidColorBrush x:Key="ControlBackgroundBrush" Color="#143A52" />
+		<SolidColorBrush x:Key="ControlBackgroundHoverBrush" Color="#FF174568" />
 		<SolidColorBrush x:Key="ControlForegroundBrush" Color="#FFCFDEE8" />
 		<Style TargetType="{x:Type Button}">
 			<Setter Property="Template">
@@ -47,11 +47,11 @@
 		</RichTextBox>
 
 		<Grid Margin="10,86,10,0" Height="175" VerticalAlignment="Top">
-			<Rectangle Stroke="{StaticResource ControlBackgroundHoverBrush}" StrokeThickness="1" StrokeDashArray="8 8" SnapsToDevicePixels="True" Drop="Rectangle_Drop" AllowDrop="True" Focusable="True" Fill="{StaticResource ControlBackgroundBrush}" MouseDown="Rectangle_MouseDown"/>
+			<Rectangle Stroke="#194967" StrokeThickness="1" StrokeDashArray="8 8" SnapsToDevicePixels="True" Drop="Rectangle_Drop" AllowDrop="True" Focusable="True" Fill="{StaticResource ControlBackgroundBrush}" MouseDown="Rectangle_MouseDown"/>
 			<Label Content="Déposer un fichier ici" Margin="10,57,10,0" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20" Height="42" VerticalAlignment="Top" Foreground="{StaticResource ControlForegroundBrush}"/>
 			<TextBlock Text="ou cliquer pour parcourir..." Margin="10,91,10,0" IsHitTestVisible="False" Height="26" VerticalAlignment="Top" TextAlignment="Center" Foreground="{StaticResource ControlForegroundBrush}"/>
 		</Grid>
-		<TextBox x:Name="TextBox_Path" Margin="10,266,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="{StaticResource ControlBackgroundBrush}"/>
+		<TextBox x:Name="TextBox_Path" Margin="10,266,10,0" TextWrapping="NoWrap" VerticalAlignment="Top" Height="26" VerticalContentAlignment="Center" Foreground="{StaticResource ControlForegroundBrush}" Background="{StaticResource ControlBackgroundBrush}" BorderBrush="#194967"/>
 
 		<Button x:Name="Button_Validate" Content="Valider" Click="Button_Validate_Click" Foreground="{StaticResource ControlForegroundBrush}" Height="42" VerticalAlignment="Bottom"/>
 	</Grid>

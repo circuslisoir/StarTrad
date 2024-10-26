@@ -10,8 +10,8 @@
         MaxWidth="400"
         WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
 	<Window.Resources>
-		<SolidColorBrush x:Key="ControlBackgroundBrush" Color="#42525E" />
-		<SolidColorBrush x:Key="ControlBackgroundHoverBrush" Color="#FF566977" />
+		<SolidColorBrush x:Key="ControlBackgroundBrush" Color="#143A52" />
+		<SolidColorBrush x:Key="ControlBackgroundHoverBrush" Color="#FF174568" />
 		<SolidColorBrush x:Key="ControlForegroundBrush" Color="#FFCFDEE8" />
 		<Style TargetType="{x:Type Button}">
 			<Setter Property="Template">
@@ -39,10 +39,10 @@
 			</Setter>
 		</Style>
 	</Window.Resources>
-	<Grid Background="#253139">
+	<Grid Background="#0F2C3E">
 		<ScrollViewer Margin="0,0,0,33">
 			<ItemsControl x:Name="ItemsControl_Channels" />
 		</ScrollViewer>
-		<Button x:Name="Button_Ok" Content="Installer" Height="33" VerticalAlignment="Bottom" Click="Button_Ok_Click" Foreground="#FFCFDEE8" Background="#42525e" BorderBrush="#42525e"/>
+		<Button x:Name="Button_Ok" Content="Installer" Height="33" VerticalAlignment="Bottom" Click="Button_Ok_Click" Foreground="#FFCFDEE8" Background="#42525e" BorderBrush="#194967"/>
 	</Grid>
 </Window>

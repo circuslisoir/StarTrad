@@ -8,8 +8,8 @@
         ResizeMode="CanResize"
         SizeChanged="Window_SizeChanged">
 	<Window.Resources>
-		<SolidColorBrush x:Key="ControlBackgroundBrush" Color="#42525E" />
-		<SolidColorBrush x:Key="ControlBackgroundHoverBrush" Color="#FF566977" />
+		<SolidColorBrush x:Key="ControlBackgroundBrush" Color="#143A52" />
+		<SolidColorBrush x:Key="ControlBackgroundHoverBrush" Color="#FF174568" />
 		<SolidColorBrush x:Key="ControlForegroundBrush" Color="#FFCFDEE8" />
 		<Style TargetType="{x:Type Button}">
 			<Setter Property="Template">
@@ -37,7 +37,7 @@
 			</Setter>
 		</Style>
 	</Window.Resources>
-	<Grid Background="#253139">
+	<Grid Background="#0F2C3E">
 		<ScrollViewer Margin="0,0,0,45">
 			<ItemsControl x:Name="ItemsControl_Executables" />
 		</ScrollViewer>
@@ -46,8 +46,8 @@
 				<ColumnDefinition/>
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
-			<Button Content="Ajouter" Height="25" Click="Button_Add_Click" Margin="0,0,5,0" Foreground="#FFCFDEE8" Background="#42525e" BorderBrush="#42525e"/>
-			<Button Grid.Column="1" Content="Enregistrer" Height="25" VerticalAlignment="Center" Click="Button_Save_Click" Margin="5,0,0,0" Foreground="#FFCFDEE8" Background="#42525e" BorderBrush="#42525e"/>
+			<Button Content="Ajouter" Height="25" Click="Button_Add_Click" Margin="0,0,5,0" Foreground="#FFCFDEE8" Background="#0A1D29" BorderBrush="#194967"/>
+			<Button Grid.Column="1" Content="Enregistrer" Height="25" VerticalAlignment="Center" Click="Button_Save_Click" Margin="5,0,0,0" Foreground="#FFCFDEE8" Background="#42525e" BorderBrush="#194967"/>
 		</Grid>
 	</Grid>
 </Window>

@@ -9,7 +9,7 @@
 		MinWidth="400" MinHeight="100"
 		MaxWidth="500"
 		WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
-	<Grid Background="#253139">
+	<Grid Background="#0F2C3E">
 		<ScrollViewer>
 			<ItemsControl x:Name="ItemsControl_InstalledVersions" />
 		</ScrollViewer>

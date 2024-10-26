@@ -9,10 +9,10 @@
 		AllowsTransparency="True"
 		WindowStyle="None"
 		MouseDown="Window_MouseDown">
-	<Grid Background="#0D202D">
+	<Grid Background="#0F2C3E">
 		<Label x:Name="Label_Title" Margin="10,10,10,0" VerticalAlignment="Top" Foreground="White" Height="31" FontWeight="Bold"/>
 
-		<ProgressBar x:Name="ProgressBar_Progress" Margin="10,46,10,10" Foreground="#1C4D6E" Background="#FF122F43" BorderBrush="{x:Null}"/>
+		<ProgressBar x:Name="ProgressBar_Progress" Margin="10,46,10,10" Foreground="#216AA5" Background="#FF143A52" BorderBrush="#194967"/>
 		<Label x:Name="Label_Progress" Margin="10,46,10,10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White"/>
 	</Grid>
 </Window>
