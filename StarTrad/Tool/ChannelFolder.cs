@@ -133,6 +133,39 @@ namespace StarTrad.Tool
 			return null;
 		}
 
+		/// <summary>
+		/// Obtains an object representing the latest version of the translation.
+		/// </summary>
+		/// <returns></returns>
+		public TranslationVersion? QueryLatestAvailableTranslationVersion()
+		{
+			Logger.LogInformation("Récupération de la dernière version de la traduction");
+
+			string versionPath;
+
+			if (this.IsLiveChannel) {
+				versionPath = "/download/version.html";
+			} else {
+				versionPath = "/download_ptu/version.html";
+			}
+
+			string? html = CircuspesClient.GetRequest(versionPath);
+
+			if (string.IsNullOrWhiteSpace(html)) {
+				return null;
+			}
+
+			TranslationVersion? version = TranslationVersion.Make(html);
+
+			if (version == null) {
+				return null;
+			}
+
+			Logger.LogInformation($"Dernière version disponnible : {version.FullVersionNumber}");
+
+			return version;
+		}
+
 		/*
 		Private
 		*/

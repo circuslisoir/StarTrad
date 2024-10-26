@@ -5,7 +5,7 @@
 	/// </summary>
 	public class TranslationVersion
 	{
-		public TranslationVersion(string part0, string part1, string part2)
+		private TranslationVersion(string part0, string part1, string part2)
 		{
 			this.TargetedGameVersion = part0;
 			this.VersionNumber = part1;

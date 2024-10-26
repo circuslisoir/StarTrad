@@ -102,30 +102,19 @@ namespace StarTrad.Tool
 			if (TranslationInstaller.installing) return;
 			TranslationInstaller.installing = true;
 
-			TranslationVersion? latestVersion = this.QueryLatestAvailableTranslationVersion();
-
-			// Unable to obtain the remote version
-			if (latestVersion == null)
-			{
-				this.Notify(ToolTipIcon.Warning, "Impossible de récuprérer la version de la dernière traduction.", true);
-				this.End(ActionResult.Failure);
-
-				return;
-			}
-
 			List<ChannelFolder> channelsWithoutUpTodateTranslation = new List<ChannelFolder>();
 
 			foreach (ChannelFolder channelFolder in this.libraryFolder.EnumerateChannelFolders(true)) {
+				TranslationVersion? latestVersion = channelFolder.QueryLatestAvailableTranslationVersion();
 				TranslationVersion? installedVersion = channelFolder.GetInstalledTranslationVersion();
 
-				// We don't have a way to check the version number for the non-LIVE remote translations, so we'll always include them
-				if (installedVersion == null || !channelFolder.IsLiveChannel || latestVersion.IsNewerThan(installedVersion)) {
+				if (installedVersion == null || latestVersion == null || latestVersion.IsNewerThan(installedVersion)) {
 					channelsWithoutUpTodateTranslation.Add(channelFolder);
 
 					continue;
 				}
 
-				// We already have the latest version installed for this channel, we'll just setup the user.cfg file just in case
+				// We already have the latest version installed for this channel, we'll just setup the user.cfg file just in case.
 				this.CreateOrUpdateUserCfgFile(channelFolder);
 			}
 
@@ -219,31 +208,6 @@ namespace StarTrad.Tool
 		#endregion
 
 		#region Private
-
-		/// <summary>
-		/// Obtains an object representing the latest version of the translation.
-		/// </summary>
-		/// <returns></returns>
-		private TranslationVersion? QueryLatestAvailableTranslationVersion()
-		{
-			Logger.LogInformation("Récupération de la dernière version de la traduction");
-			string? html = CircuspesClient.GetRequest("/download/version.html");
-
-			if (string.IsNullOrWhiteSpace(html))
-			{
-				return null;
-			}
-
-			TranslationVersion? version = TranslationVersion.Make(html);
-
-			if (version == null) {
-				return null;
-			}
-
-			Logger.LogInformation($"Dernière version disponnible : {version.FullVersionNumber}");
-
-			return version;
-		}
 
 		/// <summary>
 		/// Starts downloading the global.ini translation file from the circuspes website.
