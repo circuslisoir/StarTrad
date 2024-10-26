@@ -114,14 +114,12 @@ namespace StarTrad.Tool
 		public ShortcutCreationResult Create(string directoryPath, bool overwrite)
 		{
 			if (!Directory.Exists(directoryPath)) {
-				Debug.WriteLine("RETURN_1 :: '" + directoryPath + "'");
 				return ShortcutCreationResult.CreationFailed;
 			}
 
 			string lnkFilePath = directoryPath + '\\' + this.lnkFileName + EXTENSION;
 
 			if (System.IO.File.Exists(lnkFilePath) && !overwrite) {
-				Debug.WriteLine("RETURN_2");
 				return ShortcutCreationResult.AlreadyExists;
 			}
 
@@ -146,10 +144,8 @@ namespace StarTrad.Tool
 				return ShortcutCreationResult.SuccessfulyCreated;
 			} catch (Exception ex) {
 				Logger.LogError(ex);
-				Debug.WriteLine("RETURN_3_ERR " + ex.Message);
 			}
 
-			Debug.WriteLine("RETURN_3");
 			return ShortcutCreationResult.CreationFailed;
 		}
 	}
